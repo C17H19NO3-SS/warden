@@ -1,0 +1,30 @@
+# .NET Build Artifacts
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+
+# IDE Specific
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Sensitive Info
+.env
+*.json.user
+
+# Git Specific
+.gemini/
+GEMINI.md
+MEMORY.md
+PROJECT_DOCUMENTATION.md
+DISCORD_FF_SYSTEM.md
+DISCORD_FF_FRIENDLY.md
