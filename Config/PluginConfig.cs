@@ -225,9 +225,99 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("MsgOnlyWardenAdminOrRootCanUse")]
     public string MsgOnlyWardenAdminOrRootCanUse { get; set; } = "Bu komutu sadece komutçu, komutçu admini veya root yetkilileri kullanabilir.";
 
+    // Utility Messages
+    [JsonPropertyName("MsgHpAllSet")]
+    public string MsgHpAllSet { get; set; } = "{Green}Tüm oyuncuların canı 100 olarak ayarlandı!";
+    [JsonPropertyName("MsgHpTSet")]
+    public string MsgHpTSet { get; set; } = "{Green}T takımının canı 100 olarak ayarlandı!";
+    [JsonPropertyName("MsgHpCTSet")]
+    public string MsgHpCTSet { get; set; } = "{Green}CT takımının canı 100 olarak ayarlandı!";
+    [JsonPropertyName("MsgGetTApplied")]
+    public string MsgGetTApplied { get; set; } = "{Green}T takımı komutçunun yanına çekildi!";
+    [JsonPropertyName("MsgGitUsage")]
+    public string MsgGitUsage { get; set; } = "{Red}Kullanım: !git <isim>";
+    [JsonPropertyName("MsgGitApplied")]
+    public string MsgGitApplied { get; set; } = "{Green}{0} adlı oyuncunun yanına ışınlandın.";
+    [JsonPropertyName("MsgHakSalUsage")]
+    public string MsgHakSalUsage { get; set; } = "{Red}Kullanım: !haksal <isim>";
+    [JsonPropertyName("MsgHakSalTargetNotFound")]
+    public string MsgHakSalTargetNotFound { get; set; } = "{Red}Belirtilen T oyuncusu bulunamadı.";
+    [JsonPropertyName("MsgHakSalApplied")]
+    public string MsgHakSalApplied { get; set; } = "{Blue}{0} {Default}hakkını {Red}{1} {Default}oyuncusuna saldı!";
 
-    [JsonPropertyName("MsgSustumStarted")]
-    public string MsgSustumStarted { get; set; } = "{0} başladı! Kelime: {1}";
+    // LR Messages
+    [JsonPropertyName("MsgLROnlyLastT")]
+    public string MsgLROnlyLastT { get; set; } = "{Red}Bu komutu sadece sona kalan T kullanabilir.";
+    [JsonPropertyName("MsgSonSecUsage")]
+    public string MsgSonSecUsage { get; set; } = "{Red}Kullanım: !sonseç <isim>";
+    [JsonPropertyName("MsgSonSecApplied")]
+    public string MsgSonSecApplied { get; set; } = "{Green}{0} {Default}sona bırakıldı ve LR menüsü açıldı!";
+    [JsonPropertyName("MsgLRStarted")]
+    public string MsgLRStarted { get; set; } = "{Green}LR Başladı! {Red}{0} vs {Blue}{1}";
+    [JsonPropertyName("MsgLRTypeInfo")]
+    public string MsgLRTypeInfo { get; set; } = "{Yellow}Tür: {0}";
+    [JsonPropertyName("MsgLRDeagleTurn")]
+    public string MsgLRDeagleTurn { get; set; } = "{Green}Sıra sende! Ateş et.";
+    [JsonPropertyName("MsgLRDeagleWait")]
+    public string MsgLRDeagleWait { get; set; } = "{Yellow}Rakibinin ateş etmesini bekle.";
+    [JsonPropertyName("MsgLRCTLost")]
+    public string MsgLRCTLost { get; set; } = "{Red}{0} {Default}LR kaybettiği için T takımına atıldı!";
+    [JsonPropertyName("MsgLRRebellion")]
+    public string MsgLRRebellion { get; set; } = "{Red}{0} {Default}isyan etmeyi seçti!";
+    [JsonPropertyName("MsgLRNoCTFound")]
+    public string MsgLRNoCTFound { get; set; } = "{Red}Düello yapacak CT bulunamadı.";
+
+    // LR HUD Titles/Content
+    [JsonPropertyName("HudTitleLRMain")]
+    public string HudTitleLRMain { get; set; } = "SONA KALAN MENÜSÜ";
+    [JsonPropertyName("HudTitleLRType")]
+    public string HudTitleLRType { get; set; } = "LR TÜRÜ SEÇİN";
+    [JsonPropertyName("HudTitleLRTarget")]
+    public string HudTitleLRTarget { get; set; } = "RAKİP SEÇİN";
+    [JsonPropertyName("HudContentLRMain")]
+    public string HudContentLRMain { get; set; } = "!1 LR (Son İstek)<br>!2 İSİAN (Rebellion)";
+    [JsonPropertyName("HudContentLRType")]
+    public string HudContentLRType { get; set; } = "!1 Deagle Düellosu<br>!2 Bıçak Düellosu";
+    [JsonPropertyName("HudInstructionLRNextPage")]
+    public string HudInstructionLRNextPage { get; set; } = "Tab: Sonraki Sayfa";
+
+    // FF HUD Titles/Content
+    [JsonPropertyName("HudTitleFFSystem")]
+    public string HudTitleFFSystem { get; set; } = "FF SİSTEMİ";
+    [JsonPropertyName("HudTitleFFPrimary")]
+    public string HudTitleFFPrimary { get; set; } = "FF BİRİNCİL SİLAH";
+    [JsonPropertyName("HudTitleFFSecondary")]
+    public string HudTitleFFSecondary { get; set; } = "FF TABANCA SEÇİMİ";
+    [JsonPropertyName("HudTitleFFStartDelay")]
+    public string HudTitleFFStartDelay { get; set; } = "FF BAŞLAMASINA";
+    [JsonPropertyName("HudTitleFFEndDelay")]
+    public string HudTitleFFEndDelay { get; set; } = "FF KAPANMASINA";
+    [JsonPropertyName("HudTitleFFActive")]
+    public string HudTitleFFActive { get; set; } = "FF AKTİF";
+    [JsonPropertyName("HudContentFFMenuTime")]
+    public string HudContentFFMenuTime { get; set; } = "Seçim İçin Kalan: <font color='{0}'><b>{1}s</b></font><br><br>";
+    [JsonPropertyName("HudContentFFStartDelay")]
+    public string HudContentFFStartDelay { get; set; } = "Silahlar: <font color='{0}'><b>{1}</b></font><br>FF Açılmasına: <font color='{2}'><b>{3}s</b></font>";
+    [JsonPropertyName("HudContentFFEndDelay")]
+    public string HudContentFFEndDelay { get; set; } = "FF Kapanmasına: <font color='{0}'><b>{1}s</b></font>";
+    [JsonPropertyName("HudContentFFFreezeWarning")]
+    public string HudContentFFFreezeWarning { get; set; } = "<br><font color='{0}'>Sonunda T'ler dondurulacak!</font>";
+    [JsonPropertyName("HudContentFFActiveWeapons")]
+    public string HudContentFFActiveWeapons { get; set; } = "Silahlar: <font color='{0}'><b>{1}</b></font>";
+    [JsonPropertyName("HudInstructionFFPagination")]
+    public string HudInstructionFFPagination { get; set; } = "Tab: Sonraki, Shift: Önceki";
+    [JsonPropertyName("HudInstructionFFOndurInfo")]
+    public string HudInstructionFFOndurInfo { get; set; } = "!ffondur <süre> ile kapatma sayacı başlatılabilir.";
+
+    [JsonPropertyName("MsgFFWeaponSelected")]
+    public string MsgFFWeaponSelected { get; set; } = "{Green}{0} seçildi! FF {1} saniye sonra başlayacak.";
+    [JsonPropertyName("MsgFFActiveNow")]
+    public string MsgFFActiveNow { get; set; } = "{Green}FF Aktif Edildi!";
+    [JsonPropertyName("MsgFFOnlyKnife")]
+    public string MsgFFOnlyKnife { get; set; } = "Sadece Bıçak";
+    [JsonPropertyName("MsgWardenAdminMenuTitle")]
+    public string MsgWardenAdminMenuTitle { get; set; } = "Komutçu Admin Seçimi";
+
 
     [JsonPropertyName("MsgSustumWinner")]
     public string MsgSustumWinner { get; set; } = "{0} kazananı: {1}! Ödül: {2}";

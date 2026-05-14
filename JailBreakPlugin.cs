@@ -29,6 +29,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     private PositionService _positionService = null!;
     private FFMenuService _ffMenuService = null!;
     private UtilityService _utilityService = null!;
+    private LastRequestService _lrService = null!;
 
     public VoteService VoteService => _voteService;
 
@@ -71,15 +72,18 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         _positionService = new PositionService(this, _wardenService, _freezeService);
         _ffMenuService = new FFMenuService(this, _wardenService, _freezeService);
         _utilityService = new UtilityService(this, _wardenService);
+        _lrService = new LastRequestService(this, _wardenService);
 
         RegisterListener<Listeners.OnClientDisconnect>(_wardenService.OnClientDisconnect);
         RegisterListener<Listeners.OnTick>(_ffMenuService.OnTick);
+        RegisterListener<Listeners.OnTick>(_lrService.OnTick);
 
         RegisterEventHandler<EventRoundStart>(OnRoundStart);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         RegisterEventHandler<EventPlayerPing>(OnPlayerPing);
+        RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
+        RegisterEventHandler<EventWeaponFire>(OnWeaponFire);
         HookUserMessage(118, OnUserMessageChat, HookMode.Pre);
-
         AddCommandListener("jointeam", OnJoinTeam);
 
         AddCommand("css_w", "Become Warden", _wardenService.CommandBecomeWarden);
@@ -124,6 +128,12 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_hpct", "Set HP 100 for CT", _utilityService.CommandHpCT);
         AddCommand("css_gelt", "Get all Terrorists", _utilityService.CommandGetT);
         AddCommand("css_git", "Go to player", _utilityService.CommandGit);
+        AddCommand("css_haksal", "Swap CT with T", _utilityService.CommandHakSal);
+
+        // LR Commands
+        AddCommand("css_sonakalan", "Open LR menu", _lrService.CommandSonaKalan);
+        AddCommand("css_sonsec", "Kill all but one T and open LR", _lrService.CommandSonSec);
+        AddCommand("css_sonseç", "Kill all but one T and open LR", _lrService.CommandSonSec);
     }
 
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -135,6 +145,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         _freezeService.OnRoundStart();
         _iseliService.OnRoundStart();
         _ffMenuService.OnRoundStart();
+        _lrService.OnRoundStart();
         return HookResult.Continue;
     }
 
@@ -153,6 +164,20 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
             }
         });
 
+        return HookResult.Continue;
+    }
+
+    private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
+    {
+        if (!IsJailbreakMap()) return HookResult.Continue;
+        _lrService.OnPlayerDeath(@event);
+        return HookResult.Continue;
+    }
+
+    private HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
+    {
+        if (!IsJailbreakMap()) return HookResult.Continue;
+        _lrService.OnWeaponFire(@event);
         return HookResult.Continue;
     }
 
@@ -201,6 +226,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         if (_sustumService.HandleSustumChat(player, message)) return HookResult.Stop;
         if (_voteService.HandleVoteChat(player, message)) return HookResult.Stop;
         if (_ffMenuService.HandleFFMenuChat(player, message)) return HookResult.Stop;
+        if (_lrService.HandleLRChat(player, message)) return HookResult.Stop;
 
         return _chatService.OnUserMessageChat(@event, player, message);
     }

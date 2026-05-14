@@ -27,7 +27,7 @@ public class UtilityService
             p.Health = 100;
             Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatColors.Green}Tüm oyuncuların canı 100 olarak ayarlandı!");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgHpAllSet)}");
     }
 
     public void CommandHpT(CCSPlayerController? player, CommandInfo info)
@@ -39,7 +39,7 @@ public class UtilityService
             p.Health = 100;
             Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatColors.Green}T takımının canı 100 olarak ayarlandı!");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgHpTSet)}");
     }
 
     public void CommandHpCT(CCSPlayerController? player, CommandInfo info)
@@ -51,7 +51,7 @@ public class UtilityService
             p.Health = 100;
             Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatColors.Green}CT takımının canı 100 olarak ayarlandı!");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgHpCTSet)}");
     }
 
     public void CommandGetT(CCSPlayerController? player, CommandInfo info)
@@ -65,7 +65,7 @@ public class UtilityService
         {
             p.PlayerPawn.Value?.Teleport(origin, player.PlayerPawn.Value?.AbsRotation, new Vector(0, 0, 0));
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatColors.Green}T takımı komutçunun yanına çekildi!");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgGetTApplied)}");
     }
 
     public void CommandGit(CCSPlayerController? player, CommandInfo info)
@@ -75,7 +75,7 @@ public class UtilityService
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatColors.Red}Kullanım: !git <isim>");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgGitUsage)}");
             return;
         }
 
@@ -87,7 +87,38 @@ public class UtilityService
         }
 
         player.PlayerPawn.Value?.Teleport(target.PlayerPawn.Value?.AbsOrigin, target.PlayerPawn.Value?.AbsRotation, new Vector(0, 0, 0));
-        player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatColors.Green}{target.PlayerName} adlı oyuncunun yanına ışınlandın.");
+        player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgGitApplied, target.PlayerName))}");
+    }
+
+    public void CommandHakSal(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || player.Team != CsTeam.CounterTerrorist) return;
+
+        string targetName = info.GetArg(1);
+        if (string.IsNullOrEmpty(targetName))
+        {
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgHakSalUsage)}");
+            return;
+        }
+
+        var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, System.StringComparison.OrdinalIgnoreCase) && p.Team == CsTeam.Terrorist);
+        
+        if (target == null || !target.IsValid)
+        {
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgHakSalTargetNotFound)}");
+            return;
+        }
+
+        // Hem oyuncu hem hedef valide edildi, şimdi değişim yapılıyor
+        Server.NextFrame(() => 
+        {
+            if (player.IsValid && target.IsValid)
+            {
+                player.ChangeTeam(CsTeam.Terrorist);
+                target.ChangeTeam(CsTeam.CounterTerrorist);
+                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgHakSalApplied, player.PlayerName, target.PlayerName))}");
+            }
+        });
     }
 
     private bool HasPermission(CCSPlayerController player)
