@@ -14,7 +14,7 @@ namespace JailBreak;
 public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "JailBreak Warden";
-    public override string ModuleVersion => "1.7.0";
+    public override string ModuleVersion => "1.0.1";
     public override string ModuleAuthor => "SoulSnatcher";
 
     public PluginConfig Config { get; set; } = new();
@@ -28,6 +28,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     private IseliService _iseliService = null!;
     private PositionService _positionService = null!;
     private FFMenuService _ffMenuService = null!;
+    private UtilityService _utilityService = null!;
 
     public VoteService VoteService => _voteService;
 
@@ -69,6 +70,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         _iseliService = new IseliService(this, _wardenService);
         _positionService = new PositionService(this, _wardenService, _freezeService);
         _ffMenuService = new FFMenuService(this, _wardenService, _freezeService);
+        _utilityService = new UtilityService(this, _wardenService);
 
         RegisterListener<Listeners.OnClientDisconnect>(_wardenService.OnClientDisconnect);
         RegisterListener<Listeners.OnTick>(_ffMenuService.OnTick);
@@ -115,6 +117,13 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_ffk", "Disable FF", _ffMenuService.CommandFFKapat);
         AddCommand("css_ff0", "Disable FF and strip weapons", _ffMenuService.CommandFF0);
         AddCommand("css_ffondur", "Enable FF with freeze end", _ffMenuService.CommandFFOndur);
+
+        // Utility Commands
+        AddCommand("css_hpa", "Set HP 100 for everyone", _utilityService.CommandHpAll);
+        AddCommand("css_hpt", "Set HP 100 for T", _utilityService.CommandHpT);
+        AddCommand("css_hpct", "Set HP 100 for CT", _utilityService.CommandHpCT);
+        AddCommand("css_gelt", "Get all Terrorists", _utilityService.CommandGetT);
+        AddCommand("css_git", "Go to player", _utilityService.CommandGit);
     }
 
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
