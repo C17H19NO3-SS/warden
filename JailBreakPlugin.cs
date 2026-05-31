@@ -15,7 +15,7 @@ namespace JailBreak;
 public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "JailBreak Warden";
-    public override string ModuleVersion => "1.0.1";
+    public override string ModuleVersion => "1.0.2";
     public override string ModuleAuthor => "SoulSnatcher";
 
     public PluginConfig Config { get; set; } = new();
