@@ -22,6 +22,7 @@ public class WardenService
     private CounterStrikeSharp.API.Modules.Timers.Timer? _wardenTimer;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _rgbTimer;
     private readonly HashSet<ulong> _wardenAdmins = new();
+    private readonly Dictionary<ulong, uint> _originalImmunity = new();
     private float _hue = 0;
     private List<WardenStat> _wardenStats = new();
     private readonly string _statsPath;
@@ -149,6 +150,10 @@ public class WardenService
 
         AdminManager.AddPlayerPermissions(player, "@jailbreak/warden");
 
+        // Save original immunity and set to 100
+        _originalImmunity[player.SteamID] = (uint)player.Score; 
+        AdminManager.SetPlayerImmunity(player, 100);
+
         _wardenTimer?.Kill();
         _wardenTimer = _plugin.AddTimer(_plugin.Config.WardenDurationMinutes * 60f, () =>
         {
@@ -200,6 +205,17 @@ public class WardenService
             }
 
             AdminManager.RemovePlayerPermissions(CurrentWarden, "@jailbreak/warden");
+            
+            if (_originalImmunity.TryGetValue(CurrentWarden.SteamID, out uint immunity))
+            {
+                AdminManager.SetPlayerImmunity(CurrentWarden, immunity);
+                _originalImmunity.Remove(CurrentWarden.SteamID);
+            }
+            else
+            {
+                AdminManager.SetPlayerImmunity(CurrentWarden, 0);
+            }
+
             var pawn = CurrentWarden.PlayerPawn.Value;
             if (pawn != null && pawn.IsValid)
             {
@@ -443,8 +459,15 @@ public class WardenService
         _wardenAdmins.Remove(player.SteamID);
         AdminManager.RemovePlayerPermissions(player, "@jailbreak/ka");
 
-        // Reset immunity if needed (standard usually 0 or per group)
-        AdminManager.SetPlayerImmunity(player, 0);
+        if (_originalImmunity.TryGetValue(player.SteamID, out uint immunity))
+        {
+            AdminManager.SetPlayerImmunity(player, immunity);
+            _originalImmunity.Remove(player.SteamID);
+        }
+        else
+        {
+            AdminManager.SetPlayerImmunity(player, 0);
+        }
     }
 
     private static Color ColorFromHSV(float hue, float saturation, float value)
