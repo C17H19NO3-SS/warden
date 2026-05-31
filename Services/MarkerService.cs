@@ -2,7 +2,9 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Admin;
 using System.Drawing;
+using System;
 
 namespace JailBreak.Services;
 
@@ -15,6 +17,7 @@ public class MarkerService
     private readonly List<uint> _beamIndices = new();
     private CounterStrikeSharp.API.Modules.Timers.Timer? _rgbTimer;
     private float _hue = 0;
+    private readonly Dictionary<ulong, PlayerButtons> _lastButtons = new();
 
     public MarkerService(JailBreakPlugin plugin, WardenService wardenService)
     {
@@ -33,20 +36,20 @@ public class MarkerService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgOnlyJailbreakMap)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
             return;
         }
 
-        if (!_wardenService.IsWarden(player) && !_wardenService.IsWardenAdmin(player))
+        if (!_wardenService.IsWarden(player))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgOnlyWardenAdminOrRootCanUse)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNotWarden)}");
             return;
         }
 
         string arg = info.GetArg(1);
         if (string.IsNullOrEmpty(arg))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgMarkerUsage)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgMarkerUsage)}");
             return;
         }
 
@@ -56,17 +59,17 @@ public class MarkerService
             if (size > 250.0f) size = 250.0f;
 
             _markerSize = size;
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgMarkerSizeSet, size))}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgMarkerSizeSet), size))}");
         }
         else
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgInvalidNumber)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgInvalidNumber)}");
         }
     }
 
     public void OnPlayerPing(EventPlayerPing @event, CCSPlayerController player)
     {
-        if (!_wardenService.IsWarden(player) && !_wardenService.IsWardenAdmin(player))
+        if (!_wardenService.IsWarden(player))
             return;
 
         // X, Y, Z from event

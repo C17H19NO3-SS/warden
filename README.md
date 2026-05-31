@@ -62,6 +62,8 @@ Counter-Strike 2 sunucuları için **CounterStrikeSharp** altyapısı ile geliş
 | `!daire <genişlik>` | T'leri bakılan noktada daire şeklinde dizer |
 | `!diz <mesafe>` | T'leri bakılan noktada yan yana dizer |
 | `!gelt` | Tüm Teröristleri yanına çeker |
+| `!gelct` | Tüm Anti-Teröristleri yanına çeker |
+| `!gelall` | Tüm oyuncuları yanına çeker |
 | `!git <isim>` | Belirtilen oyuncunun yanına ışınlar |
 
 ### Diğer Komutlar
@@ -74,6 +76,8 @@ Counter-Strike 2 sunucuları için **CounterStrikeSharp** altyapısı ile geliş
 | `!olusustum` | Canlanma ödüllü Sustum oyununu başlatır |
 | `!marker <boyut>` | Komutçu marker boyutunu ayarlar (1-250) |
 | `!hpa` | Herkesin canını 100 yapar |
+| `!af` | Tüm oyuncuları canlandırır ve canlarını 100 yapar |
+| `!ctrev <isim>` | Ölü bir CT oyuncusunu canlandırır (Sınırlı hak) |
 | `!hpt` | T takımının canını 100 yapar |
 | `!hpct` | CT takımının canını 100 yapar |
 

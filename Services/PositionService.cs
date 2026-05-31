@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
+using System;
 
 namespace JailBreak.Services;
 
@@ -27,33 +28,11 @@ public class PositionService
 
     private Vector GetCenterPoint(CCSPlayerController player)
     {
-        var pawn = player.PlayerPawn.Value;
-        if (pawn == null || !pawn.IsValid) return new Vector(0, 0, 0);
-
-        Vector eyePos = new Vector(pawn.AbsOrigin!.X, pawn.AbsOrigin.Y, pawn.AbsOrigin.Z + 64.0f);
-        QAngle eyeAngles = pawn.EyeAngles!;
-
-        float pitch = (float)(eyeAngles.X * Math.PI / 180.0);
-        float yaw = (float)(eyeAngles.Y * Math.PI / 180.0);
-
-        if (eyeAngles.X > 5.0f)
+        if (_lastPingLocations.TryGetValue(player.SteamID, out var loc))
         {
-            float height = 64.0f;
-            float distance = height / (float)Math.Tan(pitch);
-            if (distance > 1000.0f) distance = 1000.0f;
-
-            return new Vector(
-                eyePos.X + (float)Math.Cos(yaw) * distance,
-                eyePos.Y + (float)Math.Sin(yaw) * distance,
-                pawn.AbsOrigin.Z
-            );
+            return loc;
         }
-
-        return new Vector(
-            eyePos.X + (float)Math.Cos(yaw) * 200.0f,
-            eyePos.Y + (float)Math.Sin(yaw) * 200.0f,
-            pawn.AbsOrigin.Z
-        );
+        return new Vector(0, 0, 0);
     }
 
     public void CommandDaire(CCSPlayerController? player, CommandInfo info)
@@ -67,7 +46,7 @@ public class PositionService
         string arg = info.GetArg(1);
         if (!float.TryParse(arg, out float radius))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgDaireUsage)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgDaireUsage)}");
             return;
         }
 
@@ -88,7 +67,7 @@ public class PositionService
             }
         }
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgDaireApplied, radius))}");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgDaireApplied), radius))}");
         ApplyFormationFreeze();
     }
 
@@ -103,7 +82,7 @@ public class PositionService
         string arg = info.GetArg(1);
         if (!float.TryParse(arg, out float spacing))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgDizUsage)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgDizUsage)}");
             return;
         }
 
@@ -136,7 +115,7 @@ public class PositionService
             }
         }
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgDizApplied, spacing))}");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgDizApplied), spacing))}");
         ApplyFormationFreeze();
     }
 
@@ -148,7 +127,7 @@ public class PositionService
         {
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                p.PrintToCenterHtml(HudHelper.FormatHud("T TAKIMI DONDURULDU", "Formasyon tamamlandı, T'ler donduruldu!"));
+                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleFormation, _plugin.Lang.HudContentFormation));
             }
         }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
 
@@ -162,6 +141,7 @@ public class PositionService
     {
         return AdminManager.PlayerHasPermissions(player, "@jailbreak/warden") ||
                AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
+               AdminManager.PlayerHasPermissions(player, "@css/kick") ||
                AdminManager.PlayerHasPermissions(player, "@css/root");
     }
 }

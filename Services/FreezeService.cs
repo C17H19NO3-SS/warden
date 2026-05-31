@@ -76,7 +76,7 @@ public class FreezeService
         _countdownTimer?.Kill();
         _countdownTimer = null;
         _countdownTime = 0;
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgTFreezeCountdownCancelled)}");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeCountdownCancelled)}");
     }
 
     private void StartCountdown(int time)
@@ -84,7 +84,7 @@ public class FreezeService
         _countdownTimer?.Kill();
         _countdownTime = time;
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgTFreezeCountdownStarted, _countdownTime))}");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeCountdownStarted), _countdownTime))}");
 
         _countdownTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -98,8 +98,8 @@ public class FreezeService
 
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                string content = $"Donmaya kalan süre: <font color='{HudHelper.ColorTime}'><b>{_countdownTime}s</b></font>";
-                p.PrintToCenterHtml(HudHelper.FormatHud("T DONDURULUYOR", content));
+                string content = string.Format(_plugin.Lang.HudContentFreeze, _countdownTime);
+                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleFreeze, content));
             }
 
             _countdownTime--;
@@ -111,7 +111,7 @@ public class FreezeService
         _isFrozen = true;
         if (!silent)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgTFreezeStarted)}");
+            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeStarted)}");
         }
 
         ApplyFreezeState();
@@ -124,7 +124,7 @@ public class FreezeService
         _isFrozen = false;
         if (!silent)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgTFreezeEnded)}");
+            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeEnded)}");
         }
 
         foreach (var player in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist))
@@ -161,6 +161,7 @@ public class FreezeService
     {
         return AdminManager.PlayerHasPermissions(player, "@jailbreak/warden") ||
                AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
+               AdminManager.PlayerHasPermissions(player, "@css/slay") ||
                AdminManager.PlayerHasPermissions(player, "@css/root");
     }
 }

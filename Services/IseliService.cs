@@ -32,6 +32,7 @@ public class IseliService
     public void CommandIseli(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
+        if (!_plugin.IsJailbreakMap()) return;
         if (!HasPermission(player)) return;
 
         string arg = info.GetArg(1);
@@ -51,6 +52,7 @@ public class IseliService
     public void CommandQuickIseli(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
+        if (!_plugin.IsJailbreakMap()) return;
         if (!HasPermission(player)) return;
 
         QuickOpen(player);
@@ -61,7 +63,7 @@ public class IseliService
         _iseliTimer?.Kill();
         _iseliTime = time;
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgIseliStarted, _iseliTime))}");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgIseliStarted), _iseliTime))}");
 
         _iseliTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -75,8 +77,8 @@ public class IseliService
 
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                string content = $"Kapıların açılmasına: <font color='{HudHelper.ColorTime}'><b>{_iseliTime}s</b></font>";
-                p.PrintToCenterHtml(HudHelper.FormatHud("İSELİ GERİ SAYIM", content));
+                string content = string.Format(_plugin.Lang.HudContentIseli, _iseliTime);
+                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleIseli, content));
             }
 
             _iseliTime--;
@@ -95,7 +97,7 @@ public class IseliService
         OpenAllDoors();
         TeleportTsToRandomSpawns();
 
-        string msg = quick ? _plugin.Config.MsgIseliQuickOpened : _plugin.Config.MsgIseliDoorsOpened;
+        string msg = quick ? _plugin.Lang.MsgIseliQuickOpened : _plugin.Lang.MsgIseliDoorsOpened;
         Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(msg)}");
     }
 
@@ -136,6 +138,7 @@ public class IseliService
     {
         return AdminManager.PlayerHasPermissions(player, "@jailbreak/warden") ||
                AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
+               AdminManager.PlayerHasPermissions(player, "@css/changemap") ||
                AdminManager.PlayerHasPermissions(player, "@css/root");
     }
 }

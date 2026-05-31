@@ -42,17 +42,18 @@ public class SustumService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgOnlyJailbreakMap)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
             return;
         }
 
         bool isWarden = AdminManager.PlayerHasPermissions(player, "@jailbreak/warden");
         bool isWardenAdmin = AdminManager.PlayerHasPermissions(player, "@jailbreak/ka");
+        bool hasChat = AdminManager.PlayerHasPermissions(player, "@css/chat");
         bool isRoot = AdminManager.PlayerHasPermissions(player, "@css/root");
 
-        if (!isWarden && !isWardenAdmin && !isRoot)
+        if (!isWarden && !isWardenAdmin && !hasChat && !isRoot)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Config.MsgNoPermission)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNoPermission)}");
             return;
         }
 
@@ -62,10 +63,10 @@ public class SustumService
         string baseWord = _plugin.Config.SustumWords[_random.Next(_plugin.Config.SustumWords.Count)];
         int number = _random.Next(100, 999);
         _targetWord = $"{baseWord}{number}";
-        _remainingTime = 15;
+        _remainingTime = _plugin.Config.SustumDuration;
 
         string modeName = mode.ToString().ToUpper();
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgSustumStarted, modeName, _targetWord))}");
+        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSustumStarted), modeName, _targetWord))}");
 
         _sustumTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -78,7 +79,7 @@ public class SustumService
 
             if (_remainingTime <= 0)
             {
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_activeMode.ToString())} süresi doldu, kimse yazamadı.");
+                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSustumExpired), modeName))}");
                 _activeMode = SustumMode.None;
                 _targetWord = "";
                 _sustumTimer?.Kill();
@@ -88,8 +89,8 @@ public class SustumService
 
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                string content = $"Yazman gereken: <font color='{HudHelper.ColorSuccess}'><b>{_targetWord}</b></font><br>Kalan Süre: <font color='{HudHelper.ColorTime}'><b>{_remainingTime}s</b></font>";
-                p.PrintToCenterHtml(HudHelper.FormatHud(modeName, content));
+                string content = string.Format(_plugin.Lang.HudContentSustum, _targetWord, _remainingTime);
+                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleSustum, content));
             }
 
             _remainingTime--;
@@ -103,6 +104,7 @@ public class SustumService
 
         bool canWin = false;
         string rewardName = "";
+        string modeName = _activeMode.ToString().ToUpper();
 
         switch (_activeMode)
         {
@@ -110,7 +112,7 @@ public class SustumService
                 if (player.Team == CsTeam.Terrorist && player.PawnIsAlive)
                 {
                     canWin = true;
-                    rewardName = _plugin.Config.MsgSustumRewardDeagle;
+                    rewardName = _plugin.Lang.MsgSustumRewardDeagle;
                     GiveDeagle(player);
                 }
                 break;
@@ -118,7 +120,7 @@ public class SustumService
                 if (player.Team == CsTeam.Terrorist && player.PawnIsAlive)
                 {
                     canWin = true;
-                    rewardName = _plugin.Config.MsgSustumRewardCT;
+                    rewardName = _plugin.Lang.MsgSustumRewardCT;
                     player.ChangeTeam(CsTeam.CounterTerrorist);
                 }
                 break;
@@ -126,7 +128,7 @@ public class SustumService
                 if (player.Team == CsTeam.Terrorist && !player.PawnIsAlive)
                 {
                     canWin = true;
-                    rewardName = _plugin.Config.MsgSustumRewardRespawn;
+                    rewardName = _plugin.Lang.MsgSustumRewardRespawn;
                     player.Respawn();
                 }
                 break;
@@ -134,7 +136,7 @@ public class SustumService
 
         if (canWin)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(_plugin.Config.MsgSustumWinner, _activeMode.ToString(), player.PlayerName, rewardName))}");
+            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSustumWinner), modeName, player.PlayerName, rewardName))}");
             _activeMode = SustumMode.None;
             _targetWord = "";
             _sustumTimer?.Kill();
@@ -150,6 +152,6 @@ public class SustumService
         var pawn = player.PlayerPawn.Value;
         if (pawn == null || !pawn.IsValid) return;
 
-        player.GiveNamedItem("weapon_deagle");
+        player.GiveNamedItem(_plugin.Config.SustumRewardDeagleWeapon);
     }
 }

@@ -66,6 +66,7 @@ public class ChatService
                     .Replace("{DarkBlue}", $"{ChatColors.DarkBlue}")
                     .Replace("{BlueGrey}", $"{ChatColors.BlueGrey}")
                     .Replace("{Magenta}", $"{ChatColors.Magenta}")
-                    .Replace("{LightRed}", $"{ChatColors.LightRed}");
+                    .Replace("{LightRed}", $"{ChatColors.LightRed}")
+                    .Replace("{Orange}", $"{ChatColors.Orange}");
     }
 }
