@@ -11,6 +11,9 @@ public class FFWeapon
 
 public class PluginConfig : BasePluginConfig
 {
+    [JsonPropertyName("DebugMode")]
+    public bool DebugMode { get; set; } = true;
+
     [JsonPropertyName("WardenDurationMinutes")]
     public int WardenDurationMinutes { get; set; } = 30;
 
