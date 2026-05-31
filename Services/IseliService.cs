@@ -86,7 +86,7 @@ public class IseliService
         }, TimerFlags.REPEAT);
     }
 
-    private void QuickOpen(CCSPlayerController player)
+    public void QuickOpen(CCSPlayerController player)
     {
         _iseliTimer?.Kill();
         _iseliTimer = null;

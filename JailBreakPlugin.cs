@@ -38,6 +38,9 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     public WardenService WardenService => _wardenService;
     public VoteService VoteService => _voteService;
     public GameManagerService GameManagerService => _gameManagerService;
+    public IseliService IseliService => _iseliService;
+    public FFMenuService FFMenuService => _ffMenuService;
+    public UtilityService UtilityService => _utilityService;
 
     public void OnConfigParsed(PluginConfig config)
     {
@@ -137,6 +140,8 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_komaday", "Komutçu oylamasına katıl", _voteService.CommandJoinVote);
         AddCommand("css_ka", "Komutçu admin menüsü", _wardenService.CommandWardenAdmin);
         AddCommand("css_kasil", "Komutçu adminini kaldır", _wardenService.CommandRemoveWardenAdmin);
+        AddCommand("css_k", "Komutçu ana menüsünü açar", _wardenService.CommandKomMenu);
+        AddCommand("css_kommenu", "Komutçu ana menüsünü açar", _wardenService.CommandKomMenu);
         AddCommand("css_marker", "İşaretleyici boyutunu ayarla", _markerService.CommandMarker);
         AddCommand("css_reloadconfig", "Config dosyasını yeniden yükle", CommandReloadConfig);
 

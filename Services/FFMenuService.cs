@@ -143,7 +143,7 @@ public class FFMenuService
         OpenWardenConfigMenu(player);
     }
 
-    private void OpenWardenConfigMenu(CCSPlayerController warden)
+    public void OpenWardenConfigMenu(CCSPlayerController warden)
     {
         var menu = new CenterHtmlMenu("⚙️ FF Ayar Menüsü", _plugin);
 

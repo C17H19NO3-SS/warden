@@ -227,6 +227,21 @@ public class WardenService
         }
     }
 
+    public void CommandKomMenu(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || !HasPermission(player)) return;
+
+        var menu = new CenterHtmlMenu("👑 Komutçu Kontrol Paneli", _plugin);
+
+        menu.AddItem("[🔓] Kapıları Aç", (p, o) => _plugin.IseliService.QuickOpen(p));
+        menu.AddItem("[🥊] Boks Modu", (p, o) => _plugin.GameManagerService.OpenBoxMenu(p));
+        menu.AddItem("[🙈] Saklambaç (30s)", (p, o) => _plugin.GameManagerService.StartSaklambac(30));
+        menu.AddItem("[⚔️] FF Menüsü", (p, o) => _plugin.FFMenuService.OpenWardenConfigMenu(p));
+        menu.AddItem("[➕] Herkesi Canlandır", (p, o) => _plugin.UtilityService.CommandAf(p, info));
+        
+        menu.Display(player, 0);
+    }
+
     public void CommandBecomeWarden(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
