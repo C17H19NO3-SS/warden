@@ -398,8 +398,8 @@ public class WardenService
         _wardenAdmins.Add(target.SteamID);
         AdminManager.AddPlayerPermissions(target, "@jailbreak/ka");
 
-        // Immunity set to 99
-        AdminManager.SetPlayerImmunity(target, 99);
+        // Immunity set to 100
+        AdminManager.SetPlayerImmunity(target, 100);
 
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenAdminSelected, target.PlayerName)));
     }

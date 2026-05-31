@@ -48,7 +48,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 ### 4. Dondurma ve Formasyonlar
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
-| `!td` | `!stop` | `@css/slay` | Tüm T takımını oldukları yerde dondurur (Hareket kısıtlanır, bakış serbest). |
+| `!td` | - | `@css/slay` | Tüm T takımını oldukları yerde dondurur (Hareket kısıtlanır, bakış serbest). |
 | `!tdb` | `!coz` | `@css/slay` | Donmuş olan oyuncuların hareket yeteneğini geri verir. |
 | `!fz <sn>` | - | `@css/slay` | Belirlenen süre sonunda (HUD sayacı ile) herkesi otomatik dondurur. |
 | `!fz0` | - | `@css/slay` | Aktif olan `!fz` geri sayımını iptal eder. |
