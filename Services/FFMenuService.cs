@@ -17,7 +17,7 @@ public class FFConfigState
     public HashSet<string> ActivePrimaries { get; set; } = new();
     public HashSet<string> ActiveSecondaries { get; set; } = new();
     public bool BunnyEnabled { get; set; } = false;
-    public int CountdownTime { get; set; } = 10;
+    public int CountdownTime { get; set; } = 30;
 }
 
 public class PlayerFFSelection
@@ -72,10 +72,10 @@ public class FFMenuService
         if (!_wardenService.HasPermission(player)) return;
 
         string arg = info.GetArg(1);
-        if (!int.TryParse(arg, out int time))
+        int time = 30;
+        if (!string.IsNullOrEmpty(arg) && int.TryParse(arg, out int parsedTime))
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFMenuUsage));
-            return;
+            time = parsedTime;
         }
 
         StartFFMenu(time, player);
