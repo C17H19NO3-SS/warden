@@ -258,7 +258,7 @@ public class LangConfig
     public string MsgSonSecApplied { get; set; } = "{White}{Red}{0}{White} sona bırakıldı ve Sona Kalan menüsü açıldı!";
 
     [JsonPropertyName("MsgLRStarted")]
-    public string MsgLRStarted { get; set; } = "{White}Son İstek (LR) Başladı! {Red}{0}{White} vs {Red}{1}{White}";
+    public string MsgLRStarted { get; set; } = "{White}LR Başladı! {Red}{0}{White} vs {Red}{1}{White}";
 
     [JsonPropertyName("MsgLRTypeInfo")]
     public string MsgLRTypeInfo { get; set; } = "{White}Tür: {Red}{0}{White}";
@@ -270,7 +270,7 @@ public class LangConfig
     public string MsgLRDeagleWait { get; set; } = "{White}Rakibinin ateş etmesini bekle.";
 
     [JsonPropertyName("MsgLRCTLost")]
-    public string MsgLRCTLost { get; set; } = "{White}{Red}{0}{White} Son İstek'i kaybettiği için T takımına atıldı!";
+    public string MsgLRCTLost { get; set; } = "{White}{Red}{0}{White} LR'yi kaybettiği için T takımına atıldı!";
 
     [JsonPropertyName("MsgLRRebellion")]
     public string MsgLRRebellion { get; set; } = "{White}{Red}{0}{White} isyan etmeyi seçti!";
@@ -284,19 +284,19 @@ public class LangConfig
     public string HudTitleLRMain { get; set; } = "SONA KALAN MENÜSÜ";
 
     [JsonPropertyName("HudTitleLRType")]
-    public string HudTitleLRType { get; set; } = "SON İSTEK (LR) TÜRÜ SEÇİN";
+    public string HudTitleLRType { get; set; } = "LR TÜRÜ SEÇİN";
 
     [JsonPropertyName("HudTitleLRTarget")]
     public string HudTitleLRTarget { get; set; } = "RAKİP SEÇİN";
 
     [JsonPropertyName("HudContentLRMain")]
-    public string HudContentLRMain { get; set; } = "!1 Son İstek (LR)<br>!2 İsyan<br>!3 Kredi Al ({0})";
+    public string HudContentLRMain { get; set; } = "!1 LR<br>!2 İsyan<br>!3 Kredi Al ({0})";
 
     [JsonPropertyName("HudContentLRType")]
     public string HudContentLRType { get; set; } = "!1 Deagle Düellosu<br>!2 Bıçak Düellosu";
 
     [JsonPropertyName("MsgLRChoiceLR")]
-    public string MsgLRChoiceLR { get; set; } = "{White}{Red}{0}{White} son istek atmayı seçti!";
+    public string MsgLRChoiceLR { get; set; } = "{White}{Red}{0}{White} LR atmayı seçti!";
 
     [JsonPropertyName("MsgLRCreditReceived")]
     public string MsgLRCreditReceived { get; set; } = "{White}{Red}{0}{White} kredi alarak round'u bitirdi!";
@@ -539,4 +539,16 @@ public class LangConfig
 
     [JsonPropertyName("MsgTopWardenEmpty")]
     public string MsgTopWardenEmpty { get; set; } = "{White}Henüz komutçuluk yapan kimse kaydedilmedi!";
+
+    [JsonPropertyName("HudTitleTopWardenAdmin")]
+    public string HudTitleTopWardenAdmin { get; set; } = "EN ÇOK KOMUTÇU ADMİNLİK YAPANLAR";
+
+    [JsonPropertyName("MsgTopWardenAdminEmpty")]
+    public string MsgTopWardenAdminEmpty { get; set; } = "{White}Henüz komutçu adminlik yapan kimse kaydedilmedi!";
+
+    [JsonPropertyName("MsgDelayStarted")]
+    public string MsgDelayStarted { get; set; } = "{Default}Delay giderme başladı.";
+
+    [JsonPropertyName("MsgDelayEnded")]
+    public string MsgDelayEnded { get; set; } = "{Default}Delay giderme bitti.";
 }

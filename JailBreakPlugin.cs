@@ -4,6 +4,8 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using JailBreak.Config;
 using JailBreak.Services;
 using JailBreak.Helpers;
@@ -128,6 +130,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         RegisterEventHandler<EventPlayerPing>(OnPlayerPing);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         RegisterEventHandler<EventWeaponFire>(OnWeaponFire);
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(_wardenService.OnTakeDamage, HookMode.Pre);
         HookUserMessage(118, OnUserMessageChat, HookMode.Pre);
         AddCommandListener("jointeam", OnJoinTeam);
 
@@ -135,11 +138,14 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_uw", "Komutçuluktan çık", _wardenService.CommandUnwarden);
         AddCommand("css_komkalan", "Komutçunun kalan süresini gör", _wardenService.CommandKomKalan);
         AddCommand("css_topkomutcu", "En çok komutçu olanları gör", _wardenService.CommandTopKomutcu);
+        AddCommand("css_q", "Komutçu koruması (God, MuteT, HP100)", _wardenService.CommandQ);
+        AddCommand("css_qq", "Komutçu korumasını kaldır", _wardenService.CommandQQ);
         AddCommand("css_komoyla", "Komutçu oylamasını başlat", _voteService.CommandStartVote);
         AddCommand("css_komdk", "Komutçuyu atma oylamasını başlat", _voteService.CommandStartKickVote);
         AddCommand("css_komaday", "Komutçu oylamasına katıl", _voteService.CommandJoinVote);
         AddCommand("css_ka", "Komutçu admin menüsü", _wardenService.CommandWardenAdmin);
         AddCommand("css_kasil", "Komutçu adminini kaldır", _wardenService.CommandRemoveWardenAdmin);
+        AddCommand("css_topka", "En çok komutçu admin olanları gör", _wardenService.CommandTopKa);
         AddCommand("css_k", "Komutçu ana menüsünü açar", _wardenService.CommandKomMenu);
         AddCommand("css_kommenu", "Komutçu ana menüsünü açar", _wardenService.CommandKomMenu);
         AddCommand("css_marker", "İşaretleyici boyutunu ayarla", _markerService.CommandMarker);
@@ -184,6 +190,8 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_bk", "Bunnyhop kapat", _utilityService.CommandBunnyClose);
         AddCommand("css_otores", "Otomatik canlanmayı aç", _utilityService.CommandOtores);
         AddCommand("css_otores0", "Otomatik canlanmayı kapat", _utilityService.CommandOtores0);
+        AddCommand("css_gom", "Oyuncuyu göm", _utilityService.CommandGom);
+        AddCommand("css_gom0", "Oyuncuyu gömülmekten çıkar", _utilityService.CommandGom0);
         AddCommand("css_umct", "CT takımının mutesini aç", _utilityService.CommandUnmuteCT);
         AddCommand("css_uct", "CT takımının mutesini aç", _utilityService.CommandUnmuteCT);
         AddCommand("css_umt", "T takımının mutesini aç", _utilityService.CommandUnmuteT);
@@ -194,6 +202,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_mct", "CT takımını mutele", _utilityService.CommandMuteCT);
         AddCommand("css_mt", "T takımını mutele", _utilityService.CommandMuteT);
         AddCommand("css_topkaccm", "Kaç cm sıralamasını göster", _utilityService.CommandTopKacCm);
+        AddCommand("css_delay", "3 saniyelik ses gecikmesini giderir", _utilityService.CommandDelay);
         AddCommand("css_msay", "Ekranda büyük duyuru yapar", _utilityService.CommandMsay);
         AddCommand("css_csay", "Ekranın ortasında duyuru yapar", _utilityService.CommandCsay);
         AddCommand("css_hsay", "HUD kısmında duyuru yapar", _utilityService.CommandHsay);

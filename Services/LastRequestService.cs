@@ -97,7 +97,7 @@ public class LastRequestService
     {
         CenterHtmlMenu menu = new(_plugin.Lang.HudTitleLRMain, _plugin);
 
-        menu.AddItem("Son İstek (LR)", (p, o) =>
+        menu.AddItem("LR", (p, o) =>
         {
             Server.NextFrame(() =>
             {

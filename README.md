@@ -27,6 +27,9 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!kasil <isim>` | - | `@css/ban` | Komutçu Admini yetkisini geri alır. |
 | `!komkalan` | - | Herkes | Mevcut komutçunun görev süresinin bitmesine ne kadar kaldığını gösterir. |
 | `!topkomutcu` | - | Herkes | En çok ve en uzun süre komutçuluk yapanları listeler. |
+| `!topka` | - | Herkes | En çok ve en uzun süre komutçu admin olanları listeler. |
+| `!q` | - | `@css/generic` | **Warden Koruma:** Tüm CT takımına God verir ve herkesin canını 100 yapar. |
+| `!qq` | - | `@css/generic` | **Koruma Kapat:** CT'lerin God modunu kaldırır. |
 | `!komoyla` | - | `@css/vote` | Komutçu oylamasını başlatır. |
 | `!komaday` | - | Herkes | Komutçu oylamasına aday olarak katılır. |
 | `!komdk` | - | `@css/vote` | Komutçuyu görevden alma oylaması başlatır. |
@@ -58,6 +61,8 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!fz0` | - | `@css/slay` | Aktif dondurma sayacını iptal eder. |
 | `!daire <gen>` | - | `@css/kick` | T takımını bakılan noktada daire şeklinde dizer. |
 | `!diz <mes>` | - | `@css/kick` | T takımını bakılan noktada düz bir sıraya dizer. |
+| `!gom <isim>` | - | `@css/slay` | Hedef oyuncuyu yere gömer ve dondurur. |
+| `!gom0 <isim>`| - | `@css/slay` | Oyuncuyu gömülmekten çıkarır ve dondurmasını çözer. |
 
 ### 5. Işınlanma ve Can Yönetimi
 | Komut | Alternatif | Yetki | Açıklama |
@@ -94,8 +99,9 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!reloadconfig` | - | `@css/root` | Ayarları ve dil dosyasını yeniler. |
 | `!kaccm` | - | Herkes | Eğlence amaçlı boy ölçümü yapar. |
 | `!topkaccm` | - | Herkes | Sunucunun en yüksek skorlarını listeler. |
+| `!delay` | - | Herkes | 3 saniyelik ses gecikmesini (delay) giderir. |
 | `!isyancilar` | - | Herkes | Gardiyanlara saldıran isyancıları listeler. |
-| `!sonakalan` | - | Herkes (Son T)| LR (Son İstek) menüsünü açar. |
+| `!sonakalan` | - | Herkes (Son T)| **LR (Sona Kalan Menüsü)** açar. |
 | `!sonsec` | `!sonseç` | `@css/slay` | Sona kalan T dışındakileri öldürür ve LR açar. |
 
 ---
@@ -140,7 +146,7 @@ Eklenti, komutların oyun içi etkisine göre şu hiyerarşide yapılandırılm�
 -   Warden ve Asistanları o an oyunda olan **tüm** yukarıdaki komutları kullanabilir.
 
 ### 👥 11. Herkes Tarafından Kullanılabilenler
--   `!w`, `!uw`, `!komkalan`, `!topkomutcu`, `!isyancilar`, `!sonakalan`, `!kaccm`, `!topkaccm`, `!komaday`.
+-   `!w`, `!uw`, `!komkalan`, `!topkomutcu`, `!topka`, `!isyancilar`, `!sonakalan`, `!delay`, `!kaccm`, `!topkaccm`, `!komaday`.
 
 ---
 

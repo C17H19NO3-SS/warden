@@ -419,4 +419,82 @@ public class UtilityService
 
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOtoresDisabled));
     }
+
+    public void CommandGom(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
+
+        string targetName = info.GetArg(1);
+        if (string.IsNullOrEmpty(targetName))
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, " Kullanım: !gom <isim>"));
+            return;
+        }
+
+        var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, StringComparison.OrdinalIgnoreCase));
+        if (target == null || !target.IsValid || !target.PawnIsAlive)
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotFound));
+            return;
+        }
+
+        var pawn = target.PlayerPawn.Value;
+        if (pawn != null && pawn.IsValid)
+        {
+            Vector origin = pawn.AbsOrigin!;
+            pawn.Teleport(new Vector(origin.X, origin.Y, origin.Z - 35.0f), pawn.AbsRotation, new Vector(0, 0, 0));
+            pawn.MoveType = MoveType_t.MOVETYPE_NONE;
+            pawn.ActualMoveType = MoveType_t.MOVETYPE_NONE;
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Red}{target.PlayerName} {ChatColors.Default}gömüldü."));
+        }
+    }
+
+    public void CommandGom0(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
+
+        string targetName = info.GetArg(1);
+        if (string.IsNullOrEmpty(targetName))
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, " Kullanım: !gom0 <isim>"));
+            return;
+        }
+
+        var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, StringComparison.OrdinalIgnoreCase));
+        if (target == null || !target.IsValid || !target.PawnIsAlive)
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotFound));
+            return;
+        }
+
+        var pawn = target.PlayerPawn.Value;
+        if (pawn != null && pawn.IsValid)
+        {
+            Vector origin = pawn.AbsOrigin!;
+            pawn.Teleport(new Vector(origin.X, origin.Y, origin.Z + 35.0f), pawn.AbsRotation, new Vector(0, 0, 0));
+            pawn.MoveType = MoveType_t.MOVETYPE_WALK;
+            pawn.ActualMoveType = MoveType_t.MOVETYPE_WALK;
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}{target.PlayerName} {ChatColors.Default}gömülmekten çıkarıldı."));
+        }
+    }
+
+    public void CommandDelay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid) return;
+
+        // If player is already muted, do nothing
+        if (player.VoiceFlags == VoiceFlags.Muted) return;
+
+        player.VoiceFlags = VoiceFlags.Muted;
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgDelayStarted));
+
+        _plugin.AddTimer(3.0f, () =>
+        {
+            if (player.IsValid)
+            {
+                player.VoiceFlags = VoiceFlags.Normal;
+                player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgDelayEnded));
+            }
+        });
+    }
 }

@@ -4,6 +4,9 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using JailBreak.Models;
 using System.Drawing;
 using System.Text.Json;
@@ -22,16 +25,22 @@ public class WardenService
     private CounterStrikeSharp.API.Modules.Timers.Timer? _wardenTimer;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _rgbTimer;
     private readonly HashSet<ulong> _wardenAdmins = new();
+    private readonly HashSet<ulong> _godModePlayers = new();
     private readonly Dictionary<ulong, uint> _originalImmunity = new();
     private float _hue = 0;
     private List<WardenStat> _wardenStats = new();
+    private List<WardenStat> _wardenAdminStats = new();
     private readonly string _statsPath;
+    private readonly string _adminStatsPath;
+    private readonly Dictionary<ulong, DateTime> _wardenAdminStartTimes = new();
 
     public WardenService(JailBreakPlugin plugin)
     {
         _plugin = plugin;
         _statsPath = Path.Combine(_plugin.ModuleDirectory, "../../configs/plugins/JailBreak/WardenStats.json");
+        _adminStatsPath = Path.Combine(_plugin.ModuleDirectory, "../../configs/plugins/JailBreak/WardenAdminStats.json");
         LoadStats();
+        LoadAdminStats();
     }
 
     private void LoadStats()
@@ -88,6 +97,60 @@ public class WardenService
         SaveStats();
     }
 
+    private void LoadAdminStats()
+    {
+        try
+        {
+            if (File.Exists(_adminStatsPath))
+            {
+                string json = File.ReadAllText(_adminStatsPath);
+                _wardenAdminStats = JsonSerializer.Deserialize<List<WardenStat>>(json) ?? new();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[JailBreak] Error loading warden admin stats: {ex.Message}");
+        }
+    }
+
+    private void SaveAdminStats()
+    {
+        try
+        {
+            string dir = Path.GetDirectoryName(_adminStatsPath) ?? "";
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            string json = JsonSerializer.Serialize(_wardenAdminStats, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_adminStatsPath, json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[JailBreak] Error saving warden admin stats: {ex.Message}");
+        }
+    }
+
+    private void UpdateAdminStats(CCSPlayerController player, double seconds)
+    {
+        var stat = _wardenAdminStats.FirstOrDefault(s => s.SteamID == player.SteamID);
+        if (stat == null)
+        {
+            stat = new WardenStat
+            {
+                SteamID = player.SteamID,
+                PlayerName = player.PlayerName,
+                TotalTimeSeconds = 0
+            };
+            _wardenAdminStats.Add(stat);
+        }
+        else
+        {
+            stat.PlayerName = player.PlayerName;
+        }
+
+        stat.TotalTimeSeconds += seconds;
+        SaveAdminStats();
+    }
+
     public bool IsWarden(CCSPlayerController player)
     {
         return CurrentWarden != null && CurrentWarden.IsValid && CurrentWarden.SteamID == player.SteamID;
@@ -111,6 +174,7 @@ public class WardenService
 
     public void OnRoundStart()
     {
+        _godModePlayers.Clear();
         if (CurrentWarden != null && !CurrentWarden.IsValid)
         {
             RemoveWarden();
@@ -256,6 +320,8 @@ public class WardenService
         menu.AddItem("[🥊] Boks Modu", (p, o) => _plugin.GameManagerService.OpenBoxMenu(p));
         menu.AddItem("[🙈] Saklambaç (30s)", (p, o) => _plugin.GameManagerService.StartSaklambac(30));
         menu.AddItem("[⚔️] FF Menüsü", (p, o) => _plugin.FFMenuService.OpenWardenConfigMenu(p));
+        menu.AddItem("[🛡️] Koruma Modu (God Mode)", (p, o) => CommandQ(p, info));
+        menu.AddItem("[❌] Korumayı Kapat (!qq)", (p, o) => CommandQQ(p, info));
         menu.AddItem("[➕] Herkesi Canlandır", (p, o) => _plugin.UtilityService.CommandAf(p, info));
         
         menu.Display(player, 0);
@@ -349,6 +415,53 @@ public class WardenService
         menu.Display(player, 0);
     }
 
+    public void CommandQ(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || !HasPermission(player, "@css/generic")) return;
+
+        foreach (var ct in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist && p.PawnIsAlive))
+        {
+            _godModePlayers.Add(ct.SteamID);
+        }
+
+        _plugin.UtilityService.CommandHpAll(player, info);
+        
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}CT takımına koruma (God Mode) verildi ve herkesin canı 100 yapıldı."));
+    }
+
+    public void CommandQQ(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || !HasPermission(player, "@css/generic")) return;
+
+        _godModePlayers.Clear();
+
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Red}Koruma (God Mode) kaldırıldı."));
+    }
+
+    public HookResult OnTakeDamage(DynamicHook hook)
+    {
+        var entity = hook.GetParam<CEntityInstance>(0);
+        var info = hook.GetParam<CTakeDamageInfo>(1);
+
+        if (entity == null || !entity.IsValid || info == null)
+            return HookResult.Continue;
+
+        var pawn = entity.As<CCSPlayerPawn>();
+        if (pawn == null || !pawn.IsValid)
+            return HookResult.Continue;
+
+        var controller = pawn.Controller.Value;
+        if (controller == null || !controller.IsValid)
+            return HookResult.Continue;
+
+        if (_godModePlayers.Contains(controller.SteamID))
+        {
+            return HookResult.Handled;
+        }
+
+        return HookResult.Continue;
+    }
+
     public void CommandWardenAdmin(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
@@ -412,6 +525,7 @@ public class WardenService
         }
 
         _wardenAdmins.Add(target.SteamID);
+        _wardenAdminStartTimes[target.SteamID] = DateTime.Now;
         AdminManager.AddPlayerPermissions(target, "@jailbreak/ka");
 
         // Immunity set to 100
@@ -456,6 +570,13 @@ public class WardenService
 
     private void RemoveWardenAdmin(CCSPlayerController player)
     {
+        if (_wardenAdminStartTimes.TryGetValue(player.SteamID, out DateTime startTime))
+        {
+            double seconds = (DateTime.Now - startTime).TotalSeconds;
+            UpdateAdminStats(player, seconds);
+            _wardenAdminStartTimes.Remove(player.SteamID);
+        }
+
         _wardenAdmins.Remove(player.SteamID);
         AdminManager.RemovePlayerPermissions(player, "@jailbreak/ka");
 
@@ -468,6 +589,29 @@ public class WardenService
         {
             AdminManager.SetPlayerImmunity(player, 0);
         }
+    }
+
+    public void CommandTopKa(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid) return;
+
+        if (_wardenAdminStats.Count == 0)
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTopWardenAdminEmpty));
+            return;
+        }
+
+        var sortedStats = _wardenAdminStats.OrderByDescending(s => s.TotalTimeSeconds).ToList();
+        var menu = new CenterHtmlMenu(_plugin.Lang.HudTitleTopWardenAdmin, _plugin);
+
+        for (int i = 0; i < sortedStats.Count; i++)
+        {
+            var s = sortedStats[i];
+            int minutes = (int)(s.TotalTimeSeconds / 60);
+            menu.AddItem($"{i + 1}. {s.PlayerName} - {minutes} dk", (p, o) => { });
+        }
+
+        menu.Display(player, 0);
     }
 
     private static Color ColorFromHSV(float hue, float saturation, float value)
