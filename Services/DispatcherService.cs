@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils; // Added for ChatColors
@@ -16,6 +17,11 @@ public class DispatcherService : ICommandDispatcher
     public void RegisterCommand(string command, string description, CommandInfo.CommandCallback Callback)
     {
         _commands[command] = (description, Callback);
+    }
+
+    public IEnumerable<string> GetRegisteredCommands()
+    {
+        return _commands.Keys;
     }
 
     public void ExecuteCommand(CCSPlayerController? player, CommandInfo info)
