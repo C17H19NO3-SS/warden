@@ -20,16 +20,16 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 ### 1. Komutçu ve Yönetim Komutları
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
-| `!k` | `!kommenu` | `@css/generic` | **Master Panel:** Tüm yetkilere görsel bir menüden erişmenizi sağlar. |
+| `!k` | `!kommenu` | Komutçu | **Master Panel:** Tüm yetkilere görsel bir menüden erişmenizi sağlar. |
 | `!w` | `!warden` | Herkes (CT) | Komutçu koltuğu boşsa sizi komutçu yapar. |
 | `!uw` | `!unwarden` | Komutçu | Komutçuluğu bırakmanızı sağlar. |
-| `!ka <isim>` | - | `@css/generic` | Seçilen oyuncuyu "Komutçu Admini" yapar. |
-| `!kasil <isim>` | - | `@css/generic` | Komutçu Admini yetkisini geri alır. |
+| `!ka <isim>` | - | `@css/cvar` | Seçilen oyuncuyu "Komutçu Admini" yapar. |
+| `!kasil <isim>` | - | `@css/ban` | Komutçu Admini yetkisini geri alır. |
 | `!komkalan` | - | Herkes | Mevcut komutçunun görev süresinin bitmesine ne kadar kaldığını gösterir. |
 | `!topkomutcu` | - | Herkes | En çok ve en uzun süre komutçuluk yapanları listeler. |
-| `!komoyla` | - | Herkes | Komutçu oylamasını başlatır. |
+| `!komoyla` | - | `@css/vote` | Komutçu oylamasını başlatır. |
 | `!komaday` | - | Herkes | Komutçu oylamasına aday olarak katılır. |
-| `!komdk` | - | Herkes | Komutçuyu görevden alma oylaması başlatır. |
+| `!komdk` | - | `@css/vote` | Komutçuyu görevden alma oylaması başlatır. |
 
 ### 2. Oyun Modları (Game Modes)
 | Komut | Alternatif | Yetki | Açıklama |
@@ -105,36 +105,42 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 Eklenti, komutların oyun içi etkisine göre şu hiyerarşide yapılandırılmıştır:
 
 ### 💻 1. @css/root (Sistem Sahibi)
--   `!reloadconfig`
+-   `!reloadconfig`, `!fsay`
 
 ### 👑 2. @css/ban (Üst Yönetim)
--   `!fsay`
+-   `!kasil`
 
 ### 🛡️ 3. @css/generic (Standart Admin)
--   `!k`, `!kommenu`, `!ka`, `!kasil`
 -   `!ba`, `!bk`, `!mct`, `!umct`, `!mt`, `!umt`
 -   `!haksal`, `!otores`, `!otores0`
 
-### 🎮 4. @css/changemap (Mod & Harita Admini)
+### 🔧 4. @css/cvar (Yetki Admini)
+-   `!ka`
+
+### 🗳️ 5. @css/vote (Oylama Admini)
+-   `!komoyla`, `!komdk`
+
+### 🎮 6. @css/changemap (Mod & Harita Admini)
 -   `!saklambac`, `!box`, `!b`, `!ffmenu`, `!ffkapat`, `!ff0`, `!ffdondur`
 -   `!iseli`, `!iq`
 
-### 🏃 5. @css/kick (Hareket & Konum Admini)
+### 🏃 7. @css/kick (Hareket & Konum Admini)
 -   `!daire`, `!diz`, `!git`, `!gelt`, `!gelct`, `!gelall`
 
-### 👊 6. @css/slay (Müdahale & Can Admini)
+### 👊 8. @css/slay (Müdahale & Can Admini)
 -   `!rev`, `!af`, `!hpa`, `!hpt`, `!hpct`
 -   `!td`, `!tdb`, `!fz`, `!fz0`, `!ss`, `!strip`
 -   `!dsustum`, `!tsustum`, `!olusustum`, `!sonsec`
 
-### 💬 7. @css/chat (Duyuru & İletişim Admini)
+### 💬 9. @css/chat (Duyuru & İletişim Admini)
 -   `!msay`, `!csay`, `!hsay`, `!marker`
 
-### 🛡️ 8. @jailbreak/warden (Aktif Roller)
+### 👑 10. Komutçu (Warden)
+-   `!k`, `!kommenu`
 -   Warden ve Asistanları o an oyunda olan **tüm** yukarıdaki komutları kullanabilir.
 
-### 👥 9. Herkes Tarafından Kullanılabilenler
--   `!w`, `!uw`, `!komkalan`, `!topkomutcu`, `!isyancilar`, `!sonakalan`, `!kaccm`, `!topkaccm`, `!komoyla`, `!komaday`, `!komdk`.
+### 👥 11. Herkes Tarafından Kullanılabilenler
+-   `!w`, `!uw`, `!komkalan`, `!topkomutcu`, `!isyancilar`, `!sonakalan`, `!kaccm`, `!topkaccm`, `!komaday`.
 
 ---
 

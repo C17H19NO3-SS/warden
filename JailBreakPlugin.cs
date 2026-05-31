@@ -182,6 +182,8 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_haksal", "CT ile T takımını yer değiştir", _utilityService.CommandHakSal);
         AddCommand("css_ba", "Bunnyhop aç", _utilityService.CommandBunnyOpen);
         AddCommand("css_bk", "Bunnyhop kapat", _utilityService.CommandBunnyClose);
+        AddCommand("css_otores", "Otomatik canlanmayı aç", _utilityService.CommandOtores);
+        AddCommand("css_otores0", "Otomatik canlanmayı kapat", _utilityService.CommandOtores0);
         AddCommand("css_umct", "CT takımının mutesini aç", _utilityService.CommandUnmuteCT);
         AddCommand("css_uct", "CT takımının mutesini aç", _utilityService.CommandUnmuteCT);
         AddCommand("css_umt", "T takımının mutesini aç", _utilityService.CommandUnmuteT);
