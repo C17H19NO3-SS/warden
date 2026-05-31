@@ -38,6 +38,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
     private GameManagerService _gameManagerService = null!;
     private DispatcherService _dispatcherService = null!;
     private HudService _hudService = null!;
+    private HudManager _hudManager = null!;
 
     public WardenService WardenService => _wardenService;
     public VoteService VoteService => _voteService;
@@ -108,7 +109,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
 
     public override void Load(bool hotReload)
     {
-        LogHelper.Initialize(Config);
+        LogHelper.Initialize(Config, ModuleDirectory);
 
         // StoreBridge config yolunu dinamik ayarla
         string storeConfigPath = Path.Combine(ModuleDirectory, "../../configs/plugins/cs2-store/config.toml");
@@ -129,9 +130,11 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         _gameManagerService = new GameManagerService(this, _wardenService, _freezeService);
         _dispatcherService = new DispatcherService();
         _hudService = new HudService(this);
+        _hudManager = new HudManager(this);
 
         RegisterListener<Listeners.OnClientDisconnect>(_wardenService.OnClientDisconnect);
         RegisterListener<Listeners.OnMapStart>((mapName) => _utilityService.ResetKacCmRecords());
+        RegisterListener<Listeners.OnTick>(_hudManager.OnTick);
 
         RegisterEventHandler<EventRoundStart>(OnRoundStart);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
@@ -349,7 +352,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
                 {
                     Config = newConfig;
                     OnConfigParsed(Config);
-                    LogHelper.Initialize(Config);
+                    LogHelper.Initialize(Config, ModuleDirectory);
                 }
             }
 
