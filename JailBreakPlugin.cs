@@ -22,7 +22,6 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     public LangConfig Lang { get; set; } = new();
 
     private WardenService _wardenService = null!;
-    public WardenService WardenService => _wardenService;
     private VoteService _voteService = null!;
     private ChatService _chatService = null!;
     private MarkerService _markerService = null!;
@@ -34,8 +33,11 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     private UtilityService _utilityService = null!;
     private LastRequestService _lrService = null!;
     private RebelService _rebelService = null!;
+    private GameManagerService _gameManagerService = null!;
 
+    public WardenService WardenService => _wardenService;
     public VoteService VoteService => _voteService;
+    public GameManagerService GameManagerService => _gameManagerService;
 
     public void OnConfigParsed(PluginConfig config)
     {
@@ -113,6 +115,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         _utilityService = new UtilityService(this, _wardenService);
         _lrService = new LastRequestService(this, _wardenService);
         _rebelService = new RebelService(this);
+        _gameManagerService = new GameManagerService(this, _wardenService, _freezeService);
 
         RegisterListener<Listeners.OnClientDisconnect>(_wardenService.OnClientDisconnect);
         RegisterListener<Listeners.OnMapStart>((mapName) => _utilityService.ResetKacCmRecords());
@@ -194,6 +197,16 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_sonseç", "Sona kalan hariç öldür ve LR aç", _lrService.CommandSonSec);
         AddCommand("css_isyancılar", "İsyancı listesini göster", _rebelService.CommandRebels);
         AddCommand("css_isyancilar", "İsyancı listesini göster", _rebelService.CommandRebels);
+
+        // Game Mode Commands
+        AddCommand("css_box", "Boks modunu başlatır", (p, i) => { if (p != null) _gameManagerService.OpenBoxMenu(p); });
+        AddCommand("css_b", "Boks modunu başlatır", (p, i) => { if (p != null) _gameManagerService.OpenBoxMenu(p); });
+        AddCommand("css_saklambac", "Saklambaç modunu başlatır", (p, i) => { 
+            if (p == null || !_wardenService.HasPermission(p)) return;
+            string arg = i.GetArg(1);
+            int time = int.TryParse(arg, out int t) ? t : 30;
+            _gameManagerService.StartSaklambac(time);
+        });
     }
 
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -205,6 +218,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
             _iseliService.OnRoundStart();
             _ffMenuService.OnRoundStart();
             _lrService.OnRoundStart();
+            _gameManagerService.OnRoundStart();
         }
 
         _freezeService.OnRoundStart();
