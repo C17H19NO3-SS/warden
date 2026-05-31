@@ -47,7 +47,7 @@ public class SustumService
             return;
         }
 
-        if (!_wardenService.HasPermission(player, "@css/chat"))
+        if (!_wardenService.HasPermission(player, "@css/slay"))
         {
             player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission));
             return;

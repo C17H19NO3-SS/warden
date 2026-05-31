@@ -467,12 +467,4 @@ public class FFMenuService
             player.GiveNamedItem("weapon_knife");
         }
     }
-
-    private bool HasPermission(CCSPlayerController player)
-    {
-        return _wardenService.IsWarden(player) ||
-               AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
-               AdminManager.PlayerHasPermissions(player, "@css/changemap") ||
-               AdminManager.PlayerHasPermissions(player, "@css/root");
-    }
 }

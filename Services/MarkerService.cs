@@ -41,7 +41,7 @@ public class MarkerService
             return;
         }
 
-        if (!_wardenService.HasPermission(player))
+        if (!_wardenService.HasPermission(player, "@css/chat"))
         {
             player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNotWarden));
             return;
@@ -70,7 +70,7 @@ public class MarkerService
 
     public void OnPlayerPing(EventPlayerPing @event, CCSPlayerController player)
     {
-        if (!_wardenService.HasPermission(player))
+        if (!_wardenService.HasPermission(player, "@css/chat"))
             return;
 
         // X, Y, Z from event

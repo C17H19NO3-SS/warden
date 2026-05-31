@@ -36,7 +36,7 @@ public class GameManagerService
 
     public void OpenBoxMenu(CCSPlayerController player)
     {
-        if (!_wardenService.HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player, "@css/changemap")) return;
         
         var menu = new CenterHtmlMenu("🥊 Boks Modu Süresi", _plugin);
         for (int i = 10; i <= 60; i += 10)

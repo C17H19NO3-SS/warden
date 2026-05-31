@@ -414,7 +414,7 @@ public class WardenService
             return;
         }
 
-        if (!HasPermission(player, "@css/cvar")) return;
+        if (!HasPermission(player, "@css/ban")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))

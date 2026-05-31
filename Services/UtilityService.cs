@@ -31,7 +31,7 @@ public class UtilityService
 
     public void CommandMsay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player != null && !_wardenService.HasPermission(player, "@css/chat")) return;
         string message = info.ArgString.Trim();
         if (string.IsNullOrEmpty(message)) return;
 
@@ -46,7 +46,7 @@ public class UtilityService
 
     public void CommandCsay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player != null && !_wardenService.HasPermission(player, "@css/chat")) return;
         string message = info.ArgString.Trim();
         if (string.IsNullOrEmpty(message)) return;
 
@@ -58,7 +58,7 @@ public class UtilityService
 
     public void CommandHsay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player != null && !_wardenService.HasPermission(player, "@css/chat")) return;
         string message = info.ArgString.Trim();
         if (string.IsNullOrEmpty(message)) return;
 
@@ -71,7 +71,7 @@ public class UtilityService
 
     public void CommandRev(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player != null && !_wardenService.HasPermission(player, "@css/slay")) return;
 
         string target = info.GetArg(1).ToLower();
         var players = Utilities.GetPlayers().Where(p => p.IsValid).ToList();
@@ -104,7 +104,7 @@ public class UtilityService
 
     public void CommandFsay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root")) return;
+        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/ban")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName)) return;
@@ -124,7 +124,7 @@ public class UtilityService
 
     public void CommandHpAll(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.PawnIsAlive))
         {
@@ -148,7 +148,7 @@ public class UtilityService
 
     public void CommandHpCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist && p.PawnIsAlive))
         {
@@ -160,7 +160,7 @@ public class UtilityService
 
     public void CommandGetT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
 
         var origin = player.PlayerPawn.Value?.AbsOrigin;
         if (origin == null) return;
@@ -174,7 +174,7 @@ public class UtilityService
 
     public void CommandGetCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
 
         var origin = player.PlayerPawn.Value?.AbsOrigin;
         if (origin == null) return;
@@ -188,7 +188,7 @@ public class UtilityService
 
     public void CommandGetAll(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
 
         var origin = player.PlayerPawn.Value?.AbsOrigin;
         if (origin == null) return;
@@ -202,7 +202,7 @@ public class UtilityService
 
     public void CommandAf(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         _currentCTRevives = _plugin.Config.MaxCTRevives;
 
@@ -246,7 +246,7 @@ public class UtilityService
 
     public void CommandHakSal(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || player.Team != CsTeam.CounterTerrorist || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || player.Team != CsTeam.CounterTerrorist || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))
@@ -277,7 +277,7 @@ public class UtilityService
 
     public void CommandBunnyOpen(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         Server.ExecuteCommand("sv_autobunnyhopping 1");
         Server.ExecuteCommand("sv_enablebunnyhopping 1");
@@ -291,7 +291,7 @@ public class UtilityService
 
     public void CommandBunnyClose(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         Server.ExecuteCommand("sv_autobunnyhopping 0");
         Server.ExecuteCommand("sv_enablebunnyhopping 0");
@@ -302,7 +302,7 @@ public class UtilityService
 
     public void CommandUnmuteCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist))
         {
@@ -313,7 +313,7 @@ public class UtilityService
 
     public void CommandUnmuteT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist))
         {
@@ -324,7 +324,7 @@ public class UtilityService
 
     public void CommandSs(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive))
         {
@@ -380,7 +380,7 @@ public class UtilityService
 
     public void CommandMuteCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist))
         {
@@ -391,7 +391,7 @@ public class UtilityService
 
     public void CommandMuteT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist))
         {
@@ -402,7 +402,7 @@ public class UtilityService
 
     public void CommandOtores(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         Server.ExecuteCommand("mp_respawn_on_death_t 1");
         Server.ExecuteCommand("mp_respawn_on_death_ct 1");
@@ -412,7 +412,7 @@ public class UtilityService
 
     public void CommandOtores0(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
 
         Server.ExecuteCommand("mp_respawn_on_death_t 0");
         Server.ExecuteCommand("mp_respawn_on_death_ct 0");

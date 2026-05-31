@@ -30,19 +30,19 @@ public class FreezeService
 
     public void CommandFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
         FreezeAll();
     }
 
     public void CommandUnfreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
         UnfreezeAll();
     }
 
     public void CommandDelayedFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
 
         string arg = info.GetArg(1);
         if (int.TryParse(arg, out int time))
@@ -53,7 +53,7 @@ public class FreezeService
 
     public void CommandResetFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
 
         _countdownTimer?.Kill();
         _countdownTimer = null;
