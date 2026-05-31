@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using System.Drawing;
 using System;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -36,20 +37,20 @@ public class MarkerService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
-        if (!_wardenService.IsWarden(player))
+        if (!_wardenService.HasPermission(player))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNotWarden)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNotWarden));
             return;
         }
 
         string arg = info.GetArg(1);
         if (string.IsNullOrEmpty(arg))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgMarkerUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgMarkerUsage));
             return;
         }
 
@@ -59,17 +60,17 @@ public class MarkerService
             if (size > 250.0f) size = 250.0f;
 
             _markerSize = size;
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgMarkerSizeSet), size))}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgMarkerSizeSet, size)));
         }
         else
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgInvalidNumber)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgInvalidNumber));
         }
     }
 
     public void OnPlayerPing(EventPlayerPing @event, CCSPlayerController player)
     {
-        if (!_wardenService.IsWarden(player))
+        if (!_wardenService.HasPermission(player))
             return;
 
         // X, Y, Z from event

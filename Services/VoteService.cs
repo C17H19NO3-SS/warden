@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -36,19 +37,19 @@ public class VoteService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
-        if (!AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") && !AdminManager.PlayerHasPermissions(player, "@css/vote") && !AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (!_wardenService.HasPermission(player, "@css/vote"))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyAdminsCanVote)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyAdminsCanVote));
             return;
         }
 
         if (_isCandidatePhase || _isVotePhase || _isKickVotePhase)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgVoteAlreadyActive)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteAlreadyActive));
             return;
         }
 
@@ -61,25 +62,25 @@ public class VoteService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
-        if (!AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") && !AdminManager.PlayerHasPermissions(player, "@css/vote") && !AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (!_wardenService.HasPermission(player, "@css/vote"))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyAdminsCanVote)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyAdminsCanVote));
             return;
         }
 
         if (_wardenService.CurrentWarden == null || !_wardenService.CurrentWarden.IsValid)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNoActiveWarden)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoActiveWarden));
             return;
         }
 
         if (_isCandidatePhase || _isVotePhase || _isKickVotePhase)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgVoteAlreadyActive)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteAlreadyActive));
             return;
         }
 
@@ -93,7 +94,7 @@ public class VoteService
         _candidates.Clear();
         _votes.Clear();
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgCandidatePhaseStarted)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgCandidatePhaseStarted));
 
         _tickTimer?.Kill();
         _tickTimer = _plugin.AddTimer(1.0f, Tick, TimerFlags.REPEAT);
@@ -105,7 +106,7 @@ public class VoteService
         _phaseTimer = _plugin.Config.VotePhaseDuration;
         _kickVotes.Clear();
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgKickVotePhaseStarted)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgKickVotePhaseStarted));
 
         _tickTimer?.Kill();
         _tickTimer = _plugin.AddTimer(1.0f, Tick, TimerFlags.REPEAT);
@@ -117,30 +118,30 @@ public class VoteService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
         if (!_isCandidatePhase)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgCandidatePhaseNotActive)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgCandidatePhaseNotActive));
             return;
         }
 
         if (_candidates.Any(c => c.SteamID == player.SteamID))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgAlreadyCandidate)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgAlreadyCandidate));
             return;
         }
 
         if (_candidates.Count >= 5)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgCandidateListFull)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgCandidateListFull));
             return;
         }
 
         _candidates.Add(player);
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgPlayerBecameCandidate), player.PlayerName, _candidates.Count))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgPlayerBecameCandidate, player.PlayerName, _candidates.Count)));
     }
 
     private void Tick()
@@ -149,22 +150,22 @@ public class VoteService
 
         if (_isCandidatePhase)
         {
-            string html = string.Format(_plugin.Lang.HudContentVoteCandidate, _plugin.Lang.HudTitleVoteCandidate, _phaseTimer);
+            string content = string.Format(_plugin.Lang.HudContentVoteCandidate, "", _phaseTimer);
             foreach (var c in _candidates)
             {
-                html += $"- {c.PlayerName}<br>";
+                content += $"- {c.PlayerName}<br>";
             }
 
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                p.PrintToCenterHtml(html);
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleVoteCandidate, content));
             }
 
             if (_phaseTimer <= 0)
             {
                 if (_candidates.Count == 0)
                 {
-                    Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNoCandidates)}");
+                    Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoCandidates));
                     ResetPhase();
                 }
                 else
@@ -175,16 +176,16 @@ public class VoteService
         }
         else if (_isVotePhase)
         {
-            string html = string.Format(_plugin.Lang.HudContentVoteSelection, _plugin.Lang.HudTitleVoteSelection, _phaseTimer);
+            string content = string.Format(_plugin.Lang.HudContentVoteSelection, "", _phaseTimer);
             for (int i = 0; i < _candidates.Count; i++)
             {
                 int voteCount = _votes.Values.Count(v => v == _candidates[i].SteamID);
-                html += $"[{i + 1}] {_candidates[i].PlayerName} - Oylar: {voteCount}<br>";
+                content += $"[{i + 1}] {_candidates[i].PlayerName} - Oylar: {voteCount}<br>";
             }
 
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                p.PrintToCenterHtml(html);
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleVoteSelection, content));
             }
 
             if (_phaseTimer <= 0)
@@ -198,13 +199,13 @@ public class VoteService
             int kickCount = _kickVotes.Values.Count(v => v == false);
 
             string title = string.Format(_plugin.Lang.HudTitleVoteKick, _wardenService.CurrentWarden?.PlayerName);
-            string html = string.Format(_plugin.Lang.HudContentVoteKick, title, _phaseTimer);
-            html += $"[1] Komutçu Kalsın - Oylar: {keepCount}<br>";
-            html += $"[2] Komutçu Atılsın - Oylar: {kickCount}<br>";
+            string content = string.Format(_plugin.Lang.HudContentVoteKick, "", _phaseTimer);
+            content += $"[1] Komutçu Kalsın - Oylar: {keepCount}<br>";
+            content += $"[2] Komutçu Atılsın - Oylar: {kickCount}<br>";
 
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                p.PrintToCenterHtml(html);
+                p.PrintToCenterHtml(PluginHelper.FormatHud(title, content));
             }
 
             if (_phaseTimer <= 0)
@@ -219,7 +220,7 @@ public class VoteService
         _isCandidatePhase = false;
         _isVotePhase = true;
         _phaseTimer = _plugin.Config.VotePhaseDuration;
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgVotePhaseStarted)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgVotePhaseStarted));
     }
 
     private void EndVotePhase()
@@ -228,12 +229,12 @@ public class VoteService
 
         if (winner != null && winner.IsValid)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgVoteEndedNewWarden), winner.PlayerName))}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgVoteEndedNewWarden, winner.PlayerName)));
             _wardenService.SetWarden(winner);
         }
         else
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgVoteCancelled)}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteCancelled));
         }
 
         ResetPhase();
@@ -246,11 +247,11 @@ public class VoteService
 
         if (kickCount > keepCount)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgKickVoteDecided), kickCount, keepCount))}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgKickVoteDecided, kickCount, keepCount)));
 
             _plugin.AddTimer(_plugin.Config.KickVoteDelayedDuration, () =>
             {
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgKickVoteDelayedSuccess)}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgKickVoteDelayedSuccess));
                 _wardenService.RemoveWarden();
 
                 foreach (var player in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot && p.Team == CsTeam.CounterTerrorist))
@@ -263,7 +264,7 @@ public class VoteService
         }
         else
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgKickVoteStayed), keepCount, kickCount))}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgKickVoteStayed, keepCount, kickCount)));
         }
 
         ResetPhase();
@@ -288,7 +289,7 @@ public class VoteService
                 {
                     var candidate = _candidates[choice - 1];
                     _votes[player.SteamID] = candidate.SteamID;
-                    player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgVoteCast), candidate.PlayerName))}");
+                    player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgVoteCast, candidate.PlayerName)));
                     return true;
                 }
             }
@@ -300,7 +301,7 @@ public class VoteService
             // Komutçu kendi oylamasına katılamaz
             if (_wardenService.IsWarden(player))
             {
-                player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgCannotVoteSelf)}");
+                player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgCannotVoteSelf));
                 return true; // Stop them from typing 1 or 2 as normal chat
             }
 
@@ -309,13 +310,13 @@ public class VoteService
                 if (choice == 1)
                 {
                     _kickVotes[player.SteamID] = true;
-                    player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgKickVoteKeepCast)}");
+                    player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgKickVoteKeepCast));
                     return true;
                 }
                 else if (choice == 2)
                 {
                     _kickVotes[player.SteamID] = false;
-                    player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgKickVoteKickCast)}");
+                    player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgKickVoteKickCast));
                     return true;
                 }
             }

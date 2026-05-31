@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Timers;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -33,7 +34,7 @@ public class IseliService
     {
         if (player == null || !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player, "@css/changemap")) return;
 
         string arg = info.GetArg(1);
 
@@ -53,7 +54,7 @@ public class IseliService
     {
         if (player == null || !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player, "@css/changemap")) return;
 
         QuickOpen(player);
     }
@@ -63,7 +64,7 @@ public class IseliService
         _iseliTimer?.Kill();
         _iseliTime = time;
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgIseliStarted), _iseliTime))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgIseliStarted, _iseliTime)));
 
         _iseliTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -78,7 +79,7 @@ public class IseliService
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
                 string content = string.Format(_plugin.Lang.HudContentIseli, _iseliTime);
-                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleIseli, content));
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleIseli, content));
             }
 
             _iseliTime--;
@@ -98,7 +99,7 @@ public class IseliService
         TeleportTsToRandomSpawns();
 
         string msg = quick ? _plugin.Lang.MsgIseliQuickOpened : _plugin.Lang.MsgIseliDoorsOpened;
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(msg)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, msg));
     }
 
     public static void OpenAllDoors()
@@ -132,13 +133,5 @@ public class IseliService
                 pawn.Teleport(randomSpawn.AbsOrigin, randomSpawn.AbsRotation, new Vector(0, 0, 0));
             }
         }
-    }
-
-    private bool HasPermission(CCSPlayerController player)
-    {
-        return AdminManager.PlayerHasPermissions(player, "@jailbreak/warden") ||
-               AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
-               AdminManager.PlayerHasPermissions(player, "@css/changemap") ||
-               AdminManager.PlayerHasPermissions(player, "@css/root");
     }
 }

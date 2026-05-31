@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
 using JailBreak.Config;
 using JailBreak.Services;
+using JailBreak.Helpers;
 using System.Text.Json;
 using System.Text.Encodings.Web;
 
@@ -21,6 +22,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     public LangConfig Lang { get; set; } = new();
 
     private WardenService _wardenService = null!;
+    public WardenService WardenService => _wardenService;
     private VoteService _voteService = null!;
     private ChatService _chatService = null!;
     private MarkerService _markerService = null!;
@@ -251,7 +253,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         string teamArg = info.GetArg(1);
         if (teamArg == "3")
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Lang.MsgCannotJoinCT)}");
+            player.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgCannotJoinCT));
             Server.NextFrame(() =>
             {
                 if (player.IsValid) player.ChangeTeam(CsTeam.Terrorist);
@@ -298,7 +300,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     {
         if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root"))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Lang.MsgNoPermission)}");
+            player.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgNoPermission));
             return;
         }
 
@@ -328,10 +330,10 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         catch (Exception ex)
         {
             Console.WriteLine($"[JailBreak] Error reloading config: {ex.Message}");
-            player?.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatColors.Red}Config yüklenirken hata oluştu: {ex.Message}");
+            player?.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, $"{ChatColors.Red}Config yüklenirken hata oluştu: {ex.Message}"));
             return;
         }
-        string reloadMsg = $" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Lang.MsgConfigReloaded)}";
+        string reloadMsg = PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgConfigReloaded);
         if (player != null) player.PrintToChat(reloadMsg);
         else info.ReplyToCommand(reloadMsg);
     }

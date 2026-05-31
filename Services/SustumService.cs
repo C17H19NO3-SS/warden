@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Timers;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -42,18 +43,13 @@ public class SustumService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
-        bool isWarden = AdminManager.PlayerHasPermissions(player, "@jailbreak/warden");
-        bool isWardenAdmin = AdminManager.PlayerHasPermissions(player, "@jailbreak/ka");
-        bool hasChat = AdminManager.PlayerHasPermissions(player, "@css/chat");
-        bool isRoot = AdminManager.PlayerHasPermissions(player, "@css/root");
-
-        if (!isWarden && !isWardenAdmin && !hasChat && !isRoot)
+        if (!_wardenService.HasPermission(player, "@css/chat"))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNoPermission)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission));
             return;
         }
 
@@ -66,7 +62,7 @@ public class SustumService
         _remainingTime = _plugin.Config.SustumDuration;
 
         string modeName = mode.ToString().ToUpper();
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSustumStarted), modeName, _targetWord))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSustumStarted, modeName, _targetWord)));
 
         _sustumTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -79,7 +75,7 @@ public class SustumService
 
             if (_remainingTime <= 0)
             {
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSustumExpired), modeName))}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSustumExpired, modeName)));
                 _activeMode = SustumMode.None;
                 _targetWord = "";
                 _sustumTimer?.Kill();
@@ -90,7 +86,7 @@ public class SustumService
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
                 string content = string.Format(_plugin.Lang.HudContentSustum, _targetWord, _remainingTime);
-                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleSustum, content));
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleSustum, content));
             }
 
             _remainingTime--;
@@ -136,7 +132,7 @@ public class SustumService
 
         if (canWin)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSustumWinner), modeName, player.PlayerName, rewardName))}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSustumWinner, modeName, player.PlayerName, rewardName)));
             _activeMode = SustumMode.None;
             _targetWord = "";
             _sustumTimer?.Kill();

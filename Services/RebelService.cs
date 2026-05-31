@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using JailBreak.Models;
 using System.Text.Json;
 using System.Text.Encodings.Web;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -85,7 +86,7 @@ public class RebelService
         int end = Math.Min(start + itemsPerPage, sortedRebels.Count);
 
         string title = "İSYANCI LİSTESİ";
-        string content = $"Sayfa: <font color='gold'>{page}/{totalPages}</font><br><br>";
+        string content = $"Sayfa: <font color='{PluginHelper.ColorTitle}'>{page}/{totalPages}</font><br><br>";
 
         if (sortedRebels.Count == 0)
         {
@@ -95,12 +96,12 @@ public class RebelService
         {
             for (int i = start; i < end; i++)
             {
-                content += $"{i + 1}. <font color='red'>{sortedRebels[i].PlayerName}</font> - <font color='green'>{sortedRebels[i].KillCount} İsyan</font><br>";
+                content += $"{i + 1}. <font color='{PluginHelper.ColorTime}'>{sortedRebels[i].PlayerName}</font> - <font color='{PluginHelper.ColorSuccess}'>{sortedRebels[i].KillCount} İsyan</font><br>";
             }
         }
 
         string instruction = totalPages > 1 ? $"!isyancılar <sayfa> (1-{totalPages})" : "";
-        player.PrintToCenterHtml(HudHelper.FormatHud(title, content, instruction));
+        player.PrintToCenterHtml(PluginHelper.FormatHud(title, content, instruction));
     }
 
     private void LoadData()

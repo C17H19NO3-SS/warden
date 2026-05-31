@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using System;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -38,7 +39,7 @@ public class PositionService
     public void CommandDaire(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player, "@css/kick")) return;
 
         Vector center = GetCenterPoint(player);
         if (center.X == 0 && center.Y == 0) return;
@@ -46,7 +47,7 @@ public class PositionService
         string arg = info.GetArg(1);
         if (!float.TryParse(arg, out float radius))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgDaireUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgDaireUsage));
             return;
         }
 
@@ -67,14 +68,14 @@ public class PositionService
             }
         }
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgDaireApplied), radius))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgDaireApplied, radius)));
         ApplyFormationFreeze();
     }
 
     public void CommandDiz(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player, "@css/kick")) return;
 
         Vector center = GetCenterPoint(player);
         if (center.X == 0 && center.Y == 0) return;
@@ -82,7 +83,7 @@ public class PositionService
         string arg = info.GetArg(1);
         if (!float.TryParse(arg, out float spacing))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgDizUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgDizUsage));
             return;
         }
 
@@ -115,7 +116,7 @@ public class PositionService
             }
         }
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgDizApplied), spacing))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgDizApplied, spacing)));
         ApplyFormationFreeze();
     }
 
@@ -127,7 +128,7 @@ public class PositionService
         {
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
-                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleFormation, _plugin.Lang.HudContentFormation));
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleFormation, _plugin.Lang.HudContentFormation));
             }
         }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
 
@@ -136,12 +137,5 @@ public class PositionService
             timer.Kill();
         });
     }
-
-    private bool HasPermission(CCSPlayerController player)
-    {
-        return AdminManager.PlayerHasPermissions(player, "@jailbreak/warden") ||
-               AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
-               AdminManager.PlayerHasPermissions(player, "@css/kick") ||
-               AdminManager.PlayerHasPermissions(player, "@css/root");
-    }
 }
+

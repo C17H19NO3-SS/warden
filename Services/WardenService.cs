@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Text.Json;
 using CS2MenuManager.API.Menu;
 using CenterHtmlMenu = CS2MenuManager.API.Menu.CenterHtmlMenu;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -96,6 +97,14 @@ public class WardenService
         return _wardenAdmins.Contains(player.SteamID);
     }
 
+    public bool HasPermission(CCSPlayerController player, string? requiredFlag = null)
+    {
+        if (IsWarden(player) || IsWardenAdmin(player)) return true;
+        if (AdminManager.PlayerHasPermissions(player, "@css/root")) return true;
+        if (requiredFlag != null && AdminManager.PlayerHasPermissions(player, requiredFlag)) return true;
+        return false;
+    }
+
     public void OnRoundStart()
     {
         if (CurrentWarden != null && !CurrentWarden.IsValid)
@@ -142,7 +151,7 @@ public class WardenService
         {
             if (CurrentWarden != null && CurrentWarden.IsValid)
             {
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgWardenDurationExpired)}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgWardenDurationExpired));
                 _plugin.VoteService.StartKickVotePhase();
             }
         });
@@ -152,7 +161,7 @@ public class WardenService
         _hue = 0;
         _rgbTimer = _plugin.AddTimer(0.1f, UpdateWardenRgb, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgNewWarden), player.PlayerName))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgNewWarden, player.PlayerName)));
     }
 
     private void UpdateWardenRgb()
@@ -224,19 +233,19 @@ public class WardenService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
         if (player.Team != CsTeam.CounterTerrorist)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyCTCanBeWarden)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyCTCanBeWarden));
             return;
         }
 
         if (CurrentWarden != null && CurrentWarden.IsValid)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgWardenExists), CurrentWarden.PlayerName))}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenExists, CurrentWarden.PlayerName)));
             return;
         }
 
@@ -249,17 +258,17 @@ public class WardenService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
         if (!IsWarden(player))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNotWarden)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNotWarden));
             return;
         }
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgWardenLeft), player.PlayerName))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenLeft, player.PlayerName)));
         RemoveWarden();
     }
 
@@ -269,7 +278,7 @@ public class WardenService
 
         if (CurrentWarden == null || !CurrentWarden.IsValid || _wardenStartTime == null)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNoActiveWarden)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoActiveWarden));
             return;
         }
 
@@ -280,7 +289,7 @@ public class WardenService
         if (remaining.Ticks < 0) remaining = TimeSpan.Zero;
 
         string timeStr = $"{(int)remaining.TotalMinutes}:{remaining.Seconds:D2}";
-        player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgWardenTimeRemaining), timeStr))}");
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenTimeRemaining, timeStr)));
     }
 
     public void CommandTopKomutcu(CCSPlayerController? player, CommandInfo info)
@@ -289,7 +298,7 @@ public class WardenService
 
         if (_wardenStats.Count == 0)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTopWardenEmpty)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTopWardenEmpty));
             return;
         }
 
@@ -312,17 +321,13 @@ public class WardenService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
-        bool isWarden = IsWarden(player);
-        bool isRoot = AdminManager.PlayerHasPermissions(player, "@css/root") || AdminManager.PlayerHasPermissions(player, "@css/cvar");
-        bool isWardenAdmin = IsWardenAdmin(player);
-
-        if (!isWarden && !isRoot && !isWardenAdmin)
+        if (!HasPermission(player, "@css/cvar"))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyWardenAdminOrRootCanUse)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyWardenAdminOrRootCanUse));
             return;
         }
 
@@ -336,7 +341,7 @@ public class WardenService
             }
             else
             {
-                player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgPlayerNotFound)}");
+                player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotFound));
             }
             return;
         }
@@ -345,7 +350,7 @@ public class WardenService
 
         if (players.Count == 0)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgNoOtherAdmins)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoOtherAdmins));
             return;
         }
 
@@ -368,7 +373,7 @@ public class WardenService
     {
         if (!AdminManager.PlayerHasPermissions(target, "@css/generic"))
         {
-            caller.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgPlayerHasNoAdminPerms)}");
+            caller.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerHasNoAdminPerms));
             return;
         }
 
@@ -378,7 +383,7 @@ public class WardenService
         // Immunity set to 99
         AdminManager.SetPlayerImmunity(target, 99);
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgWardenAdminSelected), target.PlayerName))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenAdminSelected, target.PlayerName)));
     }
 
     public void CommandRemoveWardenAdmin(CCSPlayerController? player, CommandInfo info)
@@ -387,20 +392,16 @@ public class WardenService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOnlyJailbreakMap)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
             return;
         }
 
-        bool isWarden = IsWarden(player);
-        bool isRoot = AdminManager.PlayerHasPermissions(player, "@css/root") || AdminManager.PlayerHasPermissions(player, "@css/cvar");
-        bool isWardenAdmin = IsWardenAdmin(player);
-
-        if (!isWarden && !isRoot && !isWardenAdmin) return;
+        if (!HasPermission(player, "@css/cvar")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgKasilUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgKasilUsage));
             return;
         }
 
@@ -410,11 +411,11 @@ public class WardenService
             if (_wardenAdmins.Contains(target.SteamID))
             {
                 RemoveWardenAdmin(target);
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgWardenAdminRemoved), target.PlayerName))}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenAdminRemoved, target.PlayerName)));
             }
             else
             {
-                player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgPlayerNotWardenAdmin)}");
+                player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotWardenAdmin));
             }
         }
     }

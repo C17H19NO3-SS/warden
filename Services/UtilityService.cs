@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using System.Linq;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -29,43 +30,43 @@ public class UtilityService
 
     public void CommandHpAll(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.PawnIsAlive))
         {
             p.Health = 100;
             Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgHpAllSet)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHpAllSet));
     }
 
     public void CommandHpT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/slay")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive))
         {
             p.Health = 100;
             Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgHpTSet)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHpTSet));
     }
 
     public void CommandHpCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist && p.PawnIsAlive))
         {
             p.Health = 100;
             Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgHpCTSet)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHpCTSet));
     }
 
     public void CommandGetT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         var origin = player.PlayerPawn.Value?.AbsOrigin;
         if (origin == null) return;
@@ -74,12 +75,12 @@ public class UtilityService
         {
             p.PlayerPawn.Value?.Teleport(origin, player.PlayerPawn.Value?.AbsRotation, new Vector(0, 0, 0));
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgGetTApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGetTApplied));
     }
 
     public void CommandGetCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         var origin = player.PlayerPawn.Value?.AbsOrigin;
         if (origin == null) return;
@@ -88,12 +89,12 @@ public class UtilityService
         {
             p.PlayerPawn.Value?.Teleport(origin, player.PlayerPawn.Value?.AbsRotation, new Vector(0, 0, 0));
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgGetCTApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGetCTApplied));
     }
 
     public void CommandGetAll(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         var origin = player.PlayerPawn.Value?.AbsOrigin;
         if (origin == null) return;
@@ -102,12 +103,12 @@ public class UtilityService
         {
             p.PlayerPawn.Value?.Teleport(origin, player.PlayerPawn.Value?.AbsRotation, new Vector(0, 0, 0));
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgGetAllApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGetAllApplied));
     }
 
     public void CommandAf(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         _currentCTRevives = _plugin.Config.MaxCTRevives;
 
@@ -124,39 +125,39 @@ public class UtilityService
                 Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
             }
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgAfApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgAfApplied));
     }
 
     public void CommandGit(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/kick")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgGitUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGitUsage));
             return;
         }
 
         var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, System.StringComparison.OrdinalIgnoreCase));
         if (target == null || !target.IsValid || !target.PawnIsAlive)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgPlayerNotFound)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotFound));
             return;
         }
 
         player.PlayerPawn.Value?.Teleport(target.PlayerPawn.Value?.AbsOrigin, target.PlayerPawn.Value?.AbsRotation, new Vector(0, 0, 0));
-        player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgGitApplied), target.PlayerName))}");
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgGitApplied, target.PlayerName)));
     }
 
     public void CommandHakSal(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || player.Team != CsTeam.CounterTerrorist || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || player.Team != CsTeam.CounterTerrorist || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgHakSalUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHakSalUsage));
             return;
         }
 
@@ -164,7 +165,7 @@ public class UtilityService
 
         if (target == null || !target.IsValid)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgHakSalTargetNotFound)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHakSalTargetNotFound));
             return;
         }
 
@@ -175,14 +176,14 @@ public class UtilityService
             {
                 player.ChangeTeam(CsTeam.Terrorist);
                 target.ChangeTeam(CsTeam.CounterTerrorist);
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgHakSalApplied), player.PlayerName, target.PlayerName))}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgHakSalApplied, player.PlayerName, target.PlayerName)));
             }
         });
     }
 
     public void CommandBunnyOpen(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         Server.ExecuteCommand("sv_autobunnyhopping 1");
         Server.ExecuteCommand("sv_enablebunnyhopping 1");
@@ -191,52 +192,52 @@ public class UtilityService
         Server.ExecuteCommand("sv_staminajumpcost 0");
         Server.ExecuteCommand("sv_staminalandcost 0");
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgBunnyEnabled)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgBunnyEnabled));
     }
 
     public void CommandBunnyClose(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         Server.ExecuteCommand("sv_autobunnyhopping 0");
         Server.ExecuteCommand("sv_enablebunnyhopping 0");
         Server.ExecuteCommand("sv_airaccelerate 12");
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgBunnyDisabled)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgBunnyDisabled));
     }
 
     public void CommandUnmuteCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist))
         {
             p.VoiceFlags = VoiceFlags.Normal;
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgUnmuteCTApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgUnmuteCTApplied));
     }
 
     public void CommandUnmuteT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist))
         {
             p.VoiceFlags = VoiceFlags.Normal;
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgUnmuteTApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgUnmuteTApplied));
     }
 
     public void CommandSs(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive))
         {
             p.RemoveWeapons();
             p.GiveNamedItem("weapon_knife");
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgSsApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSsApplied));
     }
 
     public void CommandKacCm(CCSPlayerController? player, CommandInfo info)
@@ -251,7 +252,7 @@ public class UtilityService
             _kacCmRecords[player.SteamID] = (player.PlayerName, cm);
         }
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgKacCmApplied), player.PlayerName, cm))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgKacCmApplied, player.PlayerName, cm)));
     }
 
     public void CommandTopKacCm(CCSPlayerController? player, CommandInfo info)
@@ -260,11 +261,11 @@ public class UtilityService
 
         if (_kacCmRecords.Count == 0)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTopKacCmEmpty)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTopKacCmEmpty));
             return;
         }
 
-        player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTopKacCmTitle)}");
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTopKacCmTitle));
 
         var sortedRecords = _kacCmRecords.Values
             .OrderByDescending(r => r.Value)
@@ -274,7 +275,7 @@ public class UtilityService
         for (int i = 0; i < sortedRecords.Count; i++)
         {
             var r = sortedRecords[i];
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgTopKacCmEntry), i + 1, r.Name, r.Value))}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgTopKacCmEntry, i + 1, r.Name, r.Value)));
         }
     }
 
@@ -285,51 +286,43 @@ public class UtilityService
 
     public void CommandMuteCT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.CounterTerrorist))
         {
             p.VoiceFlags = VoiceFlags.Muted;
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgMuteCTApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgMuteCTApplied));
     }
 
     public void CommandMuteT(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist))
         {
             p.VoiceFlags = VoiceFlags.Muted;
         }
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgMuteTApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgMuteTApplied));
     }
 
     public void CommandOtores(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         Server.ExecuteCommand("mp_respawn_on_death_t 1");
         Server.ExecuteCommand("mp_respawn_on_death_ct 1");
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOtoresEnabled)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOtoresEnabled));
     }
 
     public void CommandOtores0(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player, "@css/ban")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/ban")) return;
 
         Server.ExecuteCommand("mp_respawn_on_death_t 0");
         Server.ExecuteCommand("mp_respawn_on_death_ct 0");
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgOtoresDisabled)}");
-    }
-
-    private bool HasPermission(CCSPlayerController player, string requiredFlag)
-    {
-        return _wardenService.IsWarden(player) ||
-               AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
-               AdminManager.PlayerHasPermissions(player, requiredFlag) ||
-               AdminManager.PlayerHasPermissions(player, "@css/root");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOtoresDisabled));
     }
 }

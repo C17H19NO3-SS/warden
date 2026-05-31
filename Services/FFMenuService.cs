@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Timers;
 using JailBreak.Config;
+using JailBreak.Helpers;
 using CS2MenuManager.API.Menu;
 using CS2MenuManager.API.Interface;
 using CS2MenuManager.API.Enum;
@@ -68,12 +69,12 @@ public class FFMenuService
     {
         if (player == null || !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player)) return;
 
         string arg = info.GetArg(1);
         if (!int.TryParse(arg, out int time))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFMenuUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFMenuUsage));
             return;
         }
 
@@ -84,33 +85,33 @@ public class FFMenuService
     {
         if (player == null || !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player)) return;
 
         DisableFF();
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFDisabled)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFDisabled));
     }
 
     public void CommandFF0(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player)) return;
 
         DisableFF();
         StripTWeapons();
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFF0Applied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFF0Applied));
     }
 
     public void CommandFFOndur(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!HasPermission(player)) return;
+        if (!_wardenService.HasPermission(player)) return;
 
         string arg = info.GetArg(1);
         if (!int.TryParse(arg, out int time))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFOndurUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFOndurUsage));
             return;
         }
 
@@ -125,7 +126,7 @@ public class FFMenuService
 
         UpdateHUD(); // Show HUD immediately
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFOndurApplied)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFEnded));
     }
 
     private void StartFFMenu(int initialTime, CCSPlayerController player)
@@ -346,7 +347,7 @@ public class FFMenuService
                 _isCountingToStart = false;
                 _isFFActive = true;
                 EnableFF();
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFActiveNow)}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFActiveNow));
             }
             else if (_isCountingToEnd)
             {
@@ -372,24 +373,24 @@ public class FFMenuService
         if (_isCountingToStart)
         {
             title = _plugin.Lang.HudTitleFFStartDelay;
-            content = string.Format(_plugin.Lang.HudContentFFStartDelay, HudHelper.ColorSuccess, "Özel Silahlar", HudHelper.ColorTime, _ffRemainingTime);
+            content = string.Format(_plugin.Lang.HudContentFFStartDelay, PluginHelper.ColorSuccess, "Özel Silahlar", PluginHelper.ColorTime, _ffRemainingTime);
         }
         else if (_isCountingToEnd)
         {
             title = _plugin.Lang.HudTitleFFEndDelay;
-            content = string.Format(_plugin.Lang.HudContentFFEndDelay, HudHelper.ColorTime, _ffRemainingTime);
-            if (_freezeOnEnd) content += string.Format(_plugin.Lang.HudContentFFFreezeWarning, HudHelper.ColorSystem);
+            content = string.Format(_plugin.Lang.HudContentFFEndDelay, PluginHelper.ColorTime, _ffRemainingTime);
+            if (_freezeOnEnd) content += string.Format(_plugin.Lang.HudContentFFFreezeWarning, PluginHelper.ColorSystem);
         }
         else if (_isFFActive)
         {
             title = _plugin.Lang.HudTitleFFActive;
-            content = string.Format(_plugin.Lang.HudContentFFActiveWeapons, HudHelper.ColorSuccess, "Özel Silahlar");
+            content = string.Format(_plugin.Lang.HudContentFFActiveWeapons, PluginHelper.ColorSuccess, "Özel Silahlar");
             instruction = _plugin.Lang.HudInstructionFFOndurInfo;
         }
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
         {
-            p.PrintToCenterHtml(HudHelper.FormatHud(title, content, instruction));
+            p.PrintToCenterHtml(PluginHelper.FormatHud(title, content, instruction));
         }
     }
 
@@ -431,7 +432,7 @@ public class FFMenuService
     private void EndFF()
     {
         DisableFF();
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFEnded)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFEnded));
 
         if (_freezeOnEnd)
         {

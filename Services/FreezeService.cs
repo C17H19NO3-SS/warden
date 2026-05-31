@@ -4,27 +4,9 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Timers;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
-
-public static class HudHelper
-{
-    public const string ColorTitle = "gold";
-    public const string ColorTime = "red";
-    public const string ColorSuccess = "green";
-    public const string ColorInstruction = "#C0C0C0";
-    public const string ColorSystem = "cyan";
-
-    public static string FormatHud(string title, string content, string instruction = "")
-    {
-        string hud = $"<font color='{ColorTitle}' size='20'><b>--- {title.ToUpper()} ---</b></font><br>{content}";
-        if (!string.IsNullOrEmpty(instruction))
-        {
-            hud += $"<br><font color='{ColorInstruction}' size='14'>{instruction}</font>";
-        }
-        return hud;
-    }
-}
 
 public class FreezeService
 {
@@ -48,19 +30,19 @@ public class FreezeService
 
     public void CommandFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
         FreezeAll();
     }
 
     public void CommandUnfreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
         UnfreezeAll();
     }
 
     public void CommandDelayedFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
 
         string arg = info.GetArg(1);
         if (int.TryParse(arg, out int time))
@@ -71,12 +53,12 @@ public class FreezeService
 
     public void CommandResetFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player)) return;
 
         _countdownTimer?.Kill();
         _countdownTimer = null;
         _countdownTime = 0;
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeCountdownCancelled)}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTFreezeCountdownCancelled));
     }
 
     private void StartCountdown(int time)
@@ -84,7 +66,7 @@ public class FreezeService
         _countdownTimer?.Kill();
         _countdownTime = time;
 
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeCountdownStarted), _countdownTime))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgTFreezeCountdownStarted, _countdownTime)));
 
         _countdownTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -99,7 +81,7 @@ public class FreezeService
             foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
             {
                 string content = string.Format(_plugin.Lang.HudContentFreeze, _countdownTime);
-                p.PrintToCenterHtml(HudHelper.FormatHud(_plugin.Lang.HudTitleFreeze, content));
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleFreeze, content));
             }
 
             _countdownTime--;
@@ -111,7 +93,7 @@ public class FreezeService
         _isFrozen = true;
         if (!silent)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeStarted)}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTFreezeStarted));
         }
 
         ApplyFreezeState();
@@ -124,7 +106,7 @@ public class FreezeService
         _isFrozen = false;
         if (!silent)
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgTFreezeEnded)}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTFreezeEnded));
         }
 
         foreach (var player in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist))
@@ -155,13 +137,5 @@ public class FreezeService
                 pawn.ActualMoveType = MoveType_t.MOVETYPE_NONE;
             }
         }
-    }
-
-    private bool HasPermission(CCSPlayerController player)
-    {
-        return AdminManager.PlayerHasPermissions(player, "@jailbreak/warden") ||
-               AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
-               AdminManager.PlayerHasPermissions(player, "@css/slay") ||
-               AdminManager.PlayerHasPermissions(player, "@css/root");
     }
 }

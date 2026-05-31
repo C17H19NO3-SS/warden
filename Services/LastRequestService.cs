@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CS2MenuManager.API.Menu;
 using CS2MenuManager.API.Interface;
 using CS2MenuManager.API.Enum;
+using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
@@ -51,7 +52,7 @@ public class LastRequestService
         var aliveTs = Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive).ToList();
         if (aliveTs.Count != 1)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgLROnlyLastT)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLROnlyLastT));
             return;
         }
 
@@ -61,13 +62,13 @@ public class LastRequestService
 
     public void CommandSonSec(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !HasPermission(player)) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
         if (!_plugin.IsJailbreakMap()) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgSonSecUsage)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSonSecUsage));
             return;
         }
 
@@ -75,7 +76,7 @@ public class LastRequestService
 
         if (target == null || !target.IsValid)
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgPlayerNotFound)}");
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotFound));
             return;
         }
 
@@ -88,7 +89,7 @@ public class LastRequestService
         }
 
         _lastT = target;
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgSonSecApplied), target.PlayerName))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSonSecApplied, target.PlayerName)));
         OpenInitialMenu();
     }
 
@@ -100,7 +101,7 @@ public class LastRequestService
         {
             Server.NextFrame(() =>
             {
-                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgLRChoiceLR), _lastT?.PlayerName))}");
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgLRChoiceLR, _lastT?.PlayerName)));
             });
             OpenTypeSelectionMenu();
         });
@@ -158,7 +159,7 @@ public class LastRequestService
 
         if (ctCandidates.Count == 0)
         {
-            _lastT.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgLRNoCTFound)}");
+            _lastT.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLRNoCTFound));
             return;
         }
 
@@ -178,7 +179,7 @@ public class LastRequestService
     {
         Server.NextFrame(() =>
         {
-            Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgLRRebellion), _lastT?.PlayerName))}");
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgLRRebellion, _lastT?.PlayerName)));
         });
     }
 
@@ -189,7 +190,7 @@ public class LastRequestService
         var userId = _lastT.UserId;
         StoreApi.StoreBridge.GiveCredits(_lastT, _plugin.Config.LRCreditReward);
         
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgLRCreditReceived), _lastT.PlayerName))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgLRCreditReceived, _lastT.PlayerName)));
         
         Server.ExecuteCommand($"css_slay #{userId}");
     }
@@ -205,8 +206,8 @@ public class LastRequestService
         if (_lastT == null || _selectedCT == null) return;
 
         _isLRActive = true;
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgLRStarted), _lastT.PlayerName, _selectedCT.PlayerName))}");
-        Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgLRTypeInfo), _selectedLRType))}");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgLRStarted, _lastT.PlayerName, _selectedCT.PlayerName)));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgLRTypeInfo, _selectedLRType)));
 
         if (_selectedLRType == LRType.Deagle)
         {
@@ -225,8 +226,8 @@ public class LastRequestService
         _selectedCT!.RemoveWeapons();
 
         _lastT.GiveNamedItem("weapon_deagle");
-        _lastT.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgLRDeagleTurn)}");
-        _selectedCT.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgLRDeagleWait)}");
+        _lastT.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLRDeagleTurn));
+        _selectedCT.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLRDeagleWait));
 
         // Turn-based logic will be handled in EventWeaponFire
     }
@@ -266,7 +267,7 @@ public class LastRequestService
         to.RemoveWeapons();
         to.GiveNamedItem("weapon_deagle");
 
-        to.PrintToChat($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgLRDeagleTurn)}");
+        to.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLRDeagleTurn));
     }
 
     public void OnPlayerDeath(EventPlayerDeath @event)
@@ -285,18 +286,11 @@ public class LastRequestService
             {
                 if (!_wardenService.IsWarden(_selectedCT!))
                 {
-                    Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(string.Format(ChatService.ReplaceColors(_plugin.Lang.MsgLRCTLost), _selectedCT!.PlayerName))}");
+                    Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgLRCTLost, _selectedCT!.PlayerName)));
                     _selectedCT.ChangeTeam(CsTeam.Terrorist);
                 }
             }
         }
     }
-
-    private bool HasPermission(CCSPlayerController player)
-    {
-        return _wardenService.IsWarden(player) ||
-               AdminManager.PlayerHasPermissions(player, "@jailbreak/ka") ||
-               AdminManager.PlayerHasPermissions(player, "@css/slay") ||
-               AdminManager.PlayerHasPermissions(player, "@css/root");
-    }
 }
+
