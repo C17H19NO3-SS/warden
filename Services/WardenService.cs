@@ -43,8 +43,24 @@ public class WardenService
         LoadAdminStats();
     }
 
+    public void RegisterCommands(ICommandDispatcher dispatcher)
+    {
+        dispatcher.RegisterCommand("css_w", "Komutçu ol", CommandBecomeWarden);
+        dispatcher.RegisterCommand("css_uw", "Komutçuluktan çık", CommandUnwarden);
+        dispatcher.RegisterCommand("css_komkalan", "Komutçunun kalan süresini gör", CommandKomKalan);
+        dispatcher.RegisterCommand("css_topkomutcu", "En çok komutçu olanları gör", CommandTopKomutcu);
+        dispatcher.RegisterCommand("css_q", "Komutçu koruması (God, MuteT, HP100)", CommandQ);
+        dispatcher.RegisterCommand("css_qq", "Komutçu korumasını kaldır", CommandQQ);
+        dispatcher.RegisterCommand("css_ka", "Komutçu admin menüsü", CommandWardenAdmin);
+        dispatcher.RegisterCommand("css_kasil", "Komutçu adminini kaldır", CommandRemoveWardenAdmin);
+        dispatcher.RegisterCommand("css_topka", "En çok komutçu admin olanları gör", CommandTopKa);
+        dispatcher.RegisterCommand("css_k", "Komutçu ana menüsünü açar", CommandKomMenu);
+        dispatcher.RegisterCommand("css_kommenu", "Komutçu ana menüsünü açar", CommandKomMenu);
+    }
+
     private void LoadStats()
     {
+        LogHelper.LogDebug("WardenService: Loading warden stats...");
         try
         {
             if (File.Exists(_statsPath))
@@ -55,12 +71,13 @@ public class WardenService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[JailBreak] Error loading warden stats: {ex.Message}");
+            LogHelper.LogError("Error loading warden stats.", ex);
         }
     }
 
     private void SaveStats()
     {
+        LogHelper.LogDebug("WardenService: Saving warden stats...");
         try
         {
             string dir = Path.GetDirectoryName(_statsPath) ?? "";
@@ -71,7 +88,7 @@ public class WardenService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[JailBreak] Error saving warden stats: {ex.Message}");
+            LogHelper.LogError("Error saving warden stats.", ex);
         }
     }
 
@@ -99,6 +116,7 @@ public class WardenService
 
     private void LoadAdminStats()
     {
+        LogHelper.LogDebug("WardenService: Loading warden admin stats...");
         try
         {
             if (File.Exists(_adminStatsPath))
@@ -109,12 +127,13 @@ public class WardenService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[JailBreak] Error loading warden admin stats: {ex.Message}");
+            LogHelper.LogError("Error loading warden admin stats.", ex);
         }
     }
 
     private void SaveAdminStats()
     {
+        LogHelper.LogDebug("WardenService: Saving warden admin stats...");
         try
         {
             string dir = Path.GetDirectoryName(_adminStatsPath) ?? "";
@@ -125,7 +144,7 @@ public class WardenService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[JailBreak] Error saving warden admin stats: {ex.Message}");
+            LogHelper.LogError("Error saving warden admin stats.", ex);
         }
     }
 
@@ -323,6 +342,7 @@ public class WardenService
         menu.AddItem("[🛡️] Koruma Modu (God Mode)", (p, o) => CommandQ(p, info));
         menu.AddItem("[❌] Korumayı Kapat (!qq)", (p, o) => CommandQQ(p, info));
         menu.AddItem("[➕] Herkesi Canlandır", (p, o) => _plugin.UtilityService.CommandAf(p, info));
+        menu.AddItem("[📈] İşaretleyici Ayarları", (p, o) => _plugin.MarkerService.OpenMarkerMenu(p, info));
         
         menu.Display(player, 0);
     }
@@ -438,29 +458,10 @@ public class WardenService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Red}Koruma (God Mode) kaldırıldı."));
     }
 
-    public HookResult OnTakeDamage(DynamicHook hook)
-    {
-        var entity = hook.GetParam<CEntityInstance>(0);
-        var info = hook.GetParam<CTakeDamageInfo>(1);
 
-        if (entity == null || !entity.IsValid || info == null)
-            return HookResult.Continue;
 
-        var pawn = entity.As<CCSPlayerPawn>();
-        if (pawn == null || !pawn.IsValid)
-            return HookResult.Continue;
 
-        var controller = pawn.Controller.Value;
-        if (controller == null || !controller.IsValid)
-            return HookResult.Continue;
 
-        if (_godModePlayers.Contains(controller.SteamID))
-        {
-            return HookResult.Handled;
-        }
-
-        return HookResult.Continue;
-    }
 
     public void CommandWardenAdmin(CCSPlayerController? player, CommandInfo info)
     {

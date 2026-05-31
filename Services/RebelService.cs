@@ -106,6 +106,7 @@ public class RebelService
 
     private void LoadData()
     {
+        LogHelper.LogDebug("RebelService: Loading rebel data...");
         try
         {
             if (File.Exists(_filePath))
@@ -116,13 +117,14 @@ public class RebelService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[JailBreak] Rebel data load error: {ex.Message}");
+            LogHelper.LogError("Rebel data load error.", ex);
             _rebels = new List<RebelData>();
         }
     }
 
     private void SaveData()
     {
+        LogHelper.LogDebug("RebelService: Saving rebel data...");
         try
         {
             string? directory = Path.GetDirectoryName(_filePath);
@@ -141,7 +143,7 @@ public class RebelService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[JailBreak] Rebel data save error: {ex.Message}");
+            LogHelper.LogError("Rebel data save error.", ex);
         }
     }
 }

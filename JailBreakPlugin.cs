@@ -127,7 +127,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         _lrService = new LastRequestService(this, _wardenService);
         _rebelService = new RebelService(this);
         _gameManagerService = new GameManagerService(this, _wardenService, _freezeService);
-        _dispatcherService = new DispatcherService(Logger);
+        _dispatcherService = new DispatcherService();
         _hudService = new HudService(this);
 
         RegisterListener<Listeners.OnClientDisconnect>(_wardenService.OnClientDisconnect);
