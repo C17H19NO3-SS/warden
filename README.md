@@ -80,7 +80,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!csay <mesaj>` | - | `@css/chat` | Ekranın alt-orta kısmında renkli duyuru yapar. |
 | `!hsay <mesaj>` | - | `@css/chat` | HUD (Hint) bölgesinde mesaj gösterir. |
 | `!marker <boy>` | - | `@css/chat` | Komutçu işaretçisinin boyutunu ayarlar. |
-| `!fsay <isim> <msg>`| - | `@css/ban` | Belirlenen oyuncunun adıyla chat'e yazı yazar. |
+| `!fsay <isim> <msg>`| - | `@css/root` | Belirlenen oyuncunun adıyla chat'e yazı yazar. |
 
 ### 7. Genel ve Diğer Komutlar
 | Komut | Alternatif | Yetki | Açıklama |
@@ -141,3 +141,4 @@ Eklenti, komutların oyun içi etkisine göre şu hiyerarşide yapılandırılm�
 ## 📜 Krediler
 CS2 JailBreak topluluğu için ❤️ ile geliştirildi.
 **CounterStrikeSharp** ve **CS2MenuManager** tarafından desteklenmektedir.
+StrikeSharp** ve **CS2MenuManager** tarafından desteklenmektedir.

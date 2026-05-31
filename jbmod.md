@@ -10,17 +10,7 @@ Sunucunuzdaki `admin_groups.json` yapılandırmasına göre optimize edilmiş, s
 ## 👑 1. @css/ban (Kritik Yetki / Üst Yönetim)
 Sunucu dengesini, takımları ve oyun akışını kökten değiştiren en güçlü komutlar.
 
-- `!rev <hedef>` - (Oyuncu veya takımı canlandırır)
-- `!af` - (Herkesi canlandırır ve canlarını 100 yapar)
-- `!haksal <isim>` - (CT ve T takımlarını yer değiştirir)
-- `!gelall` - (Herkesi yanına çeker)
-- `!hpa` - (Tüm oyuncuların canını 100 yapar)
-- `!fsay <isim> <msg>` - (Zorunlu say yazdırır)
-- `!ka` / `!kasil` - (Komutçu Admini yetkisi verir/alır)
-- `!ba` / `!bk` - (Bunnyhop özelliğini açar/kapatır)
-- `!mct` / `!umct` - (CT takımını mutele / aç)
-- `!mt` / `!umt` - (T takımını mutele / aç)
-- `!reloadconfig` - (Eklenti ayarlarını yeniler)
+- *(Bu grup alt gruplara dağıtıldı, sadece en kritik admin işlemleri için ayrıldı)*
 
 ---
 
@@ -43,6 +33,7 @@ Oyuncuların konumlarını düzenlemek ve onları takip etmek için kullanılır
 
 - `!git <isim>` - (Belirtilen oyuncuya ışınlanır)
 - `!gelt` / `!gelct` - (Belirli bir takımı yanına çeker)
+- `!gelall` - (Herkesi yanına çeker)
 - `!daire <genişlik>` - (T takımını daire formasyonuna dizer)
 - `!diz <mesafe>` - (T takımını önünde sıraya dizer)
 
@@ -51,11 +42,14 @@ Oyuncuların konumlarını düzenlemek ve onları takip etmek için kullanılır
 ## 👊 4. @css/slay (Fiziksel Müdahale)
 Oyuncuların can, donma ve round içindeki durumlarını etkileyen komutlar.
 
+- `!rev <hedef>` - (Oyuncu veya takımı canlandırır)
+- `!af` - (Herkesi canlandırır ve canlarını 100 yapar)
+- `!hpa` / `!hpt` / `!hpct` - (Canları 100 yapar)
 - `!td` / `!tdb` - (T takımını dondurur veya çözer)
 - `!fz <sn>` / `!fz0` - (Süreli dondurma başlatır veya iptal eder)
-- `!hpt` / `!hpct` - (Belirli takımın canını 100 yapar)
 - `!ss` / `!strip` - (T takımının silahlarını siler)
 - `!sonsec` - (Sona kalan T dışındakileri öldürür ve LR açar)
+- `!sustum` (dsustum/tsustum/olusustum) - (Sustum oyunlarını başlatır)
 
 ---
 
@@ -65,13 +59,17 @@ Duyuru yapmak ve sohbet tabanlı mini oyunlar başlatmak için kullanılır.
 - `!msay <mesaj>` - (Büyük kutu içinde duyuru yapar)
 - `!csay <mesaj>` - (Merkezi renkli yazı yazar)
 - `!hsay <mesaj>` - (HUD/Hint mesajı gönderir)
-- `!sustum` (dsustum/tsustum/olusustum) - (Sustum oyunlarını başlatır)
 - `!marker <boyut>` - (Komutçu işaretçisini ayarlar)
 
 ---
 
 ## 🛡️ 6. @css/generic (Genel Yetki)
-- `!k` / `!kommenu` - **Warden Ana Menüsünü** açar. (İçerisinde kendi yetki seviyenizdeki komutlar görünür).
+- `!k` / `!kommenu` - **Warden Ana Menüsünü** açar.
+- `!ka` / `!kasil` - (Komutçu Admini yetkisi verir/alır)
+- `!ba` / `!bk` - (Bunnyhop özelliğini açar/kapatır)
+- `!mct` / `!umct` / `!mt` / `!umt` - (Takım mutesini yönetir)
+- `!haksal <isim>` - (CT ve T takımlarını yer değiştirir)
+- `!otores` / `!otores0` - (Otomatik canlanmayı ayarlar)
 
 ---
 
@@ -79,6 +77,7 @@ Duyuru yapmak ve sohbet tabanlı mini oyunlar başlatmak için kullanılır.
 Sistemsel ayarlar ve en üst düzey yetkiler.
 
 - `!reloadconfig` - (Eklenti ayarlarını ve dili yeniler)
+- `!fsay <isim> <msg>` - (Zorunlu say yazdırır)
 
 ---
 

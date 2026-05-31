@@ -104,7 +104,7 @@ public class UtilityService
 
     public void CommandFsay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/ban")) return;
+        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root")) return;
 
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName)) return;
