@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using System.Linq;
 using JailBreak.Helpers;
+using CS2MenuManager.API.Menu;
 
 namespace JailBreak.Services;
 
@@ -26,6 +27,99 @@ public class UtilityService
     public void OnRoundStart()
     {
         _currentCTRevives = _plugin.Config.MaxCTRevives;
+    }
+
+    public void CommandMsay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        string message = info.ArgString.Trim();
+        if (string.IsNullOrEmpty(message)) return;
+
+        foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
+        {
+            // Using a simple CenterHtmlMenu as a "big message" display
+            var menu = new CenterHtmlMenu($"📢 DUYURU", _plugin);
+            menu.AddItem(message, (caller, opt) => { });
+            menu.Display(p, 10); // Display for 10 seconds
+        }
+    }
+
+    public void CommandCsay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        string message = info.ArgString.Trim();
+        if (string.IsNullOrEmpty(message)) return;
+
+        foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
+        {
+            p.PrintToCenterHtml($"<font color='red' size='20'>📢 {message}</font>");
+        }
+    }
+
+    public void CommandHsay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+        string message = info.ArgString.Trim();
+        if (string.IsNullOrEmpty(message)) return;
+
+        // Hint/HUD message
+        foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
+        {
+             p.PrintToCenter(message);
+        }
+    }
+
+    public void CommandRev(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player != null && !_wardenService.HasPermission(player, "@css/ban")) return;
+
+        string target = info.GetArg(1).ToLower();
+        var players = Utilities.GetPlayers().Where(p => p.IsValid).ToList();
+
+        if (target == "@all")
+        {
+            foreach (var p in players) if (!p.PawnIsAlive) p.Respawn();
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}Herkes canlandırıldı."));
+        }
+        else if (target == "@t")
+        {
+            foreach (var p in players.Where(p => p.Team == CsTeam.Terrorist)) if (!p.PawnIsAlive) p.Respawn();
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}T takımı canlandırıldı."));
+        }
+        else if (target == "@ct")
+        {
+            foreach (var p in players.Where(p => p.Team == CsTeam.CounterTerrorist)) if (!p.PawnIsAlive) p.Respawn();
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}CT takımı canlandırıldı."));
+        }
+        else
+        {
+            var p = players.FirstOrDefault(x => x.PlayerName.Contains(target, StringComparison.OrdinalIgnoreCase));
+            if (p != null)
+            {
+                p.Respawn();
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}{p.PlayerName} canlandırıldı."));
+            }
+        }
+    }
+
+    public void CommandFsay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root")) return;
+
+        string targetName = info.GetArg(1);
+        if (string.IsNullOrEmpty(targetName)) return;
+
+        // info.ArgString contains everything after the command.
+        // We need to strip the target name to get the message.
+        string message = info.ArgString.Substring(targetName.Length).Trim();
+
+        var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, System.StringComparison.OrdinalIgnoreCase));
+        if (target != null && !string.IsNullOrEmpty(message))
+        {
+            // This will trigger the Chat hook so we might need to be careful if we are looping, 
+            // but standard CS# ExecuteClientCommand "say" should be fine.
+            target.ExecuteClientCommand($"say {message}");
+        }
     }
 
     public void CommandHpAll(CCSPlayerController? player, CommandInfo info)

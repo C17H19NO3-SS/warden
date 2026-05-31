@@ -195,6 +195,11 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_topkaccm", "Kaç cm sıralamasını göster", _utilityService.CommandTopKacCm);
         AddCommand("css_otores", "Otomatik canlanmayı aç", _utilityService.CommandOtores);
         AddCommand("css_otores0", "Otomatik canlanmayı kapat", _utilityService.CommandOtores0);
+        AddCommand("css_msay", "Ekranda büyük duyuru yapar", _utilityService.CommandMsay);
+        AddCommand("css_csay", "Ekranın ortasında duyuru yapar", _utilityService.CommandCsay);
+        AddCommand("css_hsay", "HUD kısmında duyuru yapar", _utilityService.CommandHsay);
+        AddCommand("css_rev", "Oyuncu canlandırır", _utilityService.CommandRev);
+        AddCommand("css_fsay", "Oyuncuya zorla say yazdırır (Root)", _utilityService.CommandFsay);
 
         // LR Commands
         AddCommand("css_sonakalan", "LR menüsünü aç", _lrService.CommandSonaKalan);
