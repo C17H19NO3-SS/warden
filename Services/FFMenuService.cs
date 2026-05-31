@@ -84,7 +84,7 @@ public class FFMenuService
             return;
         }
 
-        StartFFMenu(time);
+        StartFFMenu(time, player);
     }
 
     public void CommandFFKapat(CCSPlayerController? player, CommandInfo info)
@@ -135,7 +135,90 @@ public class FFMenuService
         Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFOndurApplied)}");
     }
 
-    private void StartFFMenu(int time)
+    private void StartFFMenu(int initialTime, CCSPlayerController player)
+    {
+        _currentFFConfig = new FFConfigState
+        {
+            CountdownTime = initialTime,
+            BunnyEnabled = false
+        };
+
+        foreach (var wp in _plugin.Config.FFPrimaryWeaponList) _currentFFConfig.ActivePrimaries.Add(wp.ItemName);
+        foreach (var wp in _plugin.Config.FFSecondaryWeaponList) _currentFFConfig.ActiveSecondaries.Add(wp.ItemName);
+
+        OpenWardenConfigMenu(player);
+    }
+
+    private void OpenWardenConfigMenu(CCSPlayerController warden)
+    {
+        var menu = new CenterHtmlMenu("⚙️ FF Ayar Menüsü", _plugin);
+
+        menu.AddItem("➡ Birincil Silahlar", (p, o) => OpenWardenPrimaryConfigMenu(p));
+        menu.AddItem("➡ İkincil Silahlar", (p, o) => OpenWardenSecondaryConfigMenu(p));
+        
+        string bunnyStatus = _currentFFConfig.BunnyEnabled ? "AÇIK" : "KAPALI";
+        menu.AddItem($"🔄 Bunny Durumu: {bunnyStatus}", (p, o) => 
+        {
+            _currentFFConfig.BunnyEnabled = !_currentFFConfig.BunnyEnabled;
+            OpenWardenConfigMenu(p);
+        });
+
+        menu.AddItem($"⏳ FF Açılma Süresi: {_currentFFConfig.CountdownTime} Saniye", (p, o) => 
+        {
+            _currentFFConfig.CountdownTime += 10;
+            if (_currentFFConfig.CountdownTime > 50) _currentFFConfig.CountdownTime = 10;
+            OpenWardenConfigMenu(p);
+        });
+
+        menu.AddItem("▶ FF Başlat!", (p, o) => 
+        {
+            StartTWeaponSelectionPhase();
+        });
+
+        menu.Display(warden, 0);
+    }
+
+    private void OpenWardenPrimaryConfigMenu(CCSPlayerController warden)
+    {
+        var menu = new CenterHtmlMenu("Birincil Silah Ayarları", _plugin);
+        foreach (var wp in _plugin.Config.FFPrimaryWeaponList)
+        {
+            bool isActive = _currentFFConfig.ActivePrimaries.Contains(wp.ItemName);
+            string status = isActive ? "[AÇIK]" : "[KAPALI]";
+            menu.AddItem($"{status} {wp.Name}", (p, o) => 
+            {
+                if (isActive) _currentFFConfig.ActivePrimaries.Remove(wp.ItemName);
+                else _currentFFConfig.ActivePrimaries.Add(wp.ItemName);
+                OpenWardenPrimaryConfigMenu(p);
+            });
+        }
+        
+        // To make "Back" work perfectly, create the config menu again:
+        menu.AddItem("⬅ Geri", (p, o) => OpenWardenConfigMenu(p));
+
+        menu.Display(warden, 0);
+    }
+
+    private void OpenWardenSecondaryConfigMenu(CCSPlayerController warden)
+    {
+        var menu = new CenterHtmlMenu("İkincil Silah Ayarları", _plugin);
+        foreach (var wp in _plugin.Config.FFSecondaryWeaponList)
+        {
+            bool isActive = _currentFFConfig.ActiveSecondaries.Contains(wp.ItemName);
+            string status = isActive ? "[AÇIK]" : "[KAPALI]";
+            menu.AddItem($"{status} {wp.Name}", (p, o) => 
+            {
+                if (isActive) _currentFFConfig.ActiveSecondaries.Remove(wp.ItemName);
+                else _currentFFConfig.ActiveSecondaries.Add(wp.ItemName);
+                OpenWardenSecondaryConfigMenu(p);
+            });
+        }
+        menu.AddItem("⬅ Geri", (p, o) => OpenWardenConfigMenu(p));
+
+        menu.Display(warden, 0);
+    }
+
+    private void StartTWeaponSelectionPhase()
     {
     }
 
