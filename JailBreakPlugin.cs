@@ -37,6 +37,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
     private RebelService _rebelService = null!;
     private GameManagerService _gameManagerService = null!;
     private DispatcherService _dispatcherService = null!;
+    private TestService _testService = null!;
     private HudService _hudService = null!;
     private HudManager _hudManager = null!;
 
@@ -124,11 +125,13 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         _iseliService = new IseliService(this, _wardenService);
         _positionService = new PositionService(this, _wardenService, _freezeService);
         _ffMenuService = new FFMenuService(this, _wardenService, _freezeService);
+        _hudService = new HudService(this);
         _utilityService = new UtilityService(this, _wardenService, _hudService);
         _lrService = new LastRequestService(this, _wardenService);
         _rebelService = new RebelService(this);
         _gameManagerService = new GameManagerService(this, _wardenService, _freezeService);
         _dispatcherService = new DispatcherService();
+        _testService = new TestService(_dispatcherService);
         _hudService = new HudService(this);
         _hudManager = new HudManager(this);
 
@@ -150,6 +153,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         RegisterCommand("css_komaday", "Komutçu oylamasına katıl", _voteService.CommandJoinVote);
         RegisterCommand("css_marker", "İşaretleyici menüsünü açar", _markerService.OpenMarkerMenu);
         RegisterCommand("css_reloadconfig", "Config dosyasını yeniden yükle", CommandReloadConfig);
+        RegisterCommand("css_jbtest", "Run JailBreak plugin tests", (p, i) => _testService.RunTests());
 
         // Sustum Commands
         _sustumService.RegisterCommands(this);
@@ -312,9 +316,8 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
 
     private void CommandReloadConfig(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (player != null && !_wardenService.HasPermission(player, "@css/root"))
         {
-            player.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgNoPermission));
             return;
         }
 
