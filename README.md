@@ -1,96 +1,111 @@
-# CS2 JailBreak Komutçu (Warden) Plugini
+# CS2 JailBreak Komutçu (Warden) Plugini - Profesyonel Yönetim Paneli
 
-Counter-Strike 2 sunucuları için **CounterStrikeSharp** altyapısı ile geliştirilmiş, profesyonel ve zengin özelliklere sahip bir JailBreak yönetim eklentisidir. Bu plugin, komutçuların (Warden) rauntları, oyunları ve oyuncu formasyonlarını tamamen görsel (CenterHTML) menüler ve modern bir HUD ile yönetmesini sağlar.
-
----
-
-## 🚀 Öne Çıkan Özellikler
-
-### 👑 Merkezi Komutçu Sistemi
-- **Unified Menu (`!k`):** Tüm komutçu yetkilerini (Kapı açma, Box, Saklambaç, FF, Revive vb.) tek bir görsel menüde toplayan devrimsel kontrol paneli.
-- **Komutçu Oylaması:** Adaylık süreci ve demokratik oylama aşaması (`!komoyla`).
-- **Warden Adminleri:** Komutçuların raundu yönetmesine yardımcı olan, yüksek yetkili asistanlar (`!ka`).
-- **Görsel RGB Efekti:** Aktif komutçu, diğer oyunculardan ayırt edilebilmesi için sürekli renk değiştiren RGB efektine sahiptir.
-
-### 🎮 Yeni Nesil Oyun Modları
-- **Saklambaç (`!saklambac`):** 
-    - CT takımı otomatik olarak spawn noktalarına ışınlanır.
-    - CT'ler 180 derece ters döndürülür, dondurulur ve ekranları karartılır (Blind).
-    - Saklanma süresi sonunda CT'ler çözülür, tüm T takımı otomatik dondurulur.
-- **Boks Modu (`!box`):** 
-    - Tek tıkla süre seçimi (10-60sn) yapılan, basitleştirilmiş boks arenas başlatan mod.
-    - Süre sonunda dost ateşi otomatik kapanır.
-
-### ⚔️ Gelişmiş FF & Silah Seçimi
-- **Görsel Menü:** Artık chat'e yazmak yok! Komutçu, FF ayarlarını (silahlar, bunny hop, süre) tamamen görsel bir menü üzerinden yapar.
-- **Oyuncu Seçimi:** FF başlamadan önce T oyuncuları kendi birincil ve ikincil silahlarını görsel menülerden seçer.
-- **Akıllı HUD:** Seçim aşamasında ekran kirliliğini önlemek için sayaç gizlenir, seçimler bitince FF geri sayımı başlar.
-
-### 🧊 Gelişmiş Dondurma & Hareket Servisi
-- **Merkezi Kontrol:** Mouse hareketine izin veren, fiziksel hareketi engelleyen optimize edilmiş dondurma sistemi.
-- **Otomatik Formasyonlar:** T oyuncularını anında daire (`!daire`) veya sıra (`!diz`) şeklinde hizalama.
+Counter-Strike 2 sunucuları için **CounterStrikeSharp** altyapısı ile geliştirilmiş, Türkiye JailBreak topluluğunun ihtiyaçlarına göre modernize edilmiş en kapsamlı yönetim eklentisidir.
 
 ---
 
-## 🛠️ Komutlar
+## 👑 Merkezi Komutçu Sistemi
 
-### Komutçu & Yönetim
-| Komut | Alternatif | Açıklama |
-| :--- | :--- | :--- |
-| `!k` | `!kommenu` | **Warden Ana Menüsünü** açar (Önerilen) |
-| `!w` | `!warden` | Komutçu ol |
-| `!uw` | `!unwarden` | Komutçuluğu bırak |
-| `!ka <isim>` | - | Komutçu Admini atar |
-| `!kasil` | - | Komutçu Admin yetkisini kaldırır |
+Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm karmaşık komutları tek bir noktada toplar.
 
-### Oyun Modları
-| Komut | Alternatif | Açıklama |
-| :--- | :--- | :--- |
-| `!saklambac <sn>` | `!saklambaç` | Saklambaç modunu başlatır (Default 30sn) |
-| `!box <sn>` | `!b` | Boks modunu başlatır (Default 30sn) |
-| `!ffmenu` | - | Özelleştirilebilir FF menüsünü açar |
-| `!ffkapat` | `!ffk` | FF'i anında sonlandırır |
-| `!ff0` | - | FF'i kapatır ve tüm T'lerin silahlarını siler |
-
-### Duyuru & Broadcast
-| Komut | Yetki | Açıklama |
-| :--- | :--- | :--- |
-| `!msay <mesaj>` | Admin | Ekranın ortasında büyük duyuru kutusu açar |
-| `!csay <mesaj>` | Admin | Ekranın alt-orta kısmında renkli yazı yazar |
-| `!hsay <mesaj>` | Admin | HUD (Hint) kısmında duyuru yapar |
-| `!fsay <isim> <msg>`| Root | Belirtilen oyuncunun ağzından chat'e yazı yazar |
-
-### Yardımcı Komutlar
-| Komut | Açıklama |
-| :--- | :--- |
-| `!rev <hedef>` | Belirtilen hedefi (`@t`, `@ct`, `@all` veya isim) canlandırır |
-| `!af` | Herkesi canlandırır ve canlarını 100 yapar |
-| `!iseli <sn>` | Geri sayımlı hücre kapısı açma |
-| `!iq` | Tüm kapıları anında açar |
-| `!td` / `!tdb` | T takımını dondurur / çözer |
-| `!ss` / `!strip` | T takımının tüm silahlarını alır |
-| `!marker <boyut>` | Komutçu işaretleyici boyutunu ayarla |
+-   **👑 Komutçu Ana Menüsü (`!k` / `!kommenu`):** Tüm raunt yönetimi, oyun modları ve ayarlar bu görsel panelde birleşir.
+-   **🌈 RGB Warden:** Aktif komutçu sürekli renk değiştiren özel bir efekte sahiptir.
+-   **📊 İstatistik Takibi:** En çok komutçu olanlar ve görev süreleri otomatik kaydedilir (`!topkomutcu`).
 
 ---
 
-## ⚙️ Yapılandırma & Yetkiler
+## 🛠️ Tüm Komutlar ve Detaylı Açıklamalar
 
-- **Dosya Yolları:**
-    - Ana Ayarlar: `configs/plugins/JailBreak/JailBreak.json`
-    - Dil & Mesajlar: `configs/plugins/JailBreak/lang.json`
-- **Yetki Sistemi:** 
-    - `@css/root`: `!fsay` ve tüm yönetim komutları.
-    - `@css/ban`: Kritik denge komutları (`!rev`, `!hpa`, `!haksal`).
-    - `@jailbreak/ka`: Komutçunun sahip olduğu tüm oyun içi yetkiler.
+### 1. Komutçu ve Yönetim Komutları
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!k` | `!kommenu` | Komutçu/Admin | **Master Panel:** Tüm yetkilere görsel bir menüden erişmenizi sağlar. |
+| `!w` | `!warden` | Herkes (CT) | Komutçu koltuğu boşsa sizi komutçu yapar. |
+| `!uw` | `!unwarden` | Komutçu | Komutçuluğu bırakmanızı sağlar. |
+| `!ka <isim>` | - | Root/Admin | Seçilen oyuncuyu "Komutçu Admini" yapar. Komutçu ile aynı yetkilere sahip olur. |
+| `!kasil <isim>` | - | Root/Admin | Komutçu Admini yetkisini geri alır. |
+| `!komkalan` | - | Herkes | Mevcut komutçunun görev süresinin bitmesine ne kadar kaldığını gösterir. |
+| `!topkomutcu` | - | Herkes | Sunucu genelinde en çok ve en uzun süre komutçuluk yapanların listesini açar. |
+
+### 2. Oyun Modları (Game Modes)
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!saklambac <sn>`| `!saklambaç`| Komutçu/Admin | **Saklambaç:** CT'ler spawn'a ışınlanır, ters döndürülür, dondurulur ve ekranları karartılır. Süre sonunda CT'ler çözülür, T'ler otomatik dondurulur. |
+| `!box <sn>` | `!b` | Komutçu/Admin | **Boks Modu:** Hızlıca dost ateşini (FF) açar. Belirlenen süre sonunda FF otomatik kapanır. |
+| `!ffdondur <sn>`| `!ffondur` | Komutçu/Admin | FF'i anında açar ve geri sayım başlatır. Süre bittiğinde FF kapanır ve tüm T takımı dondurulur. |
+| `!dsustum` | - | Komutçu/Admin | Chat'e belirtilen kelimeyi ilk yazan oyuncuya **Deagle** (tek mermi) ödülü verir. |
+| `!tsustum` | - | Komutçu/Admin | Kazanan Teröristi anında **Counter-Terrorist** takımına transfer eder. |
+| `!olusustum` | - | Komutçu/Admin | Ölü olan ve kelimeyi ilk yazan oyuncuyu **yeniden canlandırır**. |
+
+### 3. Dost Ateşi (FF) ve Silah Yönetimi
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!ffmenu` | - | Komutçu/Admin | **Görsel FF Ayarı:** Birincil/İkincil silahları seçebileceğiniz, Bunny Hop durumunu ayarlayabileceğiniz kontrol panelini açar. |
+| `!ffkapat` | `!ffk` | Komutçu/Admin | Aktif olan tüm FF süreçlerini ve dost ateşini anında kapatır. |
+| `!ff0` | - | Komutçu/Admin | FF'i kapatır ve tüm Teröristlerin silahlarını silerek sadece bıçak bırakır. |
+| `!ss` | `!strip` | Komutçu/Admin | T takımının tüm silahlarını anında temizler. |
+
+### 4. Dondurma ve Formasyonlar
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!td` | `!stop` | Komutçu/Admin | Tüm T takımını oldukları yerde dondurur (Hareket kısıtlanır, bakış serbest). |
+| `!tdb` | `!coz` | Komutçu/Admin | Donmuş olan oyuncuların hareket yeteneğini geri verir. |
+| `!fz <sn>` | - | Komutçu/Admin | Belirlenen süre sonunda (HUD sayacı ile) herkesi otomatik dondurur. |
+| `!fz0` | - | Komutçu/Admin | Aktif olan `!fz` geri sayımını iptal eder. |
+| `!daire <gen>` | - | Komutçu/Admin | T takımını komutçunun baktığı noktada daire şeklinde hizalar. |
+| `!diz <mes>` | - | Komutçu/Admin | T takımını komutçunun önünde düz bir sıra halinde dizer. |
+
+### 5. Işınlanma ve Can Yönetimi
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!rev <hedef>` | `!kaldır` | Admin (@ban) | Belirlenen hedefi (`@t`, `@ct`, `@all` veya isim) anında canlandırır. |
+| `!af` | - | Admin (@ban) | Ölü herkesi canlandırır ve tüm yaşayanların canını 100 yapar. |
+| `!hpa` | - | Admin (@ban) | Yaşayan tüm oyuncuların canını 100'e sabitler. |
+| `!hpt` / `!hpct` | - | Komutçu/Admin | Sadece belirlenen takımın canını 100 yapar. |
+| `!gelt` / `!gelct` | - | Komutçu/Admin | Belirlenen takımın tamamını komutçunun yanına ışınlar. |
+| `!gelall` | - | Admin (@ban) | Sunucudaki herkesi komutçunun yanına ışınlar. |
+| `!git <isim>` | - | Admin (@kick) | Komutçuyu belirlenen oyuncunun yanına ışınlar. |
+| `!haksal <isim>`| - | Admin (@ban) | Bir CT ile bir T'nin yerini (takımını) anında değiştirir. |
+
+### 6. Duyuru ve Broadcast Komutları
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!msay <mesaj>` | - | Admin (@ban) | Ekranın ortasında büyük bir duyuru kutusu açar (10 saniye kalır). |
+| `!csay <mesaj>` | - | Admin (@ban) | Ekranın alt-orta (Center) kısmında kırmızı renkli büyük duyuru yapar. |
+| `!hsay <mesaj>` | - | Admin (@ban) | HUD (Hint) bölgesinde (ekranın en altı) mesaj gösterir. |
+| `!fsay <isim> <msg>`| - | Root | **Fake Say:** Belirlenen oyuncunun ismini kullanarak chat'e mesaj yazdırır. |
+
+### 7. Genel ve Diğer Komutlar
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!iseli <sn>` | - | Komutçu/Admin | Geri sayım başlatır ve süre sonunda tüm hücre kapılarını açar. |
+| `!iq` | - | Komutçu/Admin | Haritadaki tüm kapıları (hücre, kapı, kırılabilir cam) anında açar. |
+| `!marker <boy>` | - | Komutçu/Admin | Komutçu işaretleyicisinin (Mouse3) boyutunu ayarlar. |
+| `!ba` / `!bk` | - | Admin (@ban) | Sunucu genelinde Bunny Hop özelliğini açar veya kapatır. |
+| `!mct` / `!umct` | - | Admin (@ban) | CT takımını toplu susturur veya mutesini açar. |
+| `!mt` / `!umt` | - | Admin (@ban) | T takımını toplu susturur veya mutesini açar. |
+| `!kaccm` | - | Herkes | Eğlence amaçlı uzunluk ölçümü yapar ve en yüksek skoru kaydeder. |
+| `!topkaccm` | - | Herkes | Sunucunun en yüksek `kaccm` skorlarını listeler. |
+| `!isyancilar` | - | Herkes | Mevcut rauntta gardiyanlara saldıran isyancıları listeler. |
+| `!sonakalan` | - | Herkes (Son T)| Sona kalan mahkumun LR (Son İstek) menüsünü açmasını sağlar. |
+| `!reloadconfig` | - | Root | Eklenti ayarlarını ve dil dosyasını diskten yeniden yükler. |
 
 ---
 
-## 🎨 HUD Tasarım Standartları
-Tüm görsel geri bildirimler profesyonel bir JailBreak deneyimi için standardize edilmiştir:
-- 🟡 **Altın (Gold):** Başlıklar.
-- 🔴 **Kırmızı (Red):** Zamanlayıcılar ve Kritik uyarılar.
-- 🟢 **Yeşil (Green):** Başarı ve Aktif durumlar.
-- 🔵 **Cyan:** Sistem bilgilendirmeleri.
+## ⚙️ Teknik Detaylar ve Kurulum
+
+### Yetki Sistemi (Default Permissions)
+Eklenti, Türkiye hiyerarşisine uygun olarak yapılandırılmıştır:
+-   **@css/root:** Tüm komutlar ve `!fsay`, `!reloadconfig`.
+-   **@css/ban:** Kritik yönetim komutları (`!rev`, `!af`, `!haksal`, `!msay`).
+-   **@jailbreak/ka:** Aktif Komutçu ve Komutçu Adminlerinin sahip olduğu tüm oyun içi yetkiler.
+
+### HUD Tasarım Standartları
+Tüm görsel geri bildirimler (CenterHTML) şu renk şemasına sadıktır:
+-   🟡 **Gold:** Başlıklar.
+-   🔴 **Red:** Sayaçlar ve kritik uyarılar.
+-   🟢 **Green:** Başarı mesajları ve ödüller.
+-   🔵 **Cyan:** Sistem bilgilendirmeleri.
 
 ---
 
