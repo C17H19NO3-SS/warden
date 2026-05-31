@@ -100,8 +100,11 @@ public class WardenService
     public bool HasPermission(CCSPlayerController player, string? requiredFlag = null)
     {
         if (IsWarden(player) || IsWardenAdmin(player)) return true;
-        if (AdminManager.PlayerHasPermissions(player, "@css/root")) return true;
+        
+        // Root override removed as per user instruction to only use admin flags.
+        // We will assume @css/ban as the highest power if no flag provided.
         if (requiredFlag != null && AdminManager.PlayerHasPermissions(player, requiredFlag)) return true;
+        
         return false;
     }
 

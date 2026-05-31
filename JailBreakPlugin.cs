@@ -192,13 +192,11 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_mct", "CT takımını mutele", _utilityService.CommandMuteCT);
         AddCommand("css_mt", "T takımını mutele", _utilityService.CommandMuteT);
         AddCommand("css_topkaccm", "Kaç cm sıralamasını göster", _utilityService.CommandTopKacCm);
-        AddCommand("css_otores", "Otomatik canlanmayı aç", _utilityService.CommandOtores);
-        AddCommand("css_otores0", "Otomatik canlanmayı kapat", _utilityService.CommandOtores0);
         AddCommand("css_msay", "Ekranda büyük duyuru yapar", _utilityService.CommandMsay);
         AddCommand("css_csay", "Ekranın ortasında duyuru yapar", _utilityService.CommandCsay);
         AddCommand("css_hsay", "HUD kısmında duyuru yapar", _utilityService.CommandHsay);
         AddCommand("css_rev", "Oyuncu canlandırır", _utilityService.CommandRev);
-        AddCommand("css_fsay", "Oyuncuya zorla say yazdırır (Root)", _utilityService.CommandFsay);
+        AddCommand("css_fsay", "Oyuncuya zorla say yazdırır", _utilityService.CommandFsay);
 
         // LR Commands
         AddCommand("css_sonakalan", "LR menüsünü aç", _lrService.CommandSonaKalan);
@@ -211,7 +209,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_box", "Boks modunu başlatır", (p, i) => { if (p != null) _gameManagerService.OpenBoxMenu(p); });
         AddCommand("css_b", "Boks modunu başlatır", (p, i) => { if (p != null) _gameManagerService.OpenBoxMenu(p); });
         AddCommand("css_saklambac", "Saklambaç modunu başlatır", (p, i) => { 
-            if (p == null || !_wardenService.HasPermission(p)) return;
+            if (p == null || !_wardenService.HasPermission(p, "@css/changemap")) return;
             string arg = i.GetArg(1);
             int time = int.TryParse(arg, out int t) ? t : 30;
             _gameManagerService.StartSaklambac(time);
