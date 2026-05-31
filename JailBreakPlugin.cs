@@ -14,7 +14,7 @@ using JailBreak.Helpers;
 
 namespace JailBreak;
 
-public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
+public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommandDispatcher
 {
     public override string ModuleName => "JailBreak Warden";
     public override string ModuleVersion => "1.0.2";
@@ -141,7 +141,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         HookUserMessage(118, OnUserMessageChat, HookMode.Pre);
         AddCommandListener("jointeam", OnJoinTeam);
 
-        _wardenService.RegisterCommands(_dispatcherService);
+        _wardenService.RegisterCommands(this);
         RegisterCommand("css_komoyla", "Komutçu oylamasını başlat", _voteService.CommandStartVote);
         RegisterCommand("css_komdk", "Komutçuyu atma oylamasını başlat", _voteService.CommandStartKickVote);
         RegisterCommand("css_komaday", "Komutçu oylamasına katıl", _voteService.CommandJoinVote);
@@ -149,7 +149,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         RegisterCommand("css_reloadconfig", "Config dosyasını yeniden yükle", CommandReloadConfig);
 
         // Sustum Commands
-        _sustumService.RegisterCommands(_dispatcherService);
+        _sustumService.RegisterCommands(this);
 
         // Freeze Commands
         RegisterCommand("css_td", "T takımını dondur", _freezeService.CommandFreeze);
@@ -166,9 +166,9 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         RegisterCommand("css_diz", "T takımını yan yana diz", _positionService.CommandDiz);
 
         // FF Menu Commands
-        _ffMenuService.RegisterCommands(_dispatcherService);
+        _ffMenuService.RegisterCommands(this);
 
-        _utilityService.RegisterCommands(_dispatcherService);
+        _utilityService.RegisterCommands(this);
 
         // LR Commands
         RegisterCommand("css_sonakalan", "LR menüsünü aç", _lrService.CommandSonaKalan);
@@ -211,6 +211,11 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     {
         _dispatcherService.RegisterCommand(command, description, callback);
         AddCommand(command, description, _dispatcherService.ExecuteCommand);
+    }
+
+    public void ExecuteCommand(CCSPlayerController? player, CommandInfo info)
+    {
+        _dispatcherService.ExecuteCommand(player, info);
     }
 
     private HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
