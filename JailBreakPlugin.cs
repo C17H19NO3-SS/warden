@@ -170,8 +170,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         AddCommand("css_ffk", "FF'i kapat", _ffMenuService.CommandFFKapat);
         AddCommand("css_ff0", "FF'i kapat ve silahları al", _ffMenuService.CommandFF0);
         AddCommand("css_ffondur", "FF aç ve sonunda dondur", _ffMenuService.CommandFFOndur);
-
-        // Utility Commands
+        AddCommand("css_ffdondur", "FF aç ve sonunda dondur", _ffMenuService.CommandFFOndur);
         AddCommand("css_hpa", "Herkesin canını 100 yap", _utilityService.CommandHpAll);
         AddCommand("css_hpt", "T takımının canını 100 yap", _utilityService.CommandHpT);
         AddCommand("css_hpct", "CT takımının canını 100 yap", _utilityService.CommandHpCT);

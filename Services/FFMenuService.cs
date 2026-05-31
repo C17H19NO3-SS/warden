@@ -120,13 +120,14 @@ public class FFMenuService
         _ffRemainingTime = time;
         _isCountingToStart = false;
         _isSelectionPhaseActive = false;
+        EnableFF(); // Ensure FF is active during the countdown
 
         _tickTimer?.Kill();
         _tickTimer = _plugin.AddTimer(1.0f, CountdownTick, TimerFlags.REPEAT);
 
         UpdateHUD(); // Show HUD immediately
 
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFEnded));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFOndurApplied));
     }
 
     private void StartFFMenu(int initialTime, CCSPlayerController player)
