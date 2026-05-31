@@ -319,7 +319,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
 
     private void CommandReloadConfig(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/ban"))
+        if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root"))
         {
             player.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgNoPermission));
             return;

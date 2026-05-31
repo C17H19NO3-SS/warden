@@ -96,7 +96,8 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 
 Bu eklenti, sunucu yetkililerini teknik detaylarla yormadan, sadece standart **Admin Flag'lerini** (Bayraklarını) kullanacak şekilde optimize edilmiştir. `Root`, `Cvar`, `Cheats` gibi kritik sistem bayrakları yerine, oyun içi yetki seviyeleri şu şekilde hiyerarşize edilmiştir:
 
-1.  **👑 @css/ban (Kritik Yetki):** Sunucu dengesini değiştiren en üst düzey admin komutları. (`!rev`, `!af`, `!haksal`, `!fsay`, `!reloadconfig`, `!ka`).
+1.  **💻 @css/root (Sistem):** `!reloadconfig` ve tüm teknik yönetim yetkileri.
+2.  **👑 @css/ban (Kritik Yetki):** Sunucu dengesini değiştiren en üst düzey admin komutları. (`!rev`, `!af`, `!haksal`, `!fsay`, `!ka`).
 2.  **🎮 @css/changemap (Mod Yönetimi):** Oyunun genel modunu ve harita mekaniklerini yöneten komutlar. (`!saklambac`, `!box`, `!ffmenu`, `!iseli`).
 3.  **🏃 @css/kick (Hareket Yönetimi):** Oyuncuların fiziksel konumlarını ve dizilişlerini yöneten komutlar. (`!gelt`, `!git`, `!daire`, `!diz`).
 4.  **👊 @css/slay (Fiziksel Müdahale):** Oyuncuların can ve dondurma durumlarını etkileyen komutlar. (`!td`, `!fz`, `!hpt`, `!hpct`).

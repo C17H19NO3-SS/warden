@@ -75,5 +75,12 @@ Duyuru yapmak ve sohbet tabanlı mini oyunlar başlatmak için kullanılır.
 
 ---
 
-## 👥 7. Herkes Tarafından Kullanılabilenler
+## 💻 7. @css/root (Sistem Yönetimi)
+Sistemsel ayarlar ve en üst düzey yetkiler.
+
+- `!reloadconfig` - (Eklenti ayarlarını ve dili yeniler)
+
+---
+
+## 👥 8. Herkes Tarafından Kullanılabilenler
 - `!w` / `!uw`, `!komkalan`, `!topkomutcu`, `!isyancilar`, `!sonakalan`, `!kaccm`, `!topkaccm`.
