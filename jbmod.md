@@ -1,91 +1,85 @@
 # Jailbreak Yetkilendirme ve Komut Sistemi
 
-Sunucunuzdaki `admin_groups.json` yapılandırmasına göre oluşturulmuş güncel yetkilendirme modeli aşağıda listelenmiştir. Sistemdeki komutlar (`config`, `password`, `cheats`, `root`, `generic`, `reservation` haricindeki) kullanılabilir admin yetki bayraklarına (flag'lere) dengeli ve rollerin hiyerarşisine uygun şekilde dağıtılmıştır.
+Sunucunuzdaki `admin_groups.json` yapılandırmasına göre optimize edilmiş, modern hiyerarşik yetkilendirme modeli. Tüm komutlar, rollerin sorumluluklarına ve oyun dengesine göre dağıtılmıştır.
 
-1. **Oyun İçi Aktif Komutçu ve Komutçu Adminler:** O an oyunda komutçu (`!w`) olan kişi ve Komutçu Adminliği (`@jailbreak/ka`) bulunan yetkililer, admin yetkisine bakılmaksızın **tüm Jailbreak ve Moderasyon** komutlarını kullanabilir.
-2. **Adminler (Komutçu veya Komutçu Admin Olmayanlar):** Bu iki rolde olmayan yetkililer, sahip oldukları yetki gruplarına (flag'lere) göre sadece aşağıda belirtilen komutları kullanabilir.
-
----
-
-## 1. Oyun İçi Aktif Komutçu ve Komutçu Adminler
-Oyunda `!w` yazıp **Komutçu** olan oyuncu ve **Komutçu Admini** (`@jailbreak/ka`) yetkisine sahip yetkililer, sistemdeki tüm moderasyon ve jailbreak komutlarına sınırsız erişime sahiptir.
-
-**Kullanabileceği Komutlar:**
-* Aşağıdaki tüm komutlar (Tam liste)
+1. **Oyun İçi Aktif Komutçu ve Komutçu Adminler:** O an oyunda komutçu (`!w`) olan kişi ve Komutçu Adminliği (`@jailbreak/ka`) bulunan yetkililer, admin yetkisine bakılmaksızın **tüm** oyun içi komutları kullanabilir.
+2. **Adminler:** Aktif rolde olmayan yetkililer, sahip oldukları flag'lere göre aşağıda belirtilen sınırlı komutlara erişebilir.
 
 ---
 
-## 2. Sunucu Çapında Etkili Güçlü Komutlar (Ban Yetkisi)
-Tüm sunucuyu aynı anda etkileyen ve oyunun dengesini değiştirebilecek komutlardır.
+## 1. Merkezi Kontrol ve Ana Menü
+Tüm yetkililerin hızlı erişim noktasıdır.
+
+- `!k` / `!kommenu` - **Warden Ana Menüsünü** açar. (İçerisinde kapı açma, Box, Saklambaç, FF ve ayarlar bulunur).
+
+---
+
+## 2. Sunucu Çapında Etkili Komutlar (Ban Yetkisi)
+Oyunun genel akışını ve dengesini değiştirebilecek kritik komutlardır.
 
 **Kullanılabilen Komutlar:**
+- `!rev <hedef>` [`@css/ban`] - (Belirtilen oyuncuyu veya takımı canlandırır)
 - `!hpa` [`@css/ban`] - (Tüm oyuncuların canını 100 yapar)
 - `!gelall` [`@css/ban`] - (Tüm oyuncuları yanına çeker)
 - `!haksal` [`@css/ban`] - (CT ve T takımlarını yer değiştirir)
 
 ---
 
-## 3. Oyun Modu ve Harita İçi Sistemler (Changemap Yetkisi)
-FF (Dost ateşi) sistemi ve hücre kapıları gibi oyunun genel modunu ve harita unsurlarını yöneten komutlar.
+## 3. Oyun Modları ve Harita Yönetimi (Changemap Yetkisi)
+Saklambaç, Box ve FF gibi harita çapındaki aktiviteleri yönetir.
 
 **Kullanılabilen Komutlar:**
-- `!ff0` [`@css/changemap`] - (FF'i kapatır ve T'lerin silahlarını alır)
-- `!ffondur` [`@css/changemap`] - (Süreli FF açar ve bitiminde herkesi dondurur)
-- `!ffmenu` / `!ffkapat` [`@css/changemap`] - (Sıradan FF menüsünü açar veya kapatır)
-- `!iseli` / `!iq` [`@css/changemap`] - (Hücre kapılarını süreli veya anında açar)
+- `!saklambac <sn>` [`@css/changemap`] - (Saklambaç modunu başlatır)
+- `!box <sn>` [`@css/changemap`] - (Boks modunu başlatır)
+- `!ffmenu` [`@css/changemap`] - (Özelleştirilebilir FF menüsünü açar)
+- `!ffkapat` [`@css/changemap`] - (FF'i anında durdurur)
+- `!iseli` / `!iq` [`@css/changemap`] - (Hücre kapılarını açar)
 
 ---
 
-## 4. Takımsal Çekme ve Diziliş Yönetimi (Kick Yetkisi)
-Oyuncuların konumlarını değiştirmek ve onları hizalamak için kullanılan komutlar.
+## 4. Takımsal Yönetim ve Diziliş (Kick Yetkisi)
+Oyuncuları hizalamak ve konumlarını değiştirmek için kullanılır.
 
 **Kullanılabilen Komutlar:**
-- `!gelt` [`@css/kick`] - (Tüm T takımını yanına çeker)
-- `!gelct` [`@css/kick`] - (Tüm CT takımını yanına çeker)
-- `!git` [`@css/kick`] - (Belirtilen oyuncunun yanına ışınlanır)
-- `!daire` [`@css/kick`] - (T takımını etrafında daire şeklinde dizer)
-- `!diz` [`@css/kick`] - (T takımını önünde yan yana dizer)
+- `!gelt` / `!gelct` [`@css/kick`] - (Belirli bir takımı yanına çeker)
+- `!git <isim>` [`@css/kick`] - (Oyuncunun yanına ışınlanır)
+- `!daire` / `!diz` [`@css/kick`] - (T'leri formasyona dizer)
 
 ---
 
 ## 5. Can, Dondurma ve İnfaz (Slay Yetkisi)
-Oyunculara bireysel veya takımsal olarak fiziksel müdahalede bulunan komutlar.
+Oyunculara bireysel veya takımsal fiziksel müdahale komutları.
 
 **Kullanılabilen Komutlar:**
-- `!af` [`@css/slay`] - (Ölü bir oyuncuyu canlandırır ve canını 100 yapar)
-- `!hpt` [`@css/slay`] - (Sadece T takımının canını 100 yapar)
-- `!hpct` [`@css/slay`] - (Sadece CT takımının canını 100 yapar)
-- `!td` [`@css/slay`] - (T takımını dondurur)
-- `!tdb` [`@css/slay`] - (T takımının donmasını çözer)
-- `!fz` / `!fz0` [`@css/slay`] - (Gecikmeli dondurma başlatır / sıfırlar)
-- `!sonsec` [`@css/slay`] - (Sona kalan T dışındakileri öldürür ve LR menüsü açar)
+- `!af` [`@css/slay`] - (Herkesi canlandırır ve canlarını 100 yapar)
+- `!td` / `!tdb` [`@css/slay`] - (T takımını dondurur / çözer)
+- `!fz` / `!fz0` [`@css/slay`] - (HUD sayaçlı dondurma başlatır / iptal eder)
+- `!sonsec` [`@css/slay`] - (Sona kalan T hariç öldürür ve LR açar)
 
 ---
 
-## 6. Mini Oyunlar ve Sohbet Araçları (Chat Yetkisi)
-Sohbet üzerinden oynanan sessizlik oyunları ve işaretleyici boyutunu ayarlama gibi işlevler.
+## 6. Duyuru ve Broadcast Araçları
+Ekranda görsel bilgilendirme yapmak için kullanılır.
 
 **Kullanılabilen Komutlar:**
-- `!dsustum` / `!tsustum` / `!olusustum` [`@css/chat`] - (Sustum mini oyunlarını başlatır)
+- `!msay <mesaj>` [`@css/chat`] - (Ekranın ortasında büyük duyuru açar)
+- `!csay <mesaj>` [`@css/chat`] - (Merkezi HTML duyuru yapar)
+- `!hsay <mesaj>` [`@css/chat`] - (HUD/Hint mesajı gönderir)
 - `!marker` [`@css/chat`] - (İşaretleyici boyutunu ayarlar)
 
 ---
 
-## 7. Oylama ve Bilgi (Vote ve Herkes)
-Komutçu oylamaları, isyancı takibi ve sona kalan oyuncu işlemleri.
+## 7. Üst Düzey Yönetim (Root ve Cvar)
+Sistemsel ayarlar ve özel yetkiler.
 
-**Kullanılabilen Komutlar:**
-- `!komoyla` [`@css/vote` veya Herkes] - (Komutçu oylamasını başlatır)
-- `!komdk` [`@css/vote` veya Herkes] - (Mevcut komutçuyu atmak için oylama başlatır)
-- `!komaday` [Herkes] - (Komutçu oylamasına katılır)
-- `!isyancilar` [Herkes] - (O el isyan eden oyuncuların listesini gösterir)
-- `!sonakalan` [Herkes] - (Sona kalan oyuncunun LR menüsünü açmasını sağlar)
+- `!fsay <isim> <msg>` [`@css/root`] - (Oyuncuyu taklit ederek chat'e yazar)
+- `!ka` / `!kasil` [`@css/cvar`] - (Komutçu Admini yetkisi verir/alır)
+- `!reloadconfig` [`@css/root`] - (Eklenti ayarlarını ve dili yeniler)
 
 ---
 
-## 8. Komutçu Admin Yönetimi (Cvar Yetkisi)
-Jailbreak sistemindeki komutçu yöneticilerini atamak/silmek içindir. `admin_groups.json` dosyasındaki roller incelendiğinde `@css/cvar` yetkisi sadece `#Yönetim` ve daha üst gruplarda bulunduğu için hiyerarşik olarak en uygun olanıdır.
-
-**Kullanılabilen Komutlar:**
-- `!ka` [`@jailbreak/ka` veya `@css/cvar`] - (Seçilen oyuncuya Komutçu Admini verir)
-- `!kasil` [`@jailbreak/ka` veya `@css/cvar`] - (Seçilen oyuncudan Komutçu Admini alır)
+## 8. Herkes Tarafından Kullanılabilen Bilgi Komutları
+- `!komoyla` - (Komutçu oylaması başlatır)
+- `!komaday` - (Oylamaya katılır)
+- `!isyancilar` - (İsyan edenleri listeler)
+- `!sonakalan` - (Sona kalan oyuncu için LR menüsü)
