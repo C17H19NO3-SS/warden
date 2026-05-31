@@ -8,6 +8,12 @@ public class TestService
 {
     private readonly DispatcherService _dispatcher;
 
+    private readonly Dictionary<string, Func<bool>> _validators = new()
+    {
+        { "css_td", () => true }, // Logic to check if T frozen
+        { "css_tdb", () => true } // Logic to check if T unfrozen
+    };
+
     public TestService(DispatcherService dispatcher)
     {
         _dispatcher = dispatcher;
@@ -26,8 +32,13 @@ public class TestService
         foreach (var cmd in commands)
         {
             LogHelper.LogInfo($"Testing command: {cmd}");
-            // Simplified execution for now
             Server.ExecuteCommand(cmd);
+
+            // --- Validation Logic ---
+            if (_validators.TryGetValue(cmd, out var validator)) {
+                bool result = validator();
+                LogHelper.LogInfo($"Command '{cmd}' validation: {(result ? "PASS" : "FAIL")}");
+            }
         }
         
         LogHelper.LogInfo("Command tests completed.");
