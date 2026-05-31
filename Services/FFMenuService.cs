@@ -220,11 +220,124 @@ public class FFMenuService
 
     private void StartTWeaponSelectionPhase()
     {
+        _isSelectionPhaseActive = true;
+        _selectionTimeRemaining = 15; // 15 seconds to choose
+        _playerSelections.Clear();
+
+        var ts = Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive).ToList();
+        foreach (var t in ts)
+        {
+            _playerSelections[t.SteamID] = new PlayerFFSelection();
+            OpenTPrimarySelectionMenu(t);
+        }
+
+        _tickTimer?.Kill();
+        _tickTimer = _plugin.AddTimer(1.0f, SelectionTick, TimerFlags.REPEAT);
+    }
+
+    private void OpenTPrimarySelectionMenu(CCSPlayerController player)
+    {
+        if (!_isSelectionPhaseActive) return;
+        var menu = new CenterHtmlMenu("Birincil Silah Seç", _plugin);
+        
+        foreach (var wp in _plugin.Config.FFPrimaryWeaponList)
+        {
+            if (_currentFFConfig.ActivePrimaries.Contains(wp.ItemName))
+            {
+                menu.AddItem(wp.Name, (p, o) => 
+                {
+                    if (_playerSelections.TryGetValue(p.SteamID, out var sel))
+                    {
+                        sel.PrimaryItem = wp.ItemName;
+                        sel.PrimarySelected = true;
+                    }
+                    OpenTSecondarySelectionMenu(p);
+                });
+            }
+        }
+        menu.Display(player, 0);
+    }
+
+    private void OpenTSecondarySelectionMenu(CCSPlayerController player)
+    {
+        if (!_isSelectionPhaseActive) return;
+        var menu = new CenterHtmlMenu("İkincil Silah Seç", _plugin);
+        
+        foreach (var wp in _plugin.Config.FFSecondaryWeaponList)
+        {
+            if (_currentFFConfig.ActiveSecondaries.Contains(wp.ItemName))
+            {
+                menu.AddItem(wp.Name, (p, o) => 
+                {
+                    if (_playerSelections.TryGetValue(p.SteamID, out var sel))
+                    {
+                        sel.SecondaryItem = wp.ItemName;
+                        sel.SecondarySelected = true;
+                    }
+                    // Close menu by displaying an empty/dummy menu or letting it expire
+                    var emptyMenu = new CenterHtmlMenu("Seçim Bekleniyor...", _plugin);
+                    emptyMenu.Display(player, 0);
+                    CheckAllSelectionsCompleted();
+                });
+            }
+        }
+        menu.Display(player, 0);
     }
 
     private void Tick()
     {
     }
+
+    private void CheckAllSelectionsCompleted()
+    {
+        var ts = Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive).ToList();
+        bool allDone = true;
+        foreach (var t in ts)
+        {
+            if (_playerSelections.TryGetValue(t.SteamID, out var sel))
+            {
+                if (!sel.PrimarySelected || !sel.SecondarySelected) allDone = false;
+            }
+            else { allDone = false; }
+        }
+
+        if (allDone && _isSelectionPhaseActive)
+        {
+            FinalizeSelectionPhase();
+        }
+    }
+
+    private void SelectionTick()
+    {
+        if (!_isSelectionPhaseActive) return;
+
+        _selectionTimeRemaining--;
+        if (_selectionTimeRemaining <= 0)
+        {
+            FinalizeSelectionPhase();
+        }
+    }
+
+    private void FinalizeSelectionPhase()
+    {
+        _isSelectionPhaseActive = false;
+        _tickTimer?.Kill();
+        
+        GiveWeaponsToTs();
+
+        if (_currentFFConfig.BunnyEnabled)
+        {
+            Server.ExecuteCommand("sv_autobunnyhopping 1");
+            Server.ExecuteCommand("sv_enablebunnyhopping 1");
+        }
+
+        // Start final HUD countdown
+        _isCountingToStart = true;
+        _ffRemainingTime = _currentFFConfig.CountdownTime;
+        _tickTimer = _plugin.AddTimer(1.0f, CountdownTick, TimerFlags.REPEAT);
+    }
+    
+    private void CountdownTick() { } // Dummy method to ensure it compiles, will be replaced in Task 5
 
     public void OnTick()
     {
@@ -283,6 +396,20 @@ public class FFMenuService
 
     private void GiveWeaponsToTs()
     {
+        foreach (var player in Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive))
+        {
+            player.RemoveWeapons();
+            player.GiveNamedItem("weapon_knife");
+
+            if (_playerSelections.TryGetValue(player.SteamID, out var sel))
+            {
+                if (sel.PrimarySelected && sel.PrimaryItem != "none" && !string.IsNullOrEmpty(sel.PrimaryItem))
+                    player.GiveNamedItem(sel.PrimaryItem);
+
+                if (sel.SecondarySelected && sel.SecondaryItem != "none" && !string.IsNullOrEmpty(sel.SecondaryItem))
+                    player.GiveNamedItem(sel.SecondaryItem);
+            }
+        }
     }
 
     private void StripTWeapons()
