@@ -147,4 +147,3 @@ Eklenti, komutların oyun içi etkisine göre şu hiyerarşide yapılandırılm�
 ## 📜 Krediler
 CS2 JailBreak topluluğu için ❤️ ile geliştirildi.
 **CounterStrikeSharp** ve **CS2MenuManager** tarafından desteklenmektedir.
-StrikeSharp** ve **CS2MenuManager** tarafından desteklenmektedir.
