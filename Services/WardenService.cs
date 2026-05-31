@@ -49,7 +49,7 @@ public class WardenService
         dispatcher.RegisterCommand("css_uw", "Komutçuluktan çık", CommandUnwarden);
         dispatcher.RegisterCommand("css_komkalan", "Komutçunun kalan süresini gör", CommandKomKalan);
         dispatcher.RegisterCommand("css_topkomutcu", "En çok komutçu olanları gör", CommandTopKomutcu);
-        dispatcher.RegisterCommand("css_q", "Komutçu koruması (God, MuteT, HP100)", CommandQ);
+        dispatcher.RegisterCommand("css_q", "Komutçu koruması (God, MuteT)", CommandQ);
         dispatcher.RegisterCommand("css_qq", "Komutçu korumasını kaldır", CommandQQ);
         dispatcher.RegisterCommand("css_ka", "Komutçu admin menüsü", CommandWardenAdmin);
         dispatcher.RegisterCommand("css_kasil", "Komutçu adminini kaldır", CommandRemoveWardenAdmin);
@@ -178,6 +178,11 @@ public class WardenService
     public bool IsWardenAdmin(CCSPlayerController player)
     {
         return _wardenAdmins.Contains(player.SteamID);
+    }
+
+    public bool IsGodMode(ulong steamId)
+    {
+        return _godModePlayers.Contains(steamId);
     }
 
     public bool HasPermission(CCSPlayerController player, string? requiredFlag = null)
@@ -444,9 +449,7 @@ public class WardenService
             _godModePlayers.Add(ct.SteamID);
         }
 
-        _plugin.UtilityService.CommandHpAll(player, info);
-        
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}CT takımına koruma (God Mode) verildi ve herkesin canı 100 yapıldı."));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}CT takımına koruma (God Mode) verildi."));
     }
 
     public void CommandQQ(CCSPlayerController? player, CommandInfo info)

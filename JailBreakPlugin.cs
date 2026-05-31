@@ -141,6 +141,8 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         HookUserMessage(118, OnUserMessageChat, HookMode.Pre);
         AddCommandListener("jointeam", OnJoinTeam);
 
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+
         _wardenService.RegisterCommands(this);
         RegisterCommand("css_komoyla", "Komutçu oylamasını başlat", _voteService.CommandStartVote);
         RegisterCommand("css_komdk", "Komutçuyu atma oylamasını başlat", _voteService.CommandStartKickVote);
@@ -188,6 +190,30 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         });
         
         LogHelper.LogInfo("JailBreak eklentisi başarıyla yüklendi.");
+    }
+
+    public override void Unload(bool hotReload)
+    {
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
+        base.Unload(hotReload);
+    }
+
+    private HookResult OnTakeDamage(DynamicHook hook)
+    {
+        var victim = hook.GetParam<CEntityInstance>(0);
+        if (victim == null || victim.DesignerName != "player") return HookResult.Continue;
+
+        var pawn = new CCSPlayerPawn(victim.Handle);
+        if (pawn.Controller.Value != null)
+        {
+            var player = new CCSPlayerController(pawn.Controller.Value.Handle);
+            if (player.IsValid && _wardenService.IsGodMode(player.SteamID))
+            {
+                return HookResult.Stop;
+            }
+        }
+        
+        return HookResult.Continue;
     }
 
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
