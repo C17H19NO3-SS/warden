@@ -18,6 +18,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     public override string ModuleAuthor => "SoulSnatcher";
 
     public PluginConfig Config { get; set; } = new();
+    public LangConfig Lang { get; set; } = new();
 
     private WardenService _wardenService = null!;
     private VoteService _voteService = null!;
@@ -30,6 +31,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     private FFMenuService _ffMenuService = null!;
     private UtilityService _utilityService = null!;
     private LastRequestService _lrService = null!;
+    private RebelService _rebelService = null!;
 
     public VoteService VoteService => _voteService;
 
@@ -38,20 +40,51 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         Config = config;
 
         string configPath = Path.Combine(ModuleDirectory, "../../configs/plugins/JailBreak/JailBreak.json");
+        string langPath = Path.Combine(ModuleDirectory, "../../configs/plugins/JailBreak/lang.json");
+
         try
         {
-            if (File.Exists(configPath))
+            var options = new JsonSerializerOptions
             {
-                var options = new JsonSerializerOptions
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            // Config File Logic
+            // CS# already merged the defaults into 'config', we just write it back to disk to fill missing keys.
+            string configDir = Path.GetDirectoryName(configPath) ?? "";
+            if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
+
+            string json = JsonSerializer.Serialize(config, options);
+            File.WriteAllText(configPath, json);
+
+            // Lang File Logic
+            if (File.Exists(langPath))
+            {
+                string langJson = File.ReadAllText(langPath);
+                var loadedLang = JsonSerializer.Deserialize<LangConfig>(langJson);
+                if (loadedLang != null)
                 {
-                    WriteIndented = true,
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                };
-                string json = JsonSerializer.Serialize(config, options);
-                File.WriteAllText(configPath, json);
+                    Lang = loadedLang;
+                    // Save it back to disk to add any missing keys
+                    string updatedLangJson = JsonSerializer.Serialize(Lang, options);
+                    File.WriteAllText(langPath, updatedLangJson);
+                }
+            }
+            else
+            {
+                // Create default lang file
+                string dir = Path.GetDirectoryName(langPath) ?? "";
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+                string defaultLangJson = JsonSerializer.Serialize(Lang, options);
+                File.WriteAllText(langPath, defaultLangJson);
             }
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[JailBreak] Error loading configs: {ex.Message}");
+        }
     }
 
     public bool IsJailbreakMap()
@@ -62,6 +95,10 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
 
     public override void Load(bool hotReload)
     {
+        // StoreBridge config yolunu dinamik ayarla
+        string storeConfigPath = Path.Combine(ModuleDirectory, "../../configs/plugins/cs2-store/config.toml");
+        StoreApi.StoreBridge.SetConfigPath(storeConfigPath);
+
         _wardenService = new WardenService(this);
         _voteService = new VoteService(this, _wardenService);
         _chatService = new ChatService(this, _wardenService);
@@ -73,10 +110,10 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         _ffMenuService = new FFMenuService(this, _wardenService, _freezeService);
         _utilityService = new UtilityService(this, _wardenService);
         _lrService = new LastRequestService(this, _wardenService);
+        _rebelService = new RebelService(this);
 
         RegisterListener<Listeners.OnClientDisconnect>(_wardenService.OnClientDisconnect);
-        RegisterListener<Listeners.OnTick>(_ffMenuService.OnTick);
-        RegisterListener<Listeners.OnTick>(_lrService.OnTick);
+        RegisterListener<Listeners.OnMapStart>((mapName) => _utilityService.ResetKacCmRecords());
 
         RegisterEventHandler<EventRoundStart>(OnRoundStart);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
@@ -86,66 +123,90 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         HookUserMessage(118, OnUserMessageChat, HookMode.Pre);
         AddCommandListener("jointeam", OnJoinTeam);
 
-        AddCommand("css_w", "Become Warden", _wardenService.CommandBecomeWarden);
-        AddCommand("css_uw", "Unwarden", _wardenService.CommandUnwarden);
-        AddCommand("css_komoyla", "Start Warden Vote", _voteService.CommandStartVote);
-        AddCommand("css_komdk", "Start Warden Kick Vote", _voteService.CommandStartKickVote);
-        AddCommand("css_komaday", "Join Warden Vote", _voteService.CommandJoinVote);
-        AddCommand("css_ka", "Warden Admin Menu", _wardenService.CommandWardenAdmin);
-        AddCommand("css_kasil", "Remove Warden Admin", _wardenService.CommandRemoveWardenAdmin);
-        AddCommand("css_marker", "Set marker size", _markerService.CommandMarker);
-        AddCommand("css_reloadconfig", "Reload config", CommandReloadConfig);
+        AddCommand("css_w", "Komutçu ol", _wardenService.CommandBecomeWarden);
+        AddCommand("css_uw", "Komutçuluktan çık", _wardenService.CommandUnwarden);
+        AddCommand("css_komkalan", "Komutçunun kalan süresini gör", _wardenService.CommandKomKalan);
+        AddCommand("css_topkomutcu", "En çok komutçu olanları gör", _wardenService.CommandTopKomutcu);
+        AddCommand("css_komoyla", "Komutçu oylamasını başlat", _voteService.CommandStartVote);
+        AddCommand("css_komdk", "Komutçuyu atma oylamasını başlat", _voteService.CommandStartKickVote);
+        AddCommand("css_komaday", "Komutçu oylamasına katıl", _voteService.CommandJoinVote);
+        AddCommand("css_ka", "Komutçu admin menüsü", _wardenService.CommandWardenAdmin);
+        AddCommand("css_kasil", "Komutçu adminini kaldır", _wardenService.CommandRemoveWardenAdmin);
+        AddCommand("css_marker", "İşaretleyici boyutunu ayarla", _markerService.CommandMarker);
+        AddCommand("css_reloadconfig", "Config dosyasını yeniden yükle", CommandReloadConfig);
 
         // Sustum Commands
-        AddCommand("css_dsustum", "Start Dsustum", _sustumService.CommandDsustum);
-        AddCommand("css_tsustum", "Start Tsustum", _sustumService.CommandTsustum);
-        AddCommand("css_olusustum", "Start Olusustum", _sustumService.CommandOlusustum);
+        AddCommand("css_dsustum", "Deagle ödüllü sustum başlat", _sustumService.CommandDsustum);
+        AddCommand("css_tsustum", "T'ye geçme ödüllü sustum başlat", _sustumService.CommandTsustum);
+        AddCommand("css_olusustum", "Canlanma ödüllü sustum başlat", _sustumService.CommandOlusustum);
 
         // Freeze Commands
-        AddCommand("css_td", "Freeze T", _freezeService.CommandFreeze);
-        AddCommand("css_tdb", "Unfreeze T", _freezeService.CommandUnfreeze);
-        AddCommand("css_fz", "Delayed Freeze T", _freezeService.CommandDelayedFreeze);
-        AddCommand("css_fz0", "Reset Freeze", _freezeService.CommandResetFreeze);
+        AddCommand("css_td", "T takımını dondur", _freezeService.CommandFreeze);
+        AddCommand("css_tdb", "T takımının donmasını çöz", _freezeService.CommandUnfreeze);
+        AddCommand("css_fz", "Gecikmeli dondurma başlat", _freezeService.CommandDelayedFreeze);
+        AddCommand("css_fz0", "Dondurmayı sıfırla", _freezeService.CommandResetFreeze);
 
         // Iseli Commands
-        AddCommand("css_iseli", "Iseli door control", _iseliService.CommandIseli);
-        AddCommand("css_iq", "Quick open doors", _iseliService.CommandQuickIseli);
+        AddCommand("css_iseli", "İseli kapı kontrolü", _iseliService.CommandIseli);
+        AddCommand("css_iq", "Kapıları anında aç", _iseliService.CommandQuickIseli);
 
         // Position Commands
-        AddCommand("css_daire", "Arrange T in circle", _positionService.CommandDaire);
-        AddCommand("css_diz", "Arrange T in line", _positionService.CommandDiz);
+        AddCommand("css_daire", "T takımını daire diz", _positionService.CommandDaire);
+        AddCommand("css_diz", "T takımını yan yana diz", _positionService.CommandDiz);
 
         // FF Menu Commands
-        AddCommand("css_ffmenu", "Open FF weapon menu", _ffMenuService.CommandFFMenu);
-        AddCommand("css_ffkapat", "Disable FF", _ffMenuService.CommandFFKapat);
-        AddCommand("css_ffk", "Disable FF", _ffMenuService.CommandFFKapat);
-        AddCommand("css_ff0", "Disable FF and strip weapons", _ffMenuService.CommandFF0);
-        AddCommand("css_ffondur", "Enable FF with freeze end", _ffMenuService.CommandFFOndur);
+        AddCommand("css_ffmenu", "FF silah menüsünü aç", _ffMenuService.CommandFFMenu);
+        AddCommand("css_ffkapat", "FF'i kapat", _ffMenuService.CommandFFKapat);
+        AddCommand("css_ffk", "FF'i kapat", _ffMenuService.CommandFFKapat);
+        AddCommand("css_ff0", "FF'i kapat ve silahları al", _ffMenuService.CommandFF0);
+        AddCommand("css_ffondur", "FF aç ve sonunda dondur", _ffMenuService.CommandFFOndur);
 
         // Utility Commands
-        AddCommand("css_hpa", "Set HP 100 for everyone", _utilityService.CommandHpAll);
-        AddCommand("css_hpt", "Set HP 100 for T", _utilityService.CommandHpT);
-        AddCommand("css_hpct", "Set HP 100 for CT", _utilityService.CommandHpCT);
-        AddCommand("css_gelt", "Get all Terrorists", _utilityService.CommandGetT);
-        AddCommand("css_git", "Go to player", _utilityService.CommandGit);
-        AddCommand("css_haksal", "Swap CT with T", _utilityService.CommandHakSal);
+        AddCommand("css_hpa", "Herkesin canını 100 yap", _utilityService.CommandHpAll);
+        AddCommand("css_hpt", "T takımının canını 100 yap", _utilityService.CommandHpT);
+        AddCommand("css_hpct", "CT takımının canını 100 yap", _utilityService.CommandHpCT);
+        AddCommand("css_gelt", "Tüm T'leri çek", _utilityService.CommandGetT);
+        AddCommand("css_gelct", "Tüm CT'leri çek", _utilityService.CommandGetCT);
+        AddCommand("css_gelall", "Tüm oyuncuları çek", _utilityService.CommandGetAll);
+        AddCommand("css_af", "Herkesi canlandır ve canını 100 yap", _utilityService.CommandAf);
+        AddCommand("css_git", "Oyuncuya git", _utilityService.CommandGit);
+        AddCommand("css_haksal", "CT ile T takımını yer değiştir", _utilityService.CommandHakSal);
+        AddCommand("css_ba", "Bunnyhop aç", _utilityService.CommandBunnyOpen);
+        AddCommand("css_bk", "Bunnyhop kapat", _utilityService.CommandBunnyClose);
+        AddCommand("css_umct", "CT takımının mutesini aç", _utilityService.CommandUnmuteCT);
+        AddCommand("css_uct", "CT takımının mutesini aç", _utilityService.CommandUnmuteCT);
+        AddCommand("css_umt", "T takımının mutesini aç", _utilityService.CommandUnmuteT);
+        AddCommand("css_ut", "T takımının mutesini aç", _utilityService.CommandUnmuteT);
+        AddCommand("css_ss", "T takımının silahlarını al", _utilityService.CommandSs);
+        AddCommand("css_strip", "T takımının silahlarını al", _utilityService.CommandSs);
+        AddCommand("css_kaccm", "Kaç cm ölçer", _utilityService.CommandKacCm);
+        AddCommand("css_mct", "CT takımını mutele", _utilityService.CommandMuteCT);
+        AddCommand("css_mt", "T takımını mutele", _utilityService.CommandMuteT);
+        AddCommand("css_topkaccm", "Kaç cm sıralamasını göster", _utilityService.CommandTopKacCm);
+        AddCommand("css_otores", "Otomatik canlanmayı aç", _utilityService.CommandOtores);
+        AddCommand("css_otores0", "Otomatik canlanmayı kapat", _utilityService.CommandOtores0);
 
         // LR Commands
-        AddCommand("css_sonakalan", "Open LR menu", _lrService.CommandSonaKalan);
-        AddCommand("css_sonsec", "Kill all but one T and open LR", _lrService.CommandSonSec);
-        AddCommand("css_sonseç", "Kill all but one T and open LR", _lrService.CommandSonSec);
+        AddCommand("css_sonakalan", "LR menüsünü aç", _lrService.CommandSonaKalan);
+        AddCommand("css_sonsec", "Sona kalan hariç öldür ve LR aç", _lrService.CommandSonSec);
+        AddCommand("css_sonseç", "Sona kalan hariç öldür ve LR aç", _lrService.CommandSonSec);
+        AddCommand("css_isyancılar", "İsyancı listesini göster", _rebelService.CommandRebels);
+        AddCommand("css_isyancilar", "İsyancı listesini göster", _rebelService.CommandRebels);
     }
 
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-        if (!IsJailbreakMap()) return HookResult.Continue;
+        if (IsJailbreakMap())
+        {
+            _wardenService.OnRoundStart();
+            _markerService.OnRoundStart();
+            _iseliService.OnRoundStart();
+            _ffMenuService.OnRoundStart();
+            _lrService.OnRoundStart();
+        }
 
-        _wardenService.OnRoundStart();
-        _markerService.OnRoundStart();
         _freezeService.OnRoundStart();
-        _iseliService.OnRoundStart();
-        _ffMenuService.OnRoundStart();
-        _lrService.OnRoundStart();
+        _utilityService.OnRoundStart();
         return HookResult.Continue;
     }
 
@@ -171,6 +232,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     {
         if (!IsJailbreakMap()) return HookResult.Continue;
         _lrService.OnPlayerDeath(@event);
+        _rebelService.OnPlayerDeath(@event);
         return HookResult.Continue;
     }
 
@@ -189,7 +251,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         string teamArg = info.GetArg(1);
         if (teamArg == "3")
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Config.MsgCannotJoinCT)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Lang.MsgCannotJoinCT)}");
             Server.NextFrame(() =>
             {
                 if (player.IsValid) player.ChangeTeam(CsTeam.Terrorist);
@@ -202,12 +264,14 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
 
     private HookResult OnPlayerPing(EventPlayerPing @event, GameEventInfo info)
     {
-        if (!IsJailbreakMap()) return HookResult.Continue;
-
         var player = @event.Userid;
         if (player == null || !player.IsValid) return HookResult.Continue;
 
-        _markerService.OnPlayerPing(@event, player);
+        if (IsJailbreakMap())
+        {
+            _markerService.OnPlayerPing(@event, player);
+        }
+
         _positionService.OnPlayerPing(@event, player);
         return HookResult.Continue;
     }
@@ -226,7 +290,6 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
         if (_sustumService.HandleSustumChat(player, message)) return HookResult.Stop;
         if (_voteService.HandleVoteChat(player, message)) return HookResult.Stop;
         if (_ffMenuService.HandleFFMenuChat(player, message)) return HookResult.Stop;
-        if (_lrService.HandleLRChat(player, message)) return HookResult.Stop;
 
         return _chatService.OnUserMessageChat(@event, player, message);
     }
@@ -235,31 +298,40 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>
     {
         if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root"))
         {
-            player.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Config.MsgNoPermission)}");
+            player.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Lang.MsgNoPermission)}");
             return;
         }
 
         string configPath = Path.Combine(ModuleDirectory, "../../configs/plugins/JailBreak/JailBreak.json");
-        if (File.Exists(configPath))
+        string langPath = Path.Combine(ModuleDirectory, "../../configs/plugins/JailBreak/lang.json");
+
+        try
         {
-            try
+            if (File.Exists(configPath))
             {
                 string jsonString = File.ReadAllText(configPath);
                 var newConfig = JsonSerializer.Deserialize<PluginConfig>(jsonString);
                 if (newConfig != null)
                 {
                     Config = newConfig;
-                    OnConfigParsed(Config);
+                    OnConfigParsed(Config); // This will also re-save and re-load lang if we modified it, but let's load lang explicitly below just in case.
                 }
             }
-            catch (Exception ex)
+
+            if (File.Exists(langPath))
             {
-                player?.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatColors.Red}Config yüklenirken hata oluştu: {ex.Message}");
-                return;
+                string langJson = File.ReadAllText(langPath);
+                var loadedLang = JsonSerializer.Deserialize<LangConfig>(langJson);
+                if (loadedLang != null) Lang = loadedLang;
             }
         }
-
-        string reloadMsg = $" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Config.MsgConfigReloaded)}";
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[JailBreak] Error reloading config: {ex.Message}");
+            player?.PrintToChat($" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatColors.Red}Config yüklenirken hata oluştu: {ex.Message}");
+            return;
+        }
+        string reloadMsg = $" {ChatService.ReplaceColors(Config.ChatPrefix)} {ChatService.ReplaceColors(Lang.MsgConfigReloaded)}";
         if (player != null) player.PrintToChat(reloadMsg);
         else info.ReplyToCommand(reloadMsg);
     }

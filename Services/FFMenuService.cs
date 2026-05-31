@@ -27,13 +27,6 @@ public class PlayerFFSelection
     public bool SecondarySelected { get; set; } = false;
 }
 
-public enum FFMenuStep
-{
-    None,
-    Primary,
-    Secondary
-}
-
 public class FFMenuService
 {
     private readonly JailBreakPlugin _plugin;
@@ -128,7 +121,7 @@ public class FFMenuService
         _isSelectionPhaseActive = false;
 
         _tickTimer?.Kill();
-        _tickTimer = _plugin.AddTimer(1.0f, Tick, TimerFlags.REPEAT);
+        _tickTimer = _plugin.AddTimer(1.0f, CountdownTick, TimerFlags.REPEAT);
 
         UpdateHUD(); // Show HUD immediately
 
@@ -284,10 +277,6 @@ public class FFMenuService
         menu.Display(player, 0);
     }
 
-    private void Tick()
-    {
-    }
-
     private void CheckAllSelectionsCompleted()
     {
         var ts = Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive).ToList();
@@ -337,31 +326,81 @@ public class FFMenuService
         _tickTimer = _plugin.AddTimer(1.0f, CountdownTick, TimerFlags.REPEAT);
     }
     
-    private void CountdownTick() { } // Dummy method to ensure it compiles, will be replaced in Task 5
-
-    public void OnTick()
+    private void CountdownTick()
     {
-    }
+        if (!_isCountingToStart && !_isCountingToEnd && !_isFFActive)
+        {
+            _tickTimer?.Kill();
+            _tickTimer = null;
+            return;
+        }
 
-    private void NextPage()
-    {
-    }
+        if (_ffRemainingTime > 0)
+        {
+            _ffRemainingTime--;
+        }
+        else
+        {
+            if (_isCountingToStart)
+            {
+                _isCountingToStart = false;
+                _isFFActive = true;
+                EnableFF();
+                Server.PrintToChatAll($" {ChatService.ReplaceColors(_plugin.Config.ChatPrefix)} {ChatService.ReplaceColors(_plugin.Lang.MsgFFActiveNow)}");
+            }
+            else if (_isCountingToEnd)
+            {
+                EndFF();
+            }
+            else if (!_isFFActive)
+            {
+                _tickTimer?.Kill();
+                _tickTimer = null;
+            }
+            return;
+        }
 
-    private void PrevPage()
-    {
+        UpdateHUD();
     }
 
     private void UpdateHUD()
     {
+        string title = _plugin.Lang.HudTitleFFSystem;
+        string content = "";
+        string instruction = "";
+
+        if (_isCountingToStart)
+        {
+            title = _plugin.Lang.HudTitleFFStartDelay;
+            content = string.Format(_plugin.Lang.HudContentFFStartDelay, HudHelper.ColorSuccess, "Özel Silahlar", HudHelper.ColorTime, _ffRemainingTime);
+        }
+        else if (_isCountingToEnd)
+        {
+            title = _plugin.Lang.HudTitleFFEndDelay;
+            content = string.Format(_plugin.Lang.HudContentFFEndDelay, HudHelper.ColorTime, _ffRemainingTime);
+            if (_freezeOnEnd) content += string.Format(_plugin.Lang.HudContentFFFreezeWarning, HudHelper.ColorSystem);
+        }
+        else if (_isFFActive)
+        {
+            title = _plugin.Lang.HudTitleFFActive;
+            content = string.Format(_plugin.Lang.HudContentFFActiveWeapons, HudHelper.ColorSuccess, "Özel Silahlar");
+            instruction = _plugin.Lang.HudInstructionFFOndurInfo;
+        }
+
+        foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
+        {
+            p.PrintToCenterHtml(HudHelper.FormatHud(title, content, instruction));
+        }
     }
 
     public bool HandleFFMenuChat(CCSPlayerController player, string message)
     {
+        // Intercept !1, !2 etc. so it doesn't show in chat while menus are active anywhere in CS2MenuManager
+        if (message.StartsWith("!") && int.TryParse(message.Substring(1), out _))
+        {
+            return true; // Stop chat processing for menu number inputs globally or selectively
+        }
         return false;
-    }
-
-    private void SelectWeapon(FFWeapon weapon)
-    {
     }
 
     private void EnableFF()
@@ -374,6 +413,12 @@ public class FFMenuService
     private void DisableFF(bool silent = false)
     {
         Server.ExecuteCommand("mp_teammates_are_enemies 0");
+        if (_currentFFConfig.BunnyEnabled)
+        {
+            Server.ExecuteCommand("sv_autobunnyhopping 0");
+            Server.ExecuteCommand("sv_enablebunnyhopping 0");
+            _currentFFConfig.BunnyEnabled = false;
+        }
         _isFFActive = false;
         _isSelectionPhaseActive = false;
         _playerSelections.Clear();
