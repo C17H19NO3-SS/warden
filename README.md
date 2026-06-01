@@ -17,24 +17,28 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 
 ## 🛠️ Tüm Komutlar ve Detaylı Açıklamalar
 
-### 1. Komutçu ve Yönetim Komutları
+### 1. Komutçu (Warden) ve Yönetim
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!k` | `!kommenu` | Komutçu | **Master Panel:** Tüm yetkilere görsel bir menüden erişmenizi sağlar. |
-| `!w` | `!warden` | Herkes (CT) | Komutçu koltuğu boşsa sizi komutçu yapar. |
+| `!w` | `!warden` | Herkes | Komutçu koltuğu boşsa sizi komutçu yapar. |
 | `!uw` | `!unwarden` | Komutçu | Komutçuluğu bırakmanızı sağlar. |
-| `!ka <isim>` | - | `@css/cvar` | Seçilen oyuncuyu "Komutçu Admini" yapar. |
-| `!kasil <isim>` | - | `@css/ban` | Komutçu Admini yetkisini geri alır. |
 | `!komkalan` | - | Herkes | Mevcut komutçunun görev süresinin bitmesine ne kadar kaldığını gösterir. |
 | `!topkomutcu` | - | Herkes | En çok ve en uzun süre komutçuluk yapanları listeler. |
-| `!topka` | - | Herkes | En çok ve en uzun süre komutçu admin olanları listeler. |
-| `!q` | - | `@css/generic` | **Warden Koruma:** Tüm CT takımına God verir ve herkesin canını 100 yapar. |
+| `!q` | - | `@css/generic` | **Warden Koruma:** CT takımına God verir. |
 | `!qq` | - | `@css/generic` | **Koruma Kapat:** CT'lerin God modunu kaldırır. |
-| `!komoyla` | - | `@css/vote` | Komutçu oylamasını başlatır. |
-| `!komaday` | - | Herkes | Komutçu oylamasına aday olarak katılır. |
-| `!komdk` | - | `@css/vote` | Komutçuyu görevden alma oylaması başlatır. |
+| `!ka <isim>` | - | `@css/cvar` | Seçilen oyuncuyu "Komutçu Admini" yapar. |
+| `!kasil <isim>` | - | `@css/ban` | Komutçu Admini yetkisini geri alır. |
+| `!topka` | - | Herkes | En çok ve en uzun süre komutçu admin olanları listeler. |
 
-### 2. Oyun Modları (Game Modes)
+### 2. Oylama Komutları
+| Komut | Alternatif | Yetki | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `!komoyla` | - | `@css/vote` | Komutçu oylamasını başlatır. |
+| `!komdk` | - | `@css/vote` | Komutçuyu görevden alma oylaması başlatır. |
+| `!komaday` | - | Herkes | Komutçu oylamasına aday olarak katılır. |
+
+### 3. Oyun Modları ve Eğlence
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!saklambac <sn>`| `!saklambaç`| `@css/changemap`| **Saklambaç:** CT'ler spawn'a ışınlanır ve kör edilir. Süre sonunda T'ler dondurulur. |
@@ -43,8 +47,10 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!dsustum` | - | `@css/slay` | Kelimeyi ilk yazana **Deagle** ödülü verir. |
 | `!tsustum` | `!tsusdum` | `@css/slay` | Kelimeyi ilk yazana **CT** takımına geçme ödülü verir. |
 | `!olusustum` | - | `@css/slay` | Kelimeyi ilk yazan ölü oyuncuyu **canlandırır**. |
+| `!kaccm` | - | Herkes | Eğlence amaçlı boy ölçümü yapar. |
+| `!topkaccm` | - | Herkes | Sunucunun en yüksek skorlarını listeler. |
 
-### 3. Dost Ateşi (FF) ve Silah Yönetimi
+### 4. Dost Ateşi (FF) ve Silah Yönetimi
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!ffmenu` | `!ff` | `@css/changemap`| **Görsel FF Ayarı:** Silahları ve Bunny durumunu ayarladığınız paneldir. |
@@ -52,11 +58,11 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!ff0` | - | `@css/changemap`| FF'i kapatır ve tüm T'lerin silahlarını siler. |
 | `!ss` | `!strip` | `@css/slay` | T takımının tüm silahlarını anında temizler. |
 
-### 4. Dondurma ve Formasyonlar
+### 5. Dondurma ve Formasyonlar
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!td` | - | `@css/slay` | Tüm T takımını oldukları yerde dondurur. |
-| `!tdb` | `!coz` | `@css/slay` | Donmuş olan oyuncuların dondurmasını çözer. |
+| `!tdb` | - | `@css/slay` | Donmuş olan oyuncuların dondurmasını çözer. |
 | `!fz <sn>` | - | `@css/slay` | Belirlenen süre sonunda herkesi otomatik dondurur. |
 | `!fz0` | - | `@css/slay` | Aktif dondurma sayacını iptal eder. |
 | `!daire <gen>` | - | `@css/kick` | T takımını bakılan noktada daire şeklinde dizer. |
@@ -64,7 +70,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!gom <isim>` | - | `@css/slay` | Hedef oyuncuyu yere gömer ve dondurur. |
 | `!gom0 <isim>`| - | `@css/slay` | Oyuncuyu gömülmekten çıkarır ve dondurmasını çözer. |
 
-### 5. Işınlanma ve Can Yönetimi
+### 6. Işınlanma ve Can Yönetimi
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!rev <hedef>` | `!kaldır` | `@css/slay` | Hedefi (`@t`, `@ct`, `@all` veya isim) canlandırır. |
@@ -79,7 +85,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!git <isim>` | - | `@css/kick` | Belirlenen oyuncunun yanına ışınlar. |
 | `!haksal <isim>`| - | `@css/generic` | Bir CT ile bir T'nin yerini (takımını) değiştirir. |
 
-### 6. Duyuru ve Broadcast Komutları
+### 7. Duyuru ve İletişim Komutları
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!msay <mesaj>` | - | `@css/chat` | Ekranın ortasında büyük duyuru kutusu açar. |
@@ -88,7 +94,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!marker <boy>` | - | `@css/chat` | Komutçu işaretçisinin boyutunu ayarlar. |
 | `!fsay <isim> <msg>`| - | `@css/root` | Belirlenen oyuncunun adıyla chat'e yazı yazar. |
 
-### 7. Genel ve Diğer Komutlar
+### 8. Genel ve Diğer Komutlar
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!iseli <sn>` | - | `@css/changemap`| Geri sayımlı hücre kapısı açma. |
@@ -98,56 +104,10 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!mt` / `!umt` / `!ut` | - | `@css/generic` | T takımını mutele veya mutesini aç. |
 | `!otores` / `!otores0`| - | `@css/generic` | Ölenlerin otomatik canlanmasını ayarlar. |
 | `!reloadconfig` | - | `@css/root` | Ayarları ve dil dosyasını yeniler. |
-| `!kaccm` | - | Herkes | Eğlence amaçlı boy ölçümü yapar. |
-| `!topkaccm` | - | Herkes | Sunucunun en yüksek skorlarını listeler. |
 | `!delay` | - | Herkes | 3 saniyelik ses gecikmesini (delay) giderir. |
-| `!isyancilar` | - | Herkes | Gardiyanlara saldıran isyancıları listeler. |
+| `!isyancılar` | `!isyancilar` | Herkes | Gardiyanlara saldıran isyancıları listeler. |
 | `!sonakalan` | - | Herkes (Son T)| **LR (Sona Kalan Menüsü)** açar. |
 | `!sonsec` | `!sonseç` | `@css/slay` | Sona kalan T dışındakileri öldürür ve LR açar. |
-
----
-
-## ⚙️ Yetkilendirme Standartları (Tam Liste)
-
-Eklenti, komutların oyun içi etkisine göre şu hiyerarşide yapılandırılmıştır:
-
-### 💻 1. @css/root (Sistem Sahibi)
--   `!reloadconfig`, `!fsay`
-
-### 👑 2. @css/ban (Üst Yönetim)
--   `!kasil`
-
-### 🛡️ 3. @css/generic (Standart Admin)
--   `!ba`, `!bk`, `!mct`, `!umct`, `!mt`, `!umt`
--   `!haksal`, `!otores`, `!otores0`
-
-### 🔧 4. @css/cvar (Yetki Admini)
--   `!ka`
-
-### 🗳️ 5. @css/vote (Oylama Admini)
--   `!komoyla`, `!komdk`
-
-### 🎮 6. @css/changemap (Mod & Harita Admini)
--   `!saklambac`, `!box`, `!b`, `!ffmenu`, `!ffkapat`, `!ff0`, `!ffdondur`
--   `!iseli`, `!iq`
-
-### 🏃 7. @css/kick (Hareket & Konum Admini)
--   `!daire`, `!diz`, `!git`, `!gelt`, `!gelct`, `!gelall`
-
-### 👊 8. @css/slay (Müdahale & Can Admini)
--   `!rev`, `!af`, `!hpa`, `!hpt`, `!hpct`
--   `!td`, `!tdb`, `!fz`, `!fz0`, `!ss`, `!strip`
--   `!dsustum`, `!tsustum`, `!olusustum`, `!sonsec`
-
-### 💬 9. @css/chat (Duyuru & İletişim Admini)
--   `!msay`, `!csay`, `!hsay`, `!marker`
-
-### 👑 10. Komutçu (Warden)
--   `!k`, `!kommenu`
--   Warden ve Asistanları o an oyunda olan **tüm** yukarıdaki komutları kullanabilir.
-
-### 👥 11. Herkes Tarafından Kullanılabilenler
--   `!w`, `!uw`, `!komkalan`, `!topkomutcu`, `!topka`, `!isyancilar`, `!sonakalan`, `!delay`, `!kaccm`, `!topkaccm`, `!komaday`.
 
 ---
 
