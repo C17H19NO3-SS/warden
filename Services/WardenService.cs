@@ -22,6 +22,7 @@ public class WardenService : IWardenService
     private readonly IWardenStatService _statService;
     private readonly IWardenAdminService _adminService;
     private readonly IHudManager _hudManager;
+    private readonly ILangProvider _langProvider;
 
     public CCSPlayerController? CurrentWarden { get; private set; }
     private DateTime? _wardenStartTime;
@@ -31,12 +32,13 @@ public class WardenService : IWardenService
     private readonly Dictionary<ulong, uint> _originalImmunity = new();
     private float _hue = 0;
 
-    public WardenService(JailBreakPlugin plugin, IWardenStatService statService, IWardenAdminService adminService, IHudManager hudManager)
+    public WardenService(JailBreakPlugin plugin, IWardenStatService statService, IWardenAdminService adminService, IHudManager hudManager, ILangProvider langProvider)
     {
         _plugin = plugin;
         _statService = statService;
         _adminService = adminService;
         _hudManager = hudManager;
+        _langProvider = langProvider;
     }
 
     public void RegisterCommands(ICommandDispatcher dispatcher)
@@ -81,7 +83,7 @@ public class WardenService : IWardenService
         
         if (requiredFlag != null && AdminManager.PlayerHasPermissions(player, requiredFlag)) return true;
         
-        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission));
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgNoPermission")));
         return false;
     }
 
@@ -135,7 +137,7 @@ public class WardenService : IWardenService
         {
             if (CurrentWarden != null && CurrentWarden.IsValid)
             {
-                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgWardenDurationExpired));
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgWardenDurationExpired")));
                 _plugin.VoteService.StartKickVotePhase();
             }
         });
@@ -144,7 +146,7 @@ public class WardenService : IWardenService
         _hue = 0;
         _rgbTimer = _plugin.AddTimer(0.1f, UpdateWardenRgb, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
 
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgNewWarden, player.PlayerName)));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgNewWarden", player.PlayerName)));
     }
 
     private void UpdateWardenRgb()
@@ -240,19 +242,19 @@ public class WardenService : IWardenService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgOnlyJailbreakMap")));
             return;
         }
 
         if (player.Team != CsTeam.CounterTerrorist)
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyCTCanBeWarden));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgOnlyCTCanBeWarden")));
             return;
         }
 
         if (CurrentWarden != null && CurrentWarden.IsValid)
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenExists, CurrentWarden.PlayerName)));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgWardenExists", CurrentWarden.PlayerName)));
             return;
         }
 
@@ -269,17 +271,17 @@ public class WardenService : IWardenService
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgOnlyJailbreakMap")));
             return;
         }
 
         if (!IsWarden(player))
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNotWarden));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgNotWarden")));
             return;
         }
 
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenLeft, player.PlayerName)));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgWardenLeft", player.PlayerName)));
         RemoveWarden();
     }
 
@@ -289,7 +291,7 @@ public class WardenService : IWardenService
 
         if (CurrentWarden == null || !CurrentWarden.IsValid || _wardenStartTime == null)
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoActiveWarden));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgNoActiveWarden")));
             return;
         }
 
@@ -300,7 +302,7 @@ public class WardenService : IWardenService
         if (remaining.Ticks < 0) remaining = TimeSpan.Zero;
 
         string timeStr = $"{(int)remaining.TotalMinutes}:{remaining.Seconds:D2}";
-        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenTimeRemaining, timeStr)));
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgWardenTimeRemaining", timeStr)));
     }
 
     public void CommandTopKomutcu(CCSPlayerController? player, CommandInfo info)
@@ -310,12 +312,12 @@ public class WardenService : IWardenService
         var stats = _statService.GetTopWardenStats();
         if (stats.Count == 0)
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTopWardenEmpty));
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _langProvider.GetMessage("MsgTopWardenEmpty")));
             return;
         }
 
         var sortedStats = stats.OrderByDescending(s => s.TotalTimeSeconds).ToList();
-        var menu = new CenterHtmlMenu(_plugin.Lang.HudTitleTopWarden, _plugin);
+        var menu = new CenterHtmlMenu(_langProvider.GetMessage("HudTitleTopWarden"), _plugin);
 
         for (int i = 0; i < sortedStats.Count; i++)
         {

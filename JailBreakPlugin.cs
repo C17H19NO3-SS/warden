@@ -23,6 +23,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
     public PluginConfig Config { get; set; } = new();
     public LangConfig Lang { get; set; } = new();
 
+    private ILangProvider _langProvider = null!;
     private WardenService _wardenService = null!;
     private VoteService _voteService = null!;
     private ChatService _chatService = null!;
@@ -106,13 +107,15 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
     {
         LogHelper.Initialize(Config, ModuleDirectory);
 
+        _langProvider = new LangProvider(Lang);
+
         string storeConfigPath = Path.Combine(ModuleDirectory, "../../configs/plugins/cs2-store/config.toml");
         StoreApi.StoreBridge.SetConfigPath(storeConfigPath);
 
         var statService = new WardenStatService(ModuleDirectory);
         var adminService = new WardenAdminService(this, statService);
         _hudManager = new HudManager(this);
-        _wardenService = new WardenService(this, statService, adminService, _hudManager);
+        _wardenService = new WardenService(this, statService, adminService, _hudManager, _langProvider);
         _chatService = new ChatService(this, _wardenService);
         _markerService = new MarkerService(this, _wardenService);
         _sustumService = new SustumService(this, _wardenService);
@@ -257,7 +260,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         string teamArg = info.GetArg(1);
         if (teamArg == "3")
         {
-            player.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgCannotJoinCT));
+            player.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, _langProvider.GetMessage("MsgCannotJoinCT")));
             Server.NextFrame(() =>
             {
                 if (player.IsValid) player.ChangeTeam(CsTeam.Terrorist);
@@ -337,7 +340,7 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
             player?.PrintToChat(PluginHelper.FormatChat(Config.ChatPrefix, $"{ChatColors.Red}Config yüklenirken hata oluştu: {ex.Message}"));
             return;
         }
-        string reloadMsg = PluginHelper.FormatChat(Config.ChatPrefix, Lang.MsgConfigReloaded);
+        string reloadMsg = PluginHelper.FormatChat(Config.ChatPrefix, _langProvider.GetMessage("MsgConfigReloaded"));
         if (player != null) player.PrintToChat(reloadMsg);
         else info.ReplyToCommand(reloadMsg);
     }
