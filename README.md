@@ -217,7 +217,6 @@ HUD sistemi iki bileşene ayrılır: `HudService` hızlı bildirimler için, `Hu
 
 #### Temsili HUD Görünümü
 ```
-[ HUD Bilgisi ]
 Komutçu: aktif
 FF: kapalı
 Geri sayım: 00:45
