@@ -53,7 +53,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 ### 4. Dost Ateşi (FF) ve Silah Yönetimi
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
-| `!ffmenu` | `!ff` | `Komutçu / Komutçu Admini`| **Görsel FF Ayarı:** Silahları ve Bunny durumunu ayarladığınız paneldir. |
+| `!ffmenu` | `!ff` | `Komutçu / Komutçu Admini`| **FF Paneli:** Birincil/ikincil silahları varsayılan açık olarak yönetir, Bunny ayarını değiştirir ve FF süresini 10-50 sn arasında 10'ar saniye adımlarla ayarlar. |
 | `!ffkapat` | `!ffk` | `Komutçu / Komutçu Admini`| Aktif olan tüm FF süreçlerini anında durdurur. |
 | `!ff0` | - | `Komutçu / Komutçu Admini`| FF'i kapatır ve tüm T'lerin silahlarını siler. |
 | `!ss` | `!strip` | `@css/slay` | T takımının tüm silahlarını anında temizler. |
@@ -142,10 +142,11 @@ Menü akışı şu şekilde işler:
 `FF Menü`
 ```
 [ Dost Ateşi Menüsü ]
-1) FF Aç
-2) FF Kapat
+1) Birincil Silahlar (varsayılan açık)
+2) İkincil Silahlar (varsayılan açık)
 3) Bunny Aç/Kapat
-4) Silahları Kaldır
+4) FF Süresi: 30 sn (10-50 sn, 10'ar sn adımlarla)
+5) FF Başlat
 ```
 
 `Marker Menü`
@@ -155,6 +156,53 @@ Menü akışı şu şekilde işler:
 2) Marker Sil
 3) Aktif Markerları Göster
 ```
+
+### Alt Menüler ve "Geri" Seçeneği
+Tüm alt menülerde oyuncunun üst menüye geri dönebilmesi için açık bir seçenek bulunmalıdır. Bu README örnekleri, menülerin nasıl yapılandırılabileceğini gösterir; servis implementasyonları her alt menüde `0) Geri` veya benzeri bir seçenek sunmalı ve seçildiğinde üst menüyü tekrar açmalıdır.
+
+`Warden Menu -> Oyun Modları (alt menü)`
+```
+[ Oyun Modları ]
+0) Geri
+1) Saklambaç
+2) Boks Modu
+3) FF Dondur
+4) Özel Etkinlikler
+```
+
+`Warden Menu -> Oyuncu Yönetimi (alt menü)`
+```
+[ Oyuncu Yönetimi ]
+0) Geri
+1) Oyuncu Canlandır
+2) Oyuncu Öldür
+3) Oyuncuyu Işınla
+4) Komutçu Admini Ver
+```
+
+`FF Menü (alt menü örneği)`
+```
+[ Dost Ateşi Menüsü ]
+0) Geri
+1) FF Aç
+2) FF Kapat
+3) Bunny Aç/Kapat
+4) Silahları Kaldır
+```
+
+`Marker Menü (alt menü örneği)`
+```
+[ Marker Yönetimi ]
+0) Geri
+1) Marker Oluştur
+2) Marker Sil
+3) Aktif Markerları Göster
+```
+
+Uygulama notu:
+- Her alt menü seçeneği seçildiğinde ilgili aksiyon çağrılır; `0) Geri` seçildiğinde ilgili servis veya menü yöneticisi üst menüyü yeniden açmalıdır.
+- Menü API'leri (`ChatMenu`, `CenterHtmlMenu`) geri dönüş callback'lerini desteklemeli veya servisler üst menüyü yeniden oluşturarak açmalıdır.
+- Back/geri seçeneği, kullanıcı deneyimini iyileştirir ve menü gezinimini daha sezgisel hale getirir.
 
 ### HUD Sistemi
 HUD sistemi iki bileşene ayrılır: `HudService` hızlı bildirimler için, `HudManager` ise sürekli güncellenen bilgi panelleri için.

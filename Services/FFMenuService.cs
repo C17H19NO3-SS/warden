@@ -358,6 +358,7 @@ public class FFMenuService : IFFMenuService
             {
                 _isCountingToStart = false;
                 _isFFActive = true;
+                RemoveDroppedMapWeapons();
                 EnableFF();
                 Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFActiveNow));
             }
@@ -416,6 +417,24 @@ public class FFMenuService : IFFMenuService
         Server.ExecuteCommand("mp_teammates_are_enemies 1");
         _isFFActive = true;
         _isCountingToStart = false;
+    }
+
+    private void RemoveDroppedMapWeapons()
+    {
+        var weaponNames = _plugin.Config.FFPrimaryWeaponList
+            .Concat(_plugin.Config.FFSecondaryWeaponList)
+            .Select(w => w.ItemName)
+            .Where(name => !string.IsNullOrWhiteSpace(name) && name != "none")
+            .Append("weapon_knife")
+            .Distinct();
+
+        foreach (var weaponName in weaponNames)
+        {
+            foreach (var ent in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>(weaponName))
+            {
+                ent.Remove();
+            }
+        }
     }
 
     private void DisableFF(bool silent = false)
