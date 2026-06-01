@@ -54,7 +54,7 @@ public class WardenService : IWardenService
         dispatcher.RegisterCommand("css_kommenu", "Komutçu ana menüsünü açar", CommandKomMenu);
     }
 
-    public void LoadStats() => _statService.LoadStats();
+    public async Task LoadStats() => await _statService.LoadStats();
 
     public bool IsWarden(CCSPlayerController player)
     {
@@ -176,7 +176,9 @@ public class WardenService : IWardenService
             if (_wardenStartTime != null)
             {
                 var duration = DateTime.Now - _wardenStartTime.Value;
-                _statService.UpdateWardenStats(CurrentWarden, duration.TotalSeconds);
+                ulong steamId = CurrentWarden.SteamID;
+                string playerName = CurrentWarden.PlayerName;
+                _ = Task.Run(async () => await _statService.UpdateWardenStats(steamId, playerName, duration.TotalSeconds));
             }
 
             AdminManager.RemovePlayerPermissions(CurrentWarden, "@jailbreak/warden");
