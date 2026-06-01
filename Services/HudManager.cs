@@ -19,7 +19,7 @@ public class HudContent
     public DateTime? Expiry { get; set; }
 }
 
-public class HudManager
+public class HudManager : IHudManager
 {
     private readonly JailBreakPlugin _plugin;
     private readonly Dictionary<ulong, Dictionary<string, HudContent>> _playerHudStates = new();
@@ -32,6 +32,8 @@ public class HudManager
         _plugin = plugin;
     }
 
+    public void Update() => OnTick();
+
     public void OnTick()
     {
         var now = DateTime.Now;
@@ -43,6 +45,16 @@ public class HudManager
             UpdatePlayerHud(player);
             _lastUpdateTime[player.SteamID] = now;
         }
+    }
+
+    public void SetHudText(string text, float duration)
+    {
+        // TODO: Implement centralized HUD text setting
+    }
+
+    public void ClearHud()
+    {
+        // TODO: Implement centralized HUD clearing
     }
     
     private void UpdatePlayerHud(CCSPlayerController player)
