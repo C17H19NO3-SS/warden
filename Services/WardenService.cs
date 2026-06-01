@@ -107,7 +107,7 @@ public class WardenService
         }
         else
         {
-            stat.PlayerName = player.PlayerName; // Update name in case it changed
+            stat.PlayerName = player.PlayerName; 
         }
 
         stat.TotalTimeSeconds += seconds;
@@ -185,14 +185,17 @@ public class WardenService
         return _godModePlayers.Contains(steamId);
     }
 
-    public bool HasPermission(CCSPlayerController player, string? requiredFlag = null)
+    public bool HasPermission(CCSPlayerController? player, string? requiredFlag = null)
     {
+        if (player == null) return true; // Console command
+        if (!player.IsValid) return false;
+
+        if (AdminManager.PlayerHasPermissions(player, "@css/root")) return true;
         if (IsWarden(player) || IsWardenAdmin(player)) return true;
         
-        // Root override removed as per user instruction to only use admin flags.
-        // We will assume @css/ban as the highest power if no flag provided.
         if (requiredFlag != null && AdminManager.PlayerHasPermissions(player, requiredFlag)) return true;
         
+        player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission));
         return false;
     }
 
@@ -238,7 +241,6 @@ public class WardenService
 
         AdminManager.AddPlayerPermissions(player, "@jailbreak/warden");
 
-        // Save original immunity and set to 100
         _originalImmunity[player.SteamID] = (uint)player.Score; 
         AdminManager.SetPlayerImmunity(player, 100);
 
@@ -252,7 +254,6 @@ public class WardenService
             }
         });
 
-        // Warden RGB Timer
         _rgbTimer?.Kill();
         _hue = 0;
         _rgbTimer = _plugin.AddTimer(0.1f, UpdateWardenRgb, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
@@ -318,7 +319,6 @@ public class WardenService
         _rgbTimer?.Kill();
         _rgbTimer = null;
 
-        // Komutçu gidince ka yetkileri de gider
         var admins = _wardenAdmins.ToList();
         foreach (var adminId in admins)
         {
@@ -336,6 +336,7 @@ public class WardenService
 
     public void CommandKomMenu(CCSPlayerController? player, CommandInfo info)
     {
+        LogHelper.LogTrace($"WardenService: CommandKomMenu called for {player?.PlayerName}.");
         if (player == null || !player.IsValid || !HasPermission(player)) return;
 
         var menu = new CenterHtmlMenu("👑 Komutçu Kontrol Paneli", _plugin);
@@ -349,12 +350,17 @@ public class WardenService
         menu.AddItem("[➕] Herkesi Canlandır", (p, o) => _plugin.UtilityService.CommandAf(p, info));
         menu.AddItem("[📈] İşaretleyici Ayarları", (p, o) => _plugin.MarkerService.OpenMarkerMenu(p, info));
         
+        LogHelper.LogTrace($"WardenService: CommandKomMenu displaying menu for {player.PlayerName}.");
         menu.Display(player, 0);
     }
 
     public void CommandBecomeWarden(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid) return;
+        if (player == null || !player.IsValid)
+        {
+            Server.PrintToConsole("[JailBreak] Bu komut sadece oyuncular tarafından kullanılabilir.");
+            return;
+        }
 
         if (!_plugin.IsJailbreakMap())
         {
@@ -379,7 +385,11 @@ public class WardenService
 
     public void CommandUnwarden(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid) return;
+        if (player == null || !player.IsValid)
+        {
+            Server.PrintToConsole("[JailBreak] Bu komut sadece oyuncular tarafından kullanılabilir.");
+            return;
+        }
 
         if (!_plugin.IsJailbreakMap())
         {
@@ -509,7 +519,6 @@ public class WardenService
 
         foreach (var p in players)
         {
-            // Capture the target player reference for the closure
             var targetPlayer = p;
             menu.AddItem(targetPlayer.PlayerName, (caller, option) =>
             {
@@ -532,7 +541,6 @@ public class WardenService
         _wardenAdminStartTimes[target.SteamID] = DateTime.Now;
         AdminManager.AddPlayerPermissions(target, "@jailbreak/ka");
 
-        // Immunity set to 100
         AdminManager.SetPlayerImmunity(target, 100);
 
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgWardenAdminSelected, target.PlayerName)));

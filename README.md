@@ -41,13 +41,13 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!box <sn>` | `!b` | `@css/changemap`| **Boks Modu:** Dost ateşini açar, süre sonunda otomatik kapatır. |
 | `!ffdondur <sn>`| `!ffondur` | `@css/changemap`| FF'i açar ve süre bittiğinde tüm T takımını dondurur. |
 | `!dsustum` | - | `@css/slay` | Kelimeyi ilk yazana **Deagle** ödülü verir. |
-| `!tsustum` | - | `@css/slay` | Kelimeyi ilk yazana **CT** takımına geçme ödülü verir. |
+| `!tsustum` | `!tsusdum` | `@css/slay` | Kelimeyi ilk yazana **CT** takımına geçme ödülü verir. |
 | `!olusustum` | - | `@css/slay` | Kelimeyi ilk yazan ölü oyuncuyu **canlandırır**. |
 
 ### 3. Dost Ateşi (FF) ve Silah Yönetimi
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
-| `!ffmenu` | - | `@css/changemap`| **Görsel FF Ayarı:** Silahları ve Bunny durumunu ayarladığınız paneldir. |
+| `!ffmenu` | `!ff` | `@css/changemap`| **Görsel FF Ayarı:** Silahları ve Bunny durumunu ayarladığınız paneldir. |
 | `!ffkapat` | `!ffk` | `@css/changemap`| Aktif olan tüm FF süreçlerini anında durdurur. |
 | `!ff0` | - | `@css/changemap`| FF'i kapatır ve tüm T'lerin silahlarını siler. |
 | `!ss` | `!strip` | `@css/slay` | T takımının tüm silahlarını anında temizler. |
@@ -68,8 +68,9 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!rev <hedef>` | `!kaldır` | `@css/slay` | Hedefi (`@t`, `@ct`, `@all` veya isim) canlandırır. |
+| `!kill <isim>` | - | `@css/slay` | Belirtilen oyuncuyu öldürür. |
 | `!af` | - | `@css/slay` | Herkesi canlandırır ve canlarını 100 yapar. |
-| `!hpa` | - | `@css/slay` | Yaşayan tüm oyuncuların canını 100 yapar. |
+| `!hpa` | `!hpall` | `@css/slay` | Yaşayan tüm oyuncuların canını 100 yapar. |
 | `!hpt` | - | `@css/slay` | Sadece T takımının canını 100 yapar. |
 | `!hpct` | - | `@css/slay` | Sadece CT takımının canını 100 yapar. |
 | `!gelt` | - | `@css/kick` | Tüm T takımını komutçunun yanına ışınlar. |
@@ -93,8 +94,8 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!iseli <sn>` | - | `@css/changemap`| Geri sayımlı hücre kapısı açma. |
 | `!iq` | - | `@css/changemap`| Haritadaki tüm kapıları anında açar. |
 | `!ba` / `!bk` | - | `@css/generic` | Bunny Hop özelliğini açar veya kapatır. |
-| `!mct` / `!umct` | - | `@css/generic` | CT takımını mutele veya mutesini aç. |
-| `!mt` / `!umt` | - | `@css/generic` | T takımını mutele veya mutesini aç. |
+| `!mct` / `!umct` / `!uct`| - | `@css/generic` | CT takımını mutele veya mutesini aç. |
+| `!mt` / `!umt` / `!ut` | - | `@css/generic` | T takımını mutele veya mutesini aç. |
 | `!otores` / `!otores0`| - | `@css/generic` | Ölenlerin otomatik canlanmasını ayarlar. |
 | `!reloadconfig` | - | `@css/root` | Ayarları ve dil dosyasını yeniler. |
 | `!kaccm` | - | Herkes | Eğlence amaçlı boy ölçümü yapar. |

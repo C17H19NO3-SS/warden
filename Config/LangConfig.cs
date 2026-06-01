@@ -4,27 +4,20 @@ namespace JailBreak.Config;
 
 public class LangConfig
 {
-
-    // Messages
     [JsonPropertyName("MsgOnlyJailbreakMap")]
     public string MsgOnlyJailbreakMap { get; set; } = "{White}Bu komut sadece JailBreak haritalarında kullanılabilir!";
-
 
     [JsonPropertyName("MsgWardenDurationExpired")]
     public string MsgWardenDurationExpired { get; set; } = "{White}Komutçunun süresi doldu, otomatik oylama başlatılıyor.";
 
-
     [JsonPropertyName("MsgNewWarden")]
     public string MsgNewWarden { get; set; } = "{White}{Red}{0}{White} yeni komutçu oldu!";
-
 
     [JsonPropertyName("MsgOnlyCTCanBeWarden")]
     public string MsgOnlyCTCanBeWarden { get; set; } = "{White}Sadece CT takımındakiler komutçu olabilir.";
 
-
     [JsonPropertyName("MsgWardenExists")]
     public string MsgWardenExists { get; set; } = "{White}Zaten bir komutçu var: {Red}{0}{White}";
-
 
     [JsonPropertyName("MsgWardenLeft")]
     public string MsgWardenLeft { get; set; } = "{White}{Red}{0}{White} komutçuluğu bıraktı.";
@@ -177,11 +170,13 @@ public class LangConfig
     [JsonPropertyName("MsgDizUsage")]
     public string MsgDizUsage { get; set; } = "{White}Kullanım: !diz <mesafe>";
 
+    [JsonPropertyName("MsgPingLocationFirst")]
+    public string MsgPingLocationFirst { get; set; } = "{White}Önce bir konum işaretlemeniz gerekiyor. (E tuşuna basılı tutun ve pingleyin)";
+
 
     [JsonPropertyName("MsgDaireApplied")]
     public string MsgDaireApplied { get; set; } = "{White}T takımı {Red}{0}{White} genişliğinde daire şeklinde dizildi!";
 
-    // Position Commands
     [JsonPropertyName("MsgDizApplied")]
     public string MsgDizApplied { get; set; } = "{White}T takımı {Red}{0}{White} mesafesinde yan yana dizildi!";
 
@@ -218,7 +213,6 @@ public class LangConfig
     public string MsgOnlyWardenAdminOrRootCanUse { get; set; } = "{White}Bu komutu sadece komutçu, komutçu admini veya root yetkilileri kullanabilir.";
 
 
-    // Utility Messages
     [JsonPropertyName("MsgHpAllSet")]
     public string MsgHpAllSet { get; set; } = "{White}Tüm oyuncuların canı 100 olarak ayarlandı!";
 
@@ -247,7 +241,6 @@ public class LangConfig
     public string MsgHakSalApplied { get; set; } = "{White}{Red}{0}{White} hakkını {Red}{1}{White} oyuncusuna saldı!";
 
 
-    // LR Messages
     [JsonPropertyName("MsgLROnlyLastT")]
     public string MsgLROnlyLastT { get; set; } = "{White}Bu komutu sadece sona kalan T kullanabilir.";
 
@@ -279,7 +272,6 @@ public class LangConfig
     public string MsgLRNoCTFound { get; set; } = "{White}Düello yapacak CT bulunamadı.";
 
 
-    // LR HUD Titles/Content
     [JsonPropertyName("HudTitleLRMain")]
     public string HudTitleLRMain { get; set; } = "SONA KALAN MENÜSÜ";
 
@@ -305,7 +297,6 @@ public class LangConfig
     public string HudInstructionLRNextPage { get; set; } = "Tab: Sonraki Sayfa";
 
 
-    // FF HUD Titles/Content
     [JsonPropertyName("HudTitleFFSystem")]
     public string HudTitleFFSystem { get; set; } = "FF SİSTEMİ";
 
@@ -408,7 +399,6 @@ public class LangConfig
     public string MsgIseliQuickOpened { get; set; } = "{White}İseli anında tamamlandı, tüm kapılar açıldı!";
 
 
-    // HUD Design
     [JsonPropertyName("HudTitleIseli")]
     public string HudTitleIseli { get; set; } = "İSELİ GERİ SAYIM";
 
@@ -551,4 +541,7 @@ public class LangConfig
 
     [JsonPropertyName("MsgDelayEnded")]
     public string MsgDelayEnded { get; set; } = "{Default}Delay giderme bitti.";
+
+    [JsonPropertyName("MsgSelfKillApplied")]
+    public string MsgSelfKillApplied { get; set; } = "{White}{Red}{0}{White} kendi kendini öldürdü.";
 }

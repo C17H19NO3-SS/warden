@@ -13,16 +13,20 @@ public class VoteService
     private readonly JailBreakPlugin _plugin;
     private readonly WardenService _wardenService;
 
-    // Normal Vote State
     private bool _isCandidatePhase = false;
+
     private bool _isVotePhase = false;
+
     private int _phaseTimer = 0;
+
     private CounterStrikeSharp.API.Modules.Timers.Timer? _tickTimer;
+
     private readonly List<CCSPlayerController> _candidates = new();
+
     private readonly Dictionary<ulong, ulong> _votes = new();
 
-    // Kick Vote State
     private bool _isKickVotePhase = false;
+
     private readonly Dictionary<ulong, bool> _kickVotes = new();
 
     public VoteService(JailBreakPlugin plugin, WardenService wardenService)
@@ -33,23 +37,23 @@ public class VoteService
 
     public void CommandStartVote(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid) return;
+        if (player != null && !player.IsValid) return;
 
         if (!_plugin.IsJailbreakMap())
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap));
+            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyJailbreakMap);
             return;
         }
 
-        if (!_wardenService.HasPermission(player, "@css/vote"))
+        if (player != null && !_wardenService.HasPermission(player, "@css/vote"))
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyAdminsCanVote));
+            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgOnlyAdminsCanVote);
             return;
         }
 
         if (_isCandidatePhase || _isVotePhase || _isKickVotePhase)
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteAlreadyActive));
+            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteAlreadyActive);
             return;
         }
 
@@ -80,7 +84,7 @@ public class VoteService
 
         if (_isCandidatePhase || _isVotePhase || _isKickVotePhase)
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteAlreadyActive));
+            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgVoteAlreadyActive);
             return;
         }
 
@@ -298,11 +302,9 @@ public class VoteService
 
         if (_isKickVotePhase)
         {
-            // Komutçu kendi oylamasına katılamaz
             if (_wardenService.IsWarden(player))
             {
                 player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgCannotVoteSelf));
-                return true; // Stop them from typing 1 or 2 as normal chat
             }
 
             if (int.TryParse(message, out int choice))

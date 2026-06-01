@@ -37,7 +37,6 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
     private RebelService _rebelService = null!;
     private GameManagerService _gameManagerService = null!;
     private DispatcherService _dispatcherService = null!;
-    private TestService _testService = null!;
     private HudService _hudService = null!;
     private HudManager _hudManager = null!;
 
@@ -65,15 +64,12 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
-            // Config File Logic
-            // CS# already merged the defaults into 'config', we just write it back to disk to fill missing keys.
             string configDir = Path.GetDirectoryName(configPath) ?? "";
             if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
 
             string json = JsonSerializer.Serialize(config, options);
             File.WriteAllText(configPath, json);
 
-            // Lang File Logic
             if (File.Exists(langPath))
             {
                 string langJson = File.ReadAllText(langPath);
@@ -81,14 +77,12 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
                 if (loadedLang != null)
                 {
                     Lang = loadedLang;
-                    // Save it back to disk to add any missing keys
                     string updatedLangJson = JsonSerializer.Serialize(Lang, options);
                     File.WriteAllText(langPath, updatedLangJson);
                 }
             }
             else
             {
-                // Create default lang file
                 string dir = Path.GetDirectoryName(langPath) ?? "";
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
@@ -112,7 +106,6 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
     {
         LogHelper.Initialize(Config, ModuleDirectory);
 
-        // StoreBridge config yolunu dinamik ayarla
         string storeConfigPath = Path.Combine(ModuleDirectory, "../../configs/plugins/cs2-store/config.toml");
         StoreApi.StoreBridge.SetConfigPath(storeConfigPath);
 
@@ -131,7 +124,6 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         _rebelService = new RebelService(this);
         _gameManagerService = new GameManagerService(this, _wardenService, _freezeService);
         _dispatcherService = new DispatcherService();
-        _testService = new TestService(_dispatcherService);
         _hudService = new HudService(this);
         _hudManager = new HudManager(this);
 
@@ -153,38 +145,30 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         RegisterCommand("css_komaday", "Komutçu oylamasına katıl", _voteService.CommandJoinVote);
         RegisterCommand("css_marker", "İşaretleyici menüsünü açar", _markerService.OpenMarkerMenu);
         RegisterCommand("css_reloadconfig", "Config dosyasını yeniden yükle", CommandReloadConfig);
-        RegisterCommand("css_jbtest", "Run JailBreak plugin tests", (p, i) => _testService.RunTests());
 
-        // Sustum Commands
         _sustumService.RegisterCommands(this);
 
-        // Freeze Commands
         RegisterCommand("css_td", "T takımını dondur", _freezeService.CommandFreeze);
         RegisterCommand("css_tdb", "T takımının donmasını çöz", _freezeService.CommandUnfreeze);
         RegisterCommand("css_fz", "Gecikmeli dondurma başlat", _freezeService.CommandDelayedFreeze);
         RegisterCommand("css_fz0", "Dondurmayı sıfırla", _freezeService.CommandResetFreeze);
 
-        // Iseli Commands
         RegisterCommand("css_iseli", "İseli kapı kontrolü", _iseliService.CommandIseli);
         RegisterCommand("css_iq", "Kapıları anında aç", _iseliService.CommandQuickIseli);
 
-        // Position Commands
         RegisterCommand("css_daire", "T takımını daire diz", _positionService.CommandDaire);
         RegisterCommand("css_diz", "T takımını yan yana diz", _positionService.CommandDiz);
 
-        // FF Menu Commands
         _ffMenuService.RegisterCommands(this);
 
         _utilityService.RegisterCommands(this);
 
-        // LR Commands
         RegisterCommand("css_sonakalan", "LR menüsünü aç", _lrService.CommandSonaKalan);
         RegisterCommand("css_sonsec", "Sona kalan hariç öldür ve LR aç", _lrService.CommandSonSec);
         RegisterCommand("css_sonseç", "Sona kalan hariç öldür ve LR aç", _lrService.CommandSonSec);
         RegisterCommand("css_isyancılar", "İsyancı listesini göster", _rebelService.CommandRebels);
         RegisterCommand("css_isyancilar", "İsyancı listesini göster", _rebelService.CommandRebels);
 
-        // Game Mode Commands
         RegisterCommand("css_box", "Boks modunu başlatır", (p, i) => { if (p != null) _gameManagerService.OpenBoxMenu(p); });
         RegisterCommand("css_b", "Boks modunu başlatır", (p, i) => { if (p != null) _gameManagerService.OpenBoxMenu(p); });
         RegisterCommand("css_saklambac", "Saklambaç modunu başlatır", (p, i) => { 

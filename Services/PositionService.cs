@@ -42,7 +42,11 @@ public class PositionService
         if (!_wardenService.HasPermission(player, "@css/kick")) return;
 
         Vector center = GetCenterPoint(player);
-        if (center.X == 0 && center.Y == 0) return;
+        if (center.X == 0 && center.Y == 0 && center.Z == 0) 
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPingLocationFirst));
+            return;
+        }
 
         string arg = info.GetArg(1);
         if (!float.TryParse(arg, out float radius))
@@ -65,6 +69,8 @@ public class PositionService
             if (pawn != null && pawn.IsValid)
             {
                 pawn.Teleport(new Vector(x, y, center.Z + 5.0f), pawn.AbsRotation, new Vector(0, 0, 0));
+                pawn.MoveType = MoveType_t.MOVETYPE_NONE;
+                pawn.ActualMoveType = MoveType_t.MOVETYPE_NONE;
             }
         }
 
@@ -78,7 +84,11 @@ public class PositionService
         if (!_wardenService.HasPermission(player, "@css/kick")) return;
 
         Vector center = GetCenterPoint(player);
-        if (center.X == 0 && center.Y == 0) return;
+        if (center.X == 0 && center.Y == 0 && center.Z == 0)
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPingLocationFirst));
+            return;
+        }
 
         string arg = info.GetArg(1);
         if (!float.TryParse(arg, out float spacing))
@@ -113,6 +123,8 @@ public class PositionService
             if (pawn != null && pawn.IsValid)
             {
                 pawn.Teleport(new Vector(x, y, center.Z + 5.0f), pawn.AbsRotation, new Vector(0, 0, 0));
+                pawn.MoveType = MoveType_t.MOVETYPE_NONE;
+                pawn.ActualMoveType = MoveType_t.MOVETYPE_NONE;
             }
         }
 

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -10,9 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.*" ExcludeAssets="runtime" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.300" ExcludeAssets="runtime" />
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="MySqlConnector" Version="2.5.0" />
+    <PackageReference Include="Tomlyn" Version="0.17.0" />
   </ItemGroup>
 
   <ItemGroup>

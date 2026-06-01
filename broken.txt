@@ -1,0 +1,15 @@
+menüler hemen kapanıyo
+fz0 çalışmıyo
+ffmenu komutu çalışmıyor
+ff komutları çalışmıyor
+tsusdum, dsustum, olusustum çalışmıyor
+daire çalışmıyo
+diz çalışmıyor
+kill komutu ekle
+hp ile başlayan komutlar can vermiyor
+fsay çalışmıyor
+msay, hsay, csay komutlarında anouncment gibi uyarı mesajları yazmasın sadece mesaj gönderilsin ve menü şeklinde değil hud üzerinde 15 saniye durucak şekilde ayarlansın
+marker menüsü olsun
+kaccm çalışmıyor
+isyancılar menüsü hemen kapanıyor
+sonseç komutu isim yazınca çalışmıyor

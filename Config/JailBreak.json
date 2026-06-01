@@ -1,0 +1,91 @@
+{
+  "DebugMode": true,
+  "WardenDurationMinutes": 30,
+  "MaxCTRevives": 3,
+  "LRCreditReward": 100,
+  "WardenTag": "{Red}★ Komutçu ★",
+  "WardenNameColor": "{Orange}",
+  "WardenChatColor": "{Default}",
+  "WardenAdminTag": "{Green}★ Komutcu Admin ★",
+  "WardenAdminNameColor": "{Purple}",
+  "WardenAdminChatColor": "{Default}",
+  "ChatPrefix": "{Red}[Mazi JB]{Default}",
+  "SustumWords": [
+    "elma",
+    "armut",
+    "kalem",
+    "masa",
+    "kitap",
+    "bilgisayar",
+    "telefon"
+  ],
+  "FFPrimaryWeaponList": [
+    {
+      "Name": "AK-47",
+      "ItemName": "weapon_ak47"
+    },
+    {
+      "Name": "M4A1-S",
+      "ItemName": "weapon_m4a1_silencer"
+    },
+    {
+      "Name": "AWP",
+      "ItemName": "weapon_awp"
+    },
+    {
+      "Name": "Galil",
+      "ItemName": "weapon_galilar"
+    },
+    {
+      "Name": "Famas",
+      "ItemName": "weapon_famas"
+    },
+    {
+      "Name": "SSG 08",
+      "ItemName": "weapon_ssg08"
+    },
+    {
+      "Name": "Nova",
+      "ItemName": "weapon_nova"
+    },
+    {
+      "Name": "Yok",
+      "ItemName": "none"
+    }
+  ],
+  "FFSecondaryWeaponList": [
+    {
+      "Name": "Deagle",
+      "ItemName": "weapon_deagle"
+    },
+    {
+      "Name": "USP-S",
+      "ItemName": "weapon_usp_silencer"
+    },
+    {
+      "Name": "Glock",
+      "ItemName": "weapon_glock"
+    },
+    {
+      "Name": "P250",
+      "ItemName": "weapon_p250"
+    },
+    {
+      "Name": "Five-Seven",
+      "ItemName": "weapon_fiveseven"
+    },
+    {
+      "Name": "Tec-9",
+      "ItemName": "weapon_tec9"
+    },
+    {
+      "Name": "Yok",
+      "ItemName": "none"
+    }
+  ],
+  "SustumDuration": 15,
+  "SustumRewardDeagleWeapon": "weapon_deagle",
+  "VotePhaseDuration": 30,
+  "KickVoteDelayedDuration": 60,
+  "ConfigVersion": 1
+}

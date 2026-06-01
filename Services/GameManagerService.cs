@@ -101,7 +101,6 @@ public class GameManagerService
             if (pawn != null && pawn.IsValid && ctSpawns.Count > 0)
             {
                 var spawn = ctSpawns[new Random().Next(ctSpawns.Count)]; 
-                // Teleport and Rotate 180
                 QAngle angles = pawn.AbsRotation!;
                 angles.Y += 180;
                 pawn.Teleport(spawn.AbsOrigin, angles, new CounterStrikeSharp.API.Modules.Utils.Vector(0, 0, 0));

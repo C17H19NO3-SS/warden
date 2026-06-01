@@ -23,9 +23,26 @@ namespace JailBreak.Helpers
 
         private static void WriteToFile(string level, string message)
         {
-            string fileName = $"log_{DateTime.Now:yyyy-MM-dd}.txt";
-            string filePath = Path.Combine(_logDirectory, fileName);
+            int maxLines = 500;
             string logLine = $"[{DateTime.Now:HH:mm:ss}] [{level}] {message}";
+
+            string? filePath = null;
+            int fileIndex = 0;
+            
+            while (filePath == null)
+            {
+                string fileName = $"log_{DateTime.Now:yyyy-MM-dd}_{fileIndex}.txt";
+                string tempPath = Path.Combine(_logDirectory, fileName);
+                
+                if (!File.Exists(tempPath) || File.ReadAllLines(tempPath).Length < maxLines)
+                {
+                    filePath = tempPath;
+                }
+                else
+                {
+                    fileIndex++;
+                }
+            }
 
             try
             {
@@ -46,11 +63,12 @@ namespace JailBreak.Helpers
 
         public static void LogError(string message, Exception? ex = null)
         {
+            if (_config == null || _config.LogLevel < 1) return;
             string logMessage = $"{LogPrefix} [ERROR] [{DateTime.Now:HH:mm:ss}] {message}";
             string fileMessage = message;
             if (ex != null)
             {
-                string details = $"\nException: {ex.Message}\nStackTrace: {ex.StackTrace}";
+                string details = "\nException: " + ex.Message + "\nStackTrace: " + ex.StackTrace;
                 logMessage += details;
                 fileMessage += details;
             }
@@ -60,11 +78,16 @@ namespace JailBreak.Helpers
 
         public static void LogDebug(string message)
         {
-            if (_config != null && _config.DebugMode)
-            {
-                Server.PrintToConsole($"{LogPrefix} [DEBUG] [{DateTime.Now:HH:mm:ss}] {message}");
-                WriteToFile("DEBUG", message);
-            }
+            if (_config == null || _config.LogLevel < 2) return;
+            Server.PrintToConsole($"{LogPrefix} [DEBUG] [{DateTime.Now:HH:mm:ss}] {message}");
+            WriteToFile("DEBUG", message);
+        }
+
+        public static void LogTrace(string message)
+        {
+            if (_config == null || _config.LogLevel < 3) return;
+            Server.PrintToConsole($"{LogPrefix} [TRACE] [{DateTime.Now:HH:mm:ss}] {message}");
+            WriteToFile("TRACE", message);
         }
     }
 }

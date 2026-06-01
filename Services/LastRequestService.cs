@@ -26,7 +26,6 @@ public class LastRequestService
     private CCSPlayerController? _lastT;
     private CCSPlayerController? _selectedCT;
 
-    // LR State
     private bool _isLRActive = false;
     private bool _isDeagleTurnT = true;
 
@@ -65,16 +64,18 @@ public class LastRequestService
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
         if (!_plugin.IsJailbreakMap()) return;
 
-        string targetName = info.GetArg(1);
+        string targetName = info.ArgString.Trim(); 
         if (string.IsNullOrEmpty(targetName))
         {
             player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSonSecUsage));
             return;
         }
 
-        var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, System.StringComparison.OrdinalIgnoreCase) && p.Team == CsTeam.Terrorist && p.PawnIsAlive);
+        var target = Utilities.GetPlayers().FirstOrDefault(p => 
+            p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive &&
+            (p.PlayerName.Contains(targetName, StringComparison.OrdinalIgnoreCase) || p.SteamID.ToString() == targetName));
 
-        if (target == null || !target.IsValid)
+        if (target == null) 
         {
             player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgPlayerNotFound));
             return;
@@ -229,7 +230,6 @@ public class LastRequestService
         _lastT.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLRDeagleTurn));
         _selectedCT.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgLRDeagleWait));
 
-        // Turn-based logic will be handled in EventWeaponFire
     }
 
     private void PrepareKnifeDuel()
@@ -281,7 +281,6 @@ public class LastRequestService
         {
             _isLRActive = false;
 
-            // Eğer kaybeden CT ise ve koruma ise (Warden değilse), T takımına atılacak
             if (victim.SteamID == _selectedCT?.SteamID)
             {
                 if (!_wardenService.IsWarden(_selectedCT!))

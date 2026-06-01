@@ -54,6 +54,17 @@ public class FFMenuService
         _freezeService = freezeService;
     }
 
+    public void RegisterCommands(ICommandDispatcher dispatcher)
+    {
+        dispatcher.RegisterCommand("css_ffmenu", "FF silah menüsünü aç", CommandFFMenu);
+        dispatcher.RegisterCommand("css_ff", "FF silah menüsünü aç", CommandFFMenu);
+        dispatcher.RegisterCommand("css_ffkapat", "FF'i kapat", CommandFFKapat);
+        dispatcher.RegisterCommand("css_ffk", "FF'i kapat", CommandFFKapat);
+        dispatcher.RegisterCommand("css_ff0", "FF'i kapat ve silahları al", CommandFF0);
+        dispatcher.RegisterCommand("css_ffondur", "FF aç ve sonunda dondur", CommandFFOndur);
+        dispatcher.RegisterCommand("css_ffdondur", "FF aç ve sonunda dondur", CommandFFOndur);
+    }
+
     public void OnRoundStart()
     {
         DisableFF(true);
@@ -68,8 +79,16 @@ public class FFMenuService
     public void CommandFFMenu(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
-        if (!_plugin.IsJailbreakMap()) return;
-        if (!_wardenService.HasPermission(player)) return;
+        if (!_plugin.IsJailbreakMap()) 
+        {
+            LogHelper.LogDebug("FFMenu: Not a jailbreak map");
+            return;
+        }
+        if (!_wardenService.HasPermission(player))
+        {
+            LogHelper.LogDebug($"FFMenu: Player {player.PlayerName} has no permission");
+            return;
+        }
 
         string arg = info.GetArg(1);
         int time = 30;
@@ -120,12 +139,10 @@ public class FFMenuService
         _ffRemainingTime = time;
         _isCountingToStart = false;
         _isSelectionPhaseActive = false;
-        EnableFF(); // Ensure FF is active during the countdown
 
         _tickTimer?.Kill();
         _tickTimer = _plugin.AddTimer(1.0f, CountdownTick, TimerFlags.REPEAT);
 
-        UpdateHUD(); // Show HUD immediately
 
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgFFOndurApplied));
     }
@@ -188,7 +205,6 @@ public class FFMenuService
             });
         }
         
-        // To make "Back" work perfectly, create the config menu again:
         menu.AddItem("⬅ Geri", (p, o) => OpenWardenConfigMenu(p));
 
         menu.Display(warden, 0);
@@ -216,7 +232,6 @@ public class FFMenuService
     private void StartTWeaponSelectionPhase()
     {
         _isSelectionPhaseActive = true;
-        _selectionTimeRemaining = 15; // 15 seconds to choose
         _playerSelections.Clear();
 
         var ts = Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive).ToList();
@@ -269,9 +284,6 @@ public class FFMenuService
                         sel.SecondaryItem = wp.ItemName;
                         sel.SecondarySelected = true;
                     }
-                    // Close menu by displaying an empty/dummy menu or letting it expire
-                    var emptyMenu = new CenterHtmlMenu("Seçim Bekleniyor...", _plugin);
-                    emptyMenu.Display(player, 0);
                     CheckAllSelectionsCompleted();
                 });
             }
@@ -322,7 +334,6 @@ public class FFMenuService
             Server.ExecuteCommand("sv_enablebunnyhopping 1");
         }
 
-        // Start final HUD countdown
         _isCountingToStart = true;
         _ffRemainingTime = _currentFFConfig.CountdownTime;
         _tickTimer = _plugin.AddTimer(1.0f, CountdownTick, TimerFlags.REPEAT);
@@ -397,10 +408,8 @@ public class FFMenuService
 
     public bool HandleFFMenuChat(CCSPlayerController player, string message)
     {
-        // Intercept !1, !2 etc. so it doesn't show in chat while menus are active anywhere in CS2MenuManager
         if (message.StartsWith("!") && int.TryParse(message.Substring(1), out _))
         {
-            return true; // Stop chat processing for menu number inputs globally or selectively
         }
         return false;
     }

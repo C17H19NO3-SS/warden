@@ -33,8 +33,18 @@ public class SustumService
         _wardenService = wardenService;
     }
 
+    public void RegisterCommands(ICommandDispatcher dispatcher)
+    {
+        dispatcher.RegisterCommand("css_dsustum", "Deagle ödüllü sustum başlat", CommandDsustum);
+        dispatcher.RegisterCommand("css_tsustum", "T'ye geçme ödüllü sustum başlat", CommandTsustum);
+        dispatcher.RegisterCommand("css_tsusdum", "T'ye geçme ödüllü sustum başlat", CommandTsustum);
+        dispatcher.RegisterCommand("css_olusustum", "Canlanma ödüllü sustum başlat", CommandOlusustum);
+    }
+
     public void CommandDsustum(CCSPlayerController? player, CommandInfo info) => StartSustum(player, SustumMode.Dsustum);
+    
     public void CommandTsustum(CCSPlayerController? player, CommandInfo info) => StartSustum(player, SustumMode.Tsustum);
+    
     public void CommandOlusustum(CCSPlayerController? player, CommandInfo info) => StartSustum(player, SustumMode.Olusustum);
 
     private void StartSustum(CCSPlayerController? player, SustumMode mode)
@@ -49,7 +59,6 @@ public class SustumService
 
         if (!_wardenService.HasPermission(player, "@css/slay"))
         {
-            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission));
             return;
         }
 
@@ -62,7 +71,7 @@ public class SustumService
         _remainingTime = _plugin.Config.SustumDuration;
 
         string modeName = mode.ToString().ToUpper();
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSustumStarted, modeName, _targetWord)));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSustumStarted, modeName, _targetWord));
 
         _sustumTimer = _plugin.AddTimer(1.0f, () =>
         {
@@ -75,7 +84,7 @@ public class SustumService
 
             if (_remainingTime <= 0)
             {
-                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSustumExpired, modeName)));
+                Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSustumExpired, modeName));
                 _activeMode = SustumMode.None;
                 _targetWord = "";
                 _sustumTimer?.Kill();
@@ -132,7 +141,7 @@ public class SustumService
 
         if (canWin)
         {
-            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSustumWinner, modeName, player.PlayerName, rewardName)));
+            Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSustumWinner, modeName, player.PlayerName, rewardName));
             _activeMode = SustumMode.None;
             _targetWord = "";
             _sustumTimer?.Kill();

@@ -6,29 +6,90 @@ using CounterStrikeSharp.API.Modules.Admin;
 using System.Linq;
 using JailBreak.Helpers;
 using CS2MenuManager.API.Menu;
+using System.Drawing;
 
 namespace JailBreak.Services;
 
+/// <summary>
+/// Provides a variety of utility commands and functionalities for the Warden.
+/// </summary>
 public class UtilityService
 {
     private readonly JailBreakPlugin _plugin;
     private readonly WardenService _wardenService;
+    private readonly HudService _hudService;
     private readonly Random _random = new();
     private readonly Dictionary<ulong, (string Name, int Value)> _kacCmRecords = new();
     private int _currentCTRevives;
 
-    public UtilityService(JailBreakPlugin plugin, WardenService wardenService)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UtilityService"/> class.
+    /// </summary>
+    /// <param name="plugin">The main plugin instance.</param>
+    /// <param name="wardenService">The warden service instance.</param>
+    /// <param name="hudService">The HUD service instance.</param>
+    public UtilityService(JailBreakPlugin plugin, WardenService wardenService, HudService hudService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
+        _hudService = hudService;
         _currentCTRevives = plugin.Config.MaxCTRevives;
     }
 
+    /// <summary>
+    /// Registers all utility commands with the command dispatcher.
+    /// </summary>
+    /// <param name="dispatcher">The command dispatcher.</param>
+    public void RegisterCommands(ICommandDispatcher dispatcher)
+    {
+        dispatcher.RegisterCommand("css_hpa", "Herkesin canını 100 yap", CommandHpAll);
+        dispatcher.RegisterCommand("css_hpall", "Herkesin canını 100 yap", CommandHpAll);
+        dispatcher.RegisterCommand("css_hpt", "T takımının canını 100 yap", CommandHpT);
+        dispatcher.RegisterCommand("css_hpct", "CT takımının canını 100 yap", CommandHpCT);
+        dispatcher.RegisterCommand("css_gelt", "Tüm T'leri çek", CommandGetT);
+        dispatcher.RegisterCommand("css_gelct", "Tüm CT'leri çek", CommandGetCT);
+        dispatcher.RegisterCommand("css_gelall", "Tüm oyuncuları çek", CommandGetAll);
+        dispatcher.RegisterCommand("css_af", "Herkesi canlandır ve canını 100 yap", CommandAf);
+        dispatcher.RegisterCommand("css_git", "Oyuncuya git", CommandGit);
+        dispatcher.RegisterCommand("css_haksal", "CT ile T takımını yer değiştir", CommandHakSal);
+        dispatcher.RegisterCommand("css_ba", "Bunnyhop aç", CommandBunnyOpen);
+        dispatcher.RegisterCommand("css_bk", "Bunnyhop kapat", CommandBunnyClose);
+        dispatcher.RegisterCommand("css_otores", "Otomatik canlanmayı aç", CommandOtores);
+        dispatcher.RegisterCommand("css_otores0", "Otomatik canlanmayı kapat", CommandOtores0);
+        dispatcher.RegisterCommand("css_gom", "Oyuncuyu göm", CommandGom);
+        dispatcher.RegisterCommand("css_gom0", "Oyuncuyu gömülmekten çıkar", CommandGom0);
+        dispatcher.RegisterCommand("css_umct", "CT takımının mutesini aç", CommandUnmuteCT);
+        dispatcher.RegisterCommand("css_uct", "CT takımının mutesini aç", CommandUnmuteCT);
+        dispatcher.RegisterCommand("css_umt", "T takımının mutesini aç", CommandUnmuteT);
+        dispatcher.RegisterCommand("css_ut", "T takımının mutesini aç", CommandUnmuteT);
+        dispatcher.RegisterCommand("css_ss", "T takımının silahlarını al", CommandSs);
+        dispatcher.RegisterCommand("css_strip", "T takımının silahlarını al", CommandSs);
+        dispatcher.RegisterCommand("css_kaccm", "Kaç cm ölçer", CommandKacCm);
+        dispatcher.RegisterCommand("css_mct", "CT takımını mutele", CommandMuteCT);
+        dispatcher.RegisterCommand("css_mt", "T takımını mutele", CommandMuteT);
+        dispatcher.RegisterCommand("css_topkaccm", "Kaç cm sıralamasını göster", CommandTopKacCm);
+        dispatcher.RegisterCommand("css_delay", "3 saniyelik ses gecikmesini giderir", CommandDelay);
+        dispatcher.RegisterCommand("css_msay", "Ekranda büyük duyuru yapar", CommandMsay);
+        dispatcher.RegisterCommand("css_csay", "Ekranın ortasında duyuru yapar", CommandCsay);
+        dispatcher.RegisterCommand("css_hsay", "HUD kısmında duyuru yapar", CommandHsay);
+        dispatcher.RegisterCommand("css_rev", "Oyuncu canlandırır", CommandRev);
+        dispatcher.RegisterCommand("css_fsay", "Oyuncuya zorla say yazdırır", CommandFsay);
+        dispatcher.RegisterCommand("css_kill", "Belirtilen oyuncuyu öldürür", CommandKill);
+    }
+
+    /// <summary>
+    /// Resets the utility state at the start of a round.
+    /// </summary>
     public void OnRoundStart()
     {
         _currentCTRevives = _plugin.Config.MaxCTRevives;
     }
 
+    /// <summary>
+    /// Displays a message to the left-center of the HUD.
+    /// </summary>
+    /// <param name="player">The player to display the message to.</param>
+    /// <param name="info">Command information containing the message.</param>
     public void CommandMsay(CCSPlayerController? player, CommandInfo info)
     {
         if (player != null && !_wardenService.HasPermission(player, "@css/chat")) return;
@@ -37,13 +98,15 @@ public class UtilityService
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
         {
-            // Using a simple CenterHtmlMenu as a "big message" display
-            var menu = new CenterHtmlMenu($"📢 DUYURU", _plugin);
-            menu.AddItem(message, (caller, opt) => { });
-            menu.Display(p, 10); // Display for 10 seconds
+            _hudService.SendLeftCenterHudMessage(p, message, Color.Red);
         }
     }
 
+    /// <summary>
+    /// Displays a message in the center of the HUD.
+    /// </summary>
+    /// <param name="player">The player to display the message to.</param>
+    /// <param name="info">Command information containing the message.</param>
     public void CommandCsay(CCSPlayerController? player, CommandInfo info)
     {
         if (player != null && !_wardenService.HasPermission(player, "@css/chat")) return;
@@ -52,23 +115,32 @@ public class UtilityService
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
         {
-            p.PrintToCenterHtml($"<font color='red' size='20'>📢 {message}</font>");
+            _hudService.SendLeftCenterHudMessage(p, message, Color.LightBlue);
         }
     }
 
+    /// <summary>
+    /// Displays a message in the HUD area.
+    /// </summary>
+    /// <param name="player">The player to display the message to.</param>
+    /// <param name="info">Command information containing the message.</param>
     public void CommandHsay(CCSPlayerController? player, CommandInfo info)
     {
         if (player != null && !_wardenService.HasPermission(player, "@css/chat")) return;
         string message = info.ArgString.Trim();
         if (string.IsNullOrEmpty(message)) return;
 
-        // Hint/HUD message
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
         {
-             p.PrintToCenter(message);
+            _hudService.SendLeftCenterHudMessage(p, message, Color.Yellow);
         }
     }
 
+    /// <summary>
+    /// Respawns a player or group of players.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information containing the target.</param>
     public void CommandRev(CCSPlayerController? player, CommandInfo info)
     {
         if (player != null && !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -102,6 +174,11 @@ public class UtilityService
         }
     }
 
+    /// <summary>
+    /// Forces a player to say a message in chat.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information containing target and message.</param>
     public void CommandFsay(CCSPlayerController? player, CommandInfo info)
     {
         if (player != null && !AdminManager.PlayerHasPermissions(player, "@css/root")) return;
@@ -109,31 +186,54 @@ public class UtilityService
         string targetName = info.GetArg(1);
         if (string.IsNullOrEmpty(targetName)) return;
 
-        // info.ArgString contains everything after the command.
-        // We need to strip the target name to get the message.
         string message = info.ArgString.Substring(targetName.Length).Trim();
 
         var target = Utilities.GetPlayers().FirstOrDefault(p => p.PlayerName.Contains(targetName, System.StringComparison.OrdinalIgnoreCase));
         if (target != null && !string.IsNullOrEmpty(message))
         {
-            // This will trigger the Chat hook so we might need to be careful if we are looping, 
-            // but standard CS# ExecuteClientCommand "say" should be fine.
             target.ExecuteClientCommand($"say {message}");
         }
     }
 
+    /// <summary>
+    /// Sets all players' health to 100.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandHpAll(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
+        if (player == null || !player.IsValid)
+        {
+            foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.PawnIsAlive))
+            {
+                var pawn = p.PlayerPawn.Value;
+                if (pawn != null && pawn.IsValid)
+                {
+                    pawn.Health = 100;
+                }
+            }
+            Server.PrintToConsole("[JailBreak] Tüm oyuncuların canı 100 yapıldı.");
+            return;
+        }
+
+        if (!_wardenService.HasPermission(player, "@css/slay")) return;
 
         foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && p.PawnIsAlive))
         {
-            p.Health = 100;
-            Utilities.SetStateChanged(p, "CBaseEntity", "m_iHealth");
+            var pawn = p.PlayerPawn.Value;
+            if (pawn != null && pawn.IsValid)
+            {
+                pawn.Health = 100;
+            }
         }
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHpAllSet));
     }
 
+    /// <summary>
+    /// Sets Terrorist players' health to 100.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandHpT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -146,6 +246,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHpTSet));
     }
 
+    /// <summary>
+    /// Sets Counter-Terrorist players' health to 100.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandHpCT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -158,6 +263,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgHpCTSet));
     }
 
+    /// <summary>
+    /// Teleports all Terrorist players to the caller's position.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandGetT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
@@ -172,6 +282,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGetTApplied));
     }
 
+    /// <summary>
+    /// Teleports all Counter-Terrorist players to the caller's position.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandGetCT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
@@ -186,6 +301,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGetCTApplied));
     }
 
+    /// <summary>
+    /// Teleports all players to the caller's position.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandGetAll(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
@@ -200,6 +320,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgGetAllApplied));
     }
 
+    /// <summary>
+    /// Revives all players and sets their health to 100.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandAf(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -222,6 +347,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgAfApplied));
     }
 
+    /// <summary>
+    /// Teleports the caller to the specified player.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information containing target name.</param>
     public void CommandGit(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/kick")) return;
@@ -244,6 +374,11 @@ public class UtilityService
         player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgGitApplied, target.PlayerName)));
     }
 
+    /// <summary>
+    /// Swaps the teams of the caller and the target Terrorist player.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information containing target name.</param>
     public void CommandHakSal(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || player.Team != CsTeam.CounterTerrorist || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -263,7 +398,6 @@ public class UtilityService
             return;
         }
 
-        // Hem oyuncu hem hedef valide edildi, şimdi değişim yapılıyor
         Server.NextFrame(() =>
         {
             if (player.IsValid && target.IsValid)
@@ -275,6 +409,11 @@ public class UtilityService
         });
     }
 
+    /// <summary>
+    /// Enables bunnyhopping.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandBunnyOpen(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -289,6 +428,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgBunnyEnabled));
     }
 
+    /// <summary>
+    /// Disables bunnyhopping.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandBunnyClose(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -300,6 +444,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgBunnyDisabled));
     }
 
+    /// <summary>
+    /// Unmutes all Counter-Terrorist players.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandUnmuteCT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -311,6 +460,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgUnmuteCTApplied));
     }
 
+    /// <summary>
+    /// Unmutes all Terrorist players.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandUnmuteT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -322,6 +476,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgUnmuteTApplied));
     }
 
+    /// <summary>
+    /// Removes all weapons from Terrorists and gives them a knife.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandSs(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -334,13 +493,17 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgSsApplied));
     }
 
+    /// <summary>
+    /// Measures "length" (funny command).
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandKacCm(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
 
-        int cm = _random.Next(1, 41); // 1-40
+        int cm = _random.Next(1, 41);
         
-        // Save highest value
         if (!_kacCmRecords.TryGetValue(player.SteamID, out var record) || cm > record.Value)
         {
             _kacCmRecords[player.SteamID] = (player.PlayerName, cm);
@@ -349,6 +512,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgKacCmApplied, player.PlayerName, cm)));
     }
 
+    /// <summary>
+    /// Shows top players' "length" records.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandTopKacCm(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
@@ -373,11 +541,19 @@ public class UtilityService
         }
     }
 
+    /// <summary>
+    /// Resets all "length" records.
+    /// </summary>
     public void ResetKacCmRecords()
     {
         _kacCmRecords.Clear();
     }
 
+    /// <summary>
+    /// Mutes all Counter-Terrorists.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandMuteCT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -389,6 +565,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgMuteCTApplied));
     }
 
+    /// <summary>
+    /// Mutes all Terrorists.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandMuteT(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -400,6 +581,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgMuteTApplied));
     }
 
+    /// <summary>
+    /// Enables automatic respawning for players.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandOtores(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -410,6 +596,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOtoresEnabled));
     }
 
+    /// <summary>
+    /// Disables automatic respawning for players.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandOtores0(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/generic")) return;
@@ -420,6 +611,11 @@ public class UtilityService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgOtoresDisabled));
     }
 
+    /// <summary>
+    /// Buries a player in the ground.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information containing target name.</param>
     public void CommandGom(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -449,6 +645,11 @@ public class UtilityService
         }
     }
 
+    /// <summary>
+    /// Unburies a player.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information containing target name.</param>
     public void CommandGom0(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
@@ -478,11 +679,15 @@ public class UtilityService
         }
     }
 
+    /// <summary>
+    /// Clears 3-second voice delay for the player.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
     public void CommandDelay(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null || !player.IsValid) return;
 
-        // If player is already muted, do nothing
         if (player.VoiceFlags == VoiceFlags.Muted) return;
 
         player.VoiceFlags = VoiceFlags.Muted;
@@ -496,5 +701,18 @@ public class UtilityService
                 player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgDelayEnded));
             }
         });
+    }
+
+    /// <summary>
+    /// Forces the player to kill themselves.
+    /// </summary>
+    /// <param name="player">The player initiating the command.</param>
+    /// <param name="info">Command information.</param>
+    public void CommandKill(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid) return;
+
+        player.PlayerPawn.Value?.CommitSuicide(false, true);
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgSelfKillApplied, player.PlayerName)));
     }
 }

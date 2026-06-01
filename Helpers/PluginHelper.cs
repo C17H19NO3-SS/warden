@@ -1,3 +1,5 @@
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace JailBreak.Helpers;
@@ -48,8 +50,29 @@ public static class PluginHelper
                     .Replace("{Orange}", $"{ChatColors.Orange}");
     }
 
-    public static string FormatChat(string prefix, string message)
+    public static string FormatChat(string prefix, string messageTemplate, params object[] args)
     {
-        return $" {ReplaceColors(prefix)} {ReplaceColors(message)}";
+        string formattedTemplate = ReplaceColors(messageTemplate);
+        string message = args.Length > 0 ? string.Format(formattedTemplate, args) : formattedTemplate;
+        return $" {ReplaceColors(prefix)} {message}";
+    }
+
+    /// <summary>
+    /// Sends a response message to the command caller (player or console).
+    /// </summary>
+    /// <param name="player">The player initiating the command, or null if console.</param>
+    /// <param name="prefix">The plugin prefix.</param>
+    /// <param name="message">The message to send.</param>
+    public static void ReplyToCommand(CCSPlayerController? player, string prefix, string messageTemplate, params object[] args)
+    {
+        if (player != null && player.IsValid)
+        {
+            player.PrintToChat(FormatChat(prefix, messageTemplate, args));
+        }
+        else
+        {
+            string message = args.Length > 0 ? string.Format(messageTemplate, args) : messageTemplate;
+            Server.PrintToConsole($"[JailBreak] {message.Replace("{Default}", "").Replace("{Green}", "").Replace("{Red}", "")}");
+        }
     }
 }

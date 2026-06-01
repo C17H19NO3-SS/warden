@@ -29,7 +29,6 @@ public class RebelService
 
         if (victim == null || !victim.IsValid || attacker == null || !attacker.IsValid) return;
 
-        // CT öldüren T kontrolü
         if (victim.Team == CsTeam.CounterTerrorist && attacker.Team == CsTeam.Terrorist)
         {
             UpdateRebelScore(attacker);
@@ -51,7 +50,6 @@ public class RebelService
         }
 
         rebel.KillCount++;
-        rebel.PlayerName = player.PlayerName; // İsmi güncelle (değişmiş olabilir)
         SaveData();
     }
 
@@ -74,7 +72,6 @@ public class RebelService
 
     private void ShowRebelHud(CCSPlayerController player, int page)
     {
-        // Puanlara göre sırala
         var sortedRebels = _rebels.Where(r => r.KillCount > 0).OrderByDescending(r => r.KillCount).ToList();
         
         int itemsPerPage = 5;

@@ -32,14 +32,23 @@ public class IseliService
 
     public void CommandIseli(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid) return;
+        if (player != null && !player.IsValid) return;
         if (!_plugin.IsJailbreakMap()) return;
-        if (!_wardenService.HasPermission(player, "@css/changemap")) return;
+        if (player != null && !_wardenService.HasPermission(player, "@css/changemap"))
+        {
+            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission);
+            return;
+        }
 
         string arg = info.GetArg(1);
 
         if (arg.ToLower() == "q")
         {
+            if (player == null)
+            {
+                Server.PrintToConsole("[JailBreak] Bu komut sadece oyuncular tarafından kullanılabilir.");
+                return;
+            }
             QuickOpen(player);
             return;
         }
@@ -52,9 +61,17 @@ public class IseliService
 
     public void CommandQuickIseli(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid) return;
+        if (player == null || !player.IsValid)
+        {
+            Server.PrintToConsole("[JailBreak] Bu komut sadece oyuncular tarafından kullanılabilir.");
+            return;
+        }
         if (!_plugin.IsJailbreakMap()) return;
-        if (!_wardenService.HasPermission(player, "@css/changemap")) return;
+        if (!_wardenService.HasPermission(player, "@css/changemap"))
+        {
+            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission);
+            return;
+        }
 
         QuickOpen(player);
     }
@@ -64,6 +81,7 @@ public class IseliService
         _iseliTimer?.Kill();
         _iseliTime = time;
 
+        TeleportTsToRandomSpawns();
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgIseliStarted, _iseliTime)));
 
         _iseliTimer = _plugin.AddTimer(1.0f, () =>
@@ -90,13 +108,13 @@ public class IseliService
     {
         _iseliTimer?.Kill();
         _iseliTimer = null;
+        TeleportTsToRandomSpawns();
         FinishIseli(true);
     }
 
     private void FinishIseli(bool quick = false)
     {
         OpenAllDoors();
-        TeleportTsToRandomSpawns();
 
         string msg = quick ? _plugin.Lang.MsgIseliQuickOpened : _plugin.Lang.MsgIseliDoorsOpened;
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, msg));

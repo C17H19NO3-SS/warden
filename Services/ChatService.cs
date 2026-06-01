@@ -31,10 +31,8 @@ public class ChatService
             nameColor = PluginHelper.ReplaceColors(nameColor);
             chatColor = PluginHelper.ReplaceColors(chatColor);
 
-            // Reconstruct the chat line similar to cs2-tags
             string formattedMessage = $" {tag} {nameColor}{player.PlayerName}\x01 : {chatColor}{message}";
 
-            // Set the constructed string as the new message name
             @event.SetString("messagename", formattedMessage);
 
             return HookResult.Changed;

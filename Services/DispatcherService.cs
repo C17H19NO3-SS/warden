@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Utils; // Added for ChatColors
+using CounterStrikeSharp.API.Modules.Utils;
 using JailBreak.Helpers;
 
 namespace JailBreak.Services;
@@ -30,12 +31,15 @@ public class DispatcherService : ICommandDispatcher
         string args = info.ArgString;
         
         LogHelper.LogDebug($"DispatcherService: Attempting to execute command '{commandName}' with args '{args}' for player '{player?.PlayerName ?? "Console"}'");
+        LogHelper.LogTrace($"DispatcherService: Command '{commandName}' lookup in registry.");
         
         if (_commands.TryGetValue(commandName, out var cmd))
         {
             try
             {
+                LogHelper.LogTrace($"DispatcherService: Executing callback for command '{commandName}'.");
                 cmd.Callback(player, info);
+                LogHelper.LogTrace($"DispatcherService: Callback for command '{commandName}' finished.");
             }
             catch (Exception ex)
             {

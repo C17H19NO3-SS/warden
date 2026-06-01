@@ -12,6 +12,8 @@ public class FreezeService
 {
     private readonly JailBreakPlugin _plugin;
     private bool _isFrozen = false;
+
+    public bool IsFrozen => _isFrozen;
     private int _countdownTime = 0;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _countdownTimer;
 
@@ -58,6 +60,7 @@ public class FreezeService
         _countdownTimer?.Kill();
         _countdownTimer = null;
         _countdownTime = 0;
+        _isFrozen = false; 
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgTFreezeCountdownCancelled));
     }
 
