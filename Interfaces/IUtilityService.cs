@@ -8,5 +8,5 @@ public interface IUtilityService
     void RegisterCommands();
     void OnRoundStart();
     void ResetKacCmRecords();
-    void CommandAf(CCSPlayerController? player, CommandInfo info);
+    void CommandAf(CCSPlayerController? player, CommandInfo? info = null);
 }

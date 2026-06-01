@@ -333,7 +333,7 @@ public class WardenService : IWardenService
         menu.Display(player, 0);
     }
 
-    public void CommandQ(CCSPlayerController? player, CommandInfo info)
+    public void CommandQ(CCSPlayerController? player, CommandInfo? info)
     {
         if (player == null || !player.IsValid || !HasPermission(player, "@css/generic")) return;
 
@@ -345,7 +345,7 @@ public class WardenService : IWardenService
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, $" {ChatColors.Green}CT takımına koruma (God Mode) verildi."));
     }
 
-    public void CommandQQ(CCSPlayerController? player, CommandInfo info)
+    public void CommandQQ(CCSPlayerController? player, CommandInfo? info)
     {
         if (player == null || !player.IsValid || !HasPermission(player, "@css/generic")) return;
 

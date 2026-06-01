@@ -193,7 +193,7 @@ public class UtilityService : IUtilityService
         player.PlayerPawn.Value?.CommitSuicide(false, true);
     }
 
-    public void CommandAf(CCSPlayerController? player, CommandInfo info)
+    public void CommandAf(CCSPlayerController? player, CommandInfo? info)
     {
         if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
