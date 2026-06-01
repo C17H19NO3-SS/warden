@@ -53,7 +53,7 @@ public class MarkerService : IMarkerService
     /// </summary>
     /// <param name="player">The player opening the menu.</param>
     /// <param name="info">Command information.</param>
-    public void OpenMarkerMenu(CCSPlayerController? player, CommandInfo info)
+    public void OpenMarkerMenu(CCSPlayerController? player, CommandInfo? info = null)
     {
         if (player == null || !player.IsValid) return;
         if (!_wardenService.HasPermission(player, "@css/chat"))
@@ -68,6 +68,7 @@ public class MarkerService : IMarkerService
         menu.AddMenuOption("Renk Ayarla", (p, option) => OpenColorMenu(p));
         menu.AddMenuOption("Boyut Ayarla", (p, option) => OpenSizeMenu(p));
         menu.AddMenuOption("Efekt Ayarla", (p, option) => OpenEffectMenu(p));
+        menu.AddMenuOption("⬅ Geri", (p, option) => _plugin.WardenService.OpenMainMenu(p));
 
         MenuManager.OpenChatMenu(player, menu);
     }
@@ -83,6 +84,7 @@ public class MarkerService : IMarkerService
                 p.PrintToChat($"İşaretleyici şekli: {shape}");
             });
         }
+        menu.AddMenuOption("⬅ Geri", (p, option) => OpenMarkerMenu(p, null));
         MenuManager.OpenChatMenu(player, menu);
     }
 
@@ -92,6 +94,7 @@ public class MarkerService : IMarkerService
         menu.AddMenuOption("Kırmızı", (p, option) => { _currentMarkerConfig.Color = Color.Red; p.PrintToChat("Renk: Kırmızı"); });
         menu.AddMenuOption("Mavi", (p, option) => { _currentMarkerConfig.Color = Color.Blue; p.PrintToChat("Renk: Mavi"); });
         menu.AddMenuOption("Yeşil", (p, option) => { _currentMarkerConfig.Color = Color.Green; p.PrintToChat("Renk: Yeşil"); });
+        menu.AddMenuOption("⬅ Geri", (p, option) => OpenMarkerMenu(p, null));
         MenuManager.OpenChatMenu(player, menu);
     }
 
@@ -101,6 +104,7 @@ public class MarkerService : IMarkerService
         menu.AddMenuOption("Küçük (50)", (p, option) => { _currentMarkerConfig.Size = 50.0f; p.PrintToChat("Boyut: Küçük"); });
         menu.AddMenuOption("Orta (100)", (p, option) => { _currentMarkerConfig.Size = 100.0f; p.PrintToChat("Boyut: Orta"); });
         menu.AddMenuOption("Büyük (150)", (p, option) => { _currentMarkerConfig.Size = 150.0f; p.PrintToChat("Boyut: Büyük"); });
+        menu.AddMenuOption("⬅ Geri", (p, option) => OpenMarkerMenu(p, null));
         MenuManager.OpenChatMenu(player, menu);
     }
 
@@ -115,6 +119,7 @@ public class MarkerService : IMarkerService
                 p.PrintToChat($"Efekt: {effect}");
             });
         }
+        menu.AddMenuOption("⬅ Geri", (p, option) => OpenMarkerMenu(p, null));
         MenuManager.OpenChatMenu(player, menu);
     }
 

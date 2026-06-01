@@ -39,6 +39,7 @@ public class GameManagerService : IGameManagerService
         if (!_wardenService.HasPermission(player, "@css/changemap")) return;
         
         var menu = new CenterHtmlMenu("🥊 Boks Modu Süresi", _plugin);
+        menu.AddItem("⬅ Geri", (p, o) => _plugin.WardenService.OpenMainMenu(p));
         for (int i = 10; i <= 60; i += 10)
         {
             int time = i;

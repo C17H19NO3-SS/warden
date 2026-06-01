@@ -21,4 +21,5 @@ public interface IWardenService
     void CommandBecomeWarden(CCSPlayerController? player, CommandInfo info);
     void CommandUnwarden(CCSPlayerController? player, CommandInfo info);
     void CommandKomMenu(CCSPlayerController? player, CommandInfo info);
+    void OpenMainMenu(CCSPlayerController player);
 }
