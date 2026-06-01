@@ -109,8 +109,10 @@ public class JailBreakPlugin : BasePlugin, IPluginConfig<PluginConfig>, ICommand
         string storeConfigPath = Path.Combine(ModuleDirectory, "../../configs/plugins/cs2-store/config.toml");
         StoreApi.StoreBridge.SetConfigPath(storeConfigPath);
 
-        _wardenService = new WardenService(this);
-        _voteService = new VoteService(this, _wardenService);
+        var statService = new WardenStatService(ModuleDirectory);
+        var adminService = new WardenAdminService(this, statService);
+        _hudManager = new HudManager(this);
+        _wardenService = new WardenService(this, statService, adminService, _hudManager);
         _chatService = new ChatService(this, _wardenService);
         _markerService = new MarkerService(this, _wardenService);
         _sustumService = new SustumService(this, _wardenService);
