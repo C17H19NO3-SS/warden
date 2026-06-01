@@ -43,7 +43,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | :--- | :--- | :--- | :--- |
 | `!saklambac <sn>`| `!saklambaç`| `@css/changemap`| **Saklambaç:** CT'ler spawn'a ışınlanır ve kör edilir. Süre sonunda T'ler dondurulur. |
 | `!box <sn>` | `!b` | `@css/changemap`| **Boks Modu:** Dost ateşini açar, süre sonunda otomatik kapatır. |
-| `!ffdondur <sn>`| `!ffondur` | `@css/changemap`| FF'i açar ve süre bittiğinde tüm T takımını dondurur. |
+| `!ffdondur <sn>`| `!ffondur` | `Komutçu / Komutçu Admini`| FF'i açar ve süre bittiğinde tüm T takımını dondurur. |
 | `!dsustum` | - | `@css/slay` | Kelimeyi ilk yazana **Deagle** ödülü verir. |
 | `!tsustum` | `!tsusdum` | `@css/slay` | Kelimeyi ilk yazana **CT** takımına geçme ödülü verir. |
 | `!olusustum` | - | `@css/slay` | Kelimeyi ilk yazan ölü oyuncuyu **canlandırır**. |
@@ -53,9 +53,9 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 ### 4. Dost Ateşi (FF) ve Silah Yönetimi
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
-| `!ffmenu` | `!ff` | `@css/changemap`| **Görsel FF Ayarı:** Silahları ve Bunny durumunu ayarladığınız paneldir. |
-| `!ffkapat` | `!ffk` | `@css/changemap`| Aktif olan tüm FF süreçlerini anında durdurur. |
-| `!ff0` | - | `@css/changemap`| FF'i kapatır ve tüm T'lerin silahlarını siler. |
+| `!ffmenu` | `!ff` | `Komutçu / Komutçu Admini`| **Görsel FF Ayarı:** Silahları ve Bunny durumunu ayarladığınız paneldir. |
+| `!ffkapat` | `!ffk` | `Komutçu / Komutçu Admini`| Aktif olan tüm FF süreçlerini anında durdurur. |
+| `!ff0` | - | `Komutçu / Komutçu Admini`| FF'i kapatır ve tüm T'lerin silahlarını siler. |
 | `!ss` | `!strip` | `@css/slay` | T takımının tüm silahlarını anında temizler. |
 
 ### 5. Dondurma ve Formasyonlar
@@ -74,7 +74,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | Komut | Alternatif | Yetki | Açıklama |
 | :--- | :--- | :--- | :--- |
 | `!rev <hedef>` | `!kaldır` | `@css/slay` | Hedefi (`@t`, `@ct`, `@all` veya isim) canlandırır. |
-| `!kill <isim>` | - | `@css/slay` | Belirtilen oyuncuyu öldürür. |
+| `!kill` | - | Herkes | Kendinizi öldürür. |
 | `!af` | - | `@css/slay` | Herkesi canlandırır ve canlarını 100 yapar. |
 | `!hpa` | `!hpall` | `@css/slay` | Yaşayan tüm oyuncuların canını 100 yapar. |
 | `!hpt` | - | `@css/slay` | Sadece T takımının canını 100 yapar. |
@@ -91,7 +91,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!msay <mesaj>` | - | `@css/chat` | Ekranın ortasında büyük duyuru kutusu açar. |
 | `!csay <mesaj>` | - | `@css/chat` | Ekranın alt-orta kısmında renkli duyuru yapar. |
 | `!hsay <mesaj>` | - | `@css/chat` | HUD (Hint) bölgesinde mesaj gösterir. |
-| `!marker <boy>` | - | `@css/chat` | Komutçu işaretçisinin boyutunu ayarlar. |
+| `!marker` | - | `@css/chat` | İşaretleyici menüsünü açar. |
 | `!fsay <isim> <msg>`| - | `@css/root` | Belirlenen oyuncunun adıyla chat'e yazı yazar. |
 
 ### 8. Genel ve Diğer Komutlar
