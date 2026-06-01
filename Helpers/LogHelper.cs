@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using CounterStrikeSharp.API;
 using JailBreak.Config;
@@ -11,6 +12,11 @@ namespace JailBreak.Helpers
         private static PluginConfig? _config;
         private static string _logDirectory = string.Empty;
         private const string LogPrefix = "[JailBreak]";
+        private static readonly SemaphoreSlim _fileSemaphore = new SemaphoreSlim(1, 1);
+        private static string? _currentFilePath;
+        private static int _currentLineCount;
+        private static string? _currentDate;
+        private const int MaxLines = 500;
 
         public static void Initialize(PluginConfig config, string pluginDirectory)
         {
@@ -24,42 +30,65 @@ namespace JailBreak.Helpers
 
         private static async Task WriteToFileAsync(string level, string message)
         {
-            int maxLines = 500;
             string logLine = $"[{DateTime.Now:HH:mm:ss}] [{level}] {message}";
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
 
-            string? filePath = null;
-            int fileIndex = 0;
-            
-            while (filePath == null)
+            await _fileSemaphore.WaitAsync().ConfigureAwait(false);
+            try
             {
-                string fileName = $"log_{DateTime.Now:yyyy-MM-dd}_{fileIndex}.txt";
-                string tempPath = Path.Combine(_logDirectory, fileName);
-                
-                if (!File.Exists(tempPath))
+                if (_currentFilePath == null || _currentDate != today)
                 {
-                    filePath = tempPath;
-                }
-                else
-                {
-                    var lines = await File.ReadAllLinesAsync(tempPath);
-                    if (lines.Length < maxLines)
+                    _currentDate = today;
+                    int fileIndex = 0;
+                    while (true)
                     {
-                        filePath = tempPath;
-                    }
-                    else
-                    {
+                        string fileName = $"log_{_currentDate}_{fileIndex}.txt";
+                        string tempPath = Path.Combine(_logDirectory, fileName);
+
+                        if (!File.Exists(tempPath))
+                        {
+                            _currentFilePath = tempPath;
+                            _currentLineCount = 0;
+                            break;
+                        }
+
+                        var lines = await File.ReadAllLinesAsync(tempPath).ConfigureAwait(false);
+                        if (lines.Length < MaxLines)
+                        {
+                            _currentFilePath = tempPath;
+                            _currentLineCount = lines.Length;
+                            break;
+                        }
                         fileIndex++;
                     }
                 }
-            }
 
-            try
-            {
-                await File.AppendAllLinesAsync(filePath, new[] { logLine });
+                if (_currentLineCount >= MaxLines)
+                {
+                    int fileIndex = 0;
+                    string fileName;
+                    string tempPath;
+                    do
+                    {
+                        fileIndex++;
+                        fileName = $"log_{_currentDate}_{fileIndex}.txt";
+                        tempPath = Path.Combine(_logDirectory, fileName);
+                    } while (File.Exists(tempPath));
+
+                    _currentFilePath = tempPath;
+                    _currentLineCount = 0;
+                }
+
+                await File.AppendAllLinesAsync(_currentFilePath!, new[] { logLine }).ConfigureAwait(false);
+                _currentLineCount++;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"{LogPrefix} [ERROR] [LogHelper] Failed to write to file: {ex.Message}");
+            }
+            finally
+            {
+                _fileSemaphore.Release();
             }
         }
 
