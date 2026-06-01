@@ -216,8 +216,7 @@ public class UtilityService : IUtilityService
             return;
         }
 
-        string formatted = $"{targetPlayer.PlayerName}: {message}";
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, formatted));
+        targetPlayer.ExecuteClientCommand(string.Format("say {0}", message));
     }
 
     public void CommandAf(CCSPlayerController? player, CommandInfo? info)
