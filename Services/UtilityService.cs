@@ -39,6 +39,7 @@ public class UtilityService : IUtilityService
         _plugin.RegisterCommand("css_getall", "Tüm oyuncuları yanına çek", CommandGetAll);
         _plugin.RegisterCommand("css_git", "Bir oyuncunun yanına ışınlan", CommandGit);
         _plugin.RegisterCommand("css_haksal", "LR hakkını başka birine sal", CommandHakSal);
+        _plugin.RegisterCommand("css_fsay", "Belirlenen oyuncu adıyla mesaj yazdır", CommandFsay);
         _plugin.RegisterCommand("css_af", "Herkesi canlandır ve canını 100 yap", CommandAf);
         _plugin.RegisterCommand("css_ctrev", "Ölü bir CT'yi canlandır", CommandCTRev);
         _plugin.RegisterCommand("css_bunny", "Bunnyhop'u aç/kapat", CommandBunny);
@@ -191,6 +192,32 @@ public class UtilityService : IUtilityService
 
         Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgHakSalApplied, player.PlayerName, target.PlayerName)));
         player.PlayerPawn.Value?.CommitSuicide(false, true);
+    }
+
+    public void CommandFsay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/root")) return;
+
+        string targetName = info.GetArg(1);
+        string message = info.ArgString.Trim();
+
+        if (string.IsNullOrEmpty(targetName) || string.IsNullOrEmpty(message))
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, "Kullanım: !fsay <isim> <mesaj>"));
+            return;
+        }
+
+        var targetPlayer = Utilities.GetPlayers()
+            .FirstOrDefault(p => p.IsValid && p.PlayerName.Contains(targetName, StringComparison.OrdinalIgnoreCase));
+
+        if (targetPlayer == null)
+        {
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, "Hedef oyuncu bulunamadı."));
+            return;
+        }
+
+        string formatted = $"{targetPlayer.PlayerName}: {message}";
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, formatted));
     }
 
     public void CommandAf(CCSPlayerController? player, CommandInfo? info)
