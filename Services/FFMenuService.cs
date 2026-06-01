@@ -28,11 +28,11 @@ public class PlayerFFSelection
     public bool SecondarySelected { get; set; } = false;
 }
 
-public class FFMenuService
+public class FFMenuService : IFFMenuService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
-    private readonly FreezeService _freezeService;
+    private readonly IWardenService _wardenService;
+    private readonly IFreezeService _freezeService;
 
     private FFConfigState _currentFFConfig = new();
     private Dictionary<ulong, PlayerFFSelection> _playerSelections = new();
@@ -47,22 +47,22 @@ public class FFMenuService
 
     private CounterStrikeSharp.API.Modules.Timers.Timer? _tickTimer;
 
-    public FFMenuService(JailBreakPlugin plugin, WardenService wardenService, FreezeService freezeService)
+    public FFMenuService(JailBreakPlugin plugin, IWardenService wardenService, IFreezeService freezeService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
         _freezeService = freezeService;
     }
 
-    public void RegisterCommands(ICommandDispatcher dispatcher)
+    public void RegisterCommands()
     {
-        dispatcher.RegisterCommand("css_ffmenu", "FF silah menüsünü aç", CommandFFMenu);
-        dispatcher.RegisterCommand("css_ff", "FF silah menüsünü aç", CommandFFMenu);
-        dispatcher.RegisterCommand("css_ffkapat", "FF'i kapat", CommandFFKapat);
-        dispatcher.RegisterCommand("css_ffk", "FF'i kapat", CommandFFKapat);
-        dispatcher.RegisterCommand("css_ff0", "FF'i kapat ve silahları al", CommandFF0);
-        dispatcher.RegisterCommand("css_ffondur", "FF aç ve sonunda dondur", CommandFFOndur);
-        dispatcher.RegisterCommand("css_ffdondur", "FF aç ve sonunda dondur", CommandFFOndur);
+        _plugin.RegisterCommand("css_ffmenu", "FF silah menüsünü aç", CommandFFMenu);
+        _plugin.RegisterCommand("css_ff", "FF silah menüsünü aç", CommandFFMenu);
+        _plugin.RegisterCommand("css_ffkapat", "FF'i kapat", CommandFFKapat);
+        _plugin.RegisterCommand("css_ffk", "FF'i kapat", CommandFFKapat);
+        _plugin.RegisterCommand("css_ff0", "FF'i kapat ve silahları al", CommandFF0);
+        _plugin.RegisterCommand("css_ffondur", "FF aç ve sonunda dondur", CommandFFOndur);
+        _plugin.RegisterCommand("css_ffdondur", "FF aç ve sonunda dondur", CommandFFOndur);
     }
 
     public void OnRoundStart()
@@ -408,9 +408,6 @@ public class FFMenuService
 
     public bool HandleFFMenuChat(CCSPlayerController player, string message)
     {
-        if (message.StartsWith("!") && int.TryParse(message.Substring(1), out _))
-        {
-        }
         return false;
     }
 

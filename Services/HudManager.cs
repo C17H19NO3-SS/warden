@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using System.Text;
+using JailBreak.Models;
 
 namespace JailBreak.Services;
 
@@ -49,55 +50,22 @@ public class HudManager : IHudManager
 
     public void SetHudText(string text, float duration)
     {
-        // TODO: Implement centralized HUD text setting
+        foreach (var player in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
+        {
+            SetHudContent(player, "LegacyText", text, HudPriority.Announcement, duration);
+        }
     }
 
     public void ClearHud()
     {
-        // TODO: Implement centralized HUD clearing
-    }
-    
-    private void UpdatePlayerHud(CCSPlayerController player)
-    {
-        if (!_playerHudStates.TryGetValue(player.SteamID, out var states)) return;
-
-        var now = DateTime.Now;
-        var expiredKeys = states.Where(kvp => kvp.Value.Expiry.HasValue && kvp.Value.Expiry.Value < now).Select(kvp => kvp.Key).ToList();
-        foreach (var key in expiredKeys) states.Remove(key);
-
-        if (states.Count == 0)
+        foreach (var player in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
         {
-            if (_lastSentContent.TryGetValue(player.SteamID, out var last) && !string.IsNullOrEmpty(last))
-            {
-                player.PrintToCenterHtml("");
-                _lastSentContent[player.SteamID] = "";
-            }
-            return;
-        }
-
-        var maxPriority = states.Values.Max(s => s.Priority);
-        var activeItems = states.Values.Where(s => s.Priority == maxPriority).ToList();
-
-        StringBuilder sb = new();
-        foreach (var item in activeItems)
-        {
-            if (string.IsNullOrEmpty(item.Content)) continue;
-            sb.Append(item.Content).Append("<br>");
-        }
-
-        string finalHud = sb.ToString();
-
-        if (!_lastSentContent.TryGetValue(player.SteamID, out var lastContent) || lastContent != finalHud)
-        {
-            player.PrintToCenterHtml(finalHud);
-            _lastSentContent[player.SteamID] = finalHud;
+            ClearHud(player);
         }
     }
 
     public void SetHudContent(CCSPlayerController player, string id, string content, HudPriority priority, float duration = 0)
     {
-        if (player == null || !player.IsValid) return;
-
         if (!_playerHudStates.ContainsKey(player.SteamID))
             _playerHudStates[player.SteamID] = new Dictionary<string, HudContent>();
 
@@ -111,10 +79,46 @@ public class HudManager : IHudManager
 
     public void ClearHud(CCSPlayerController player, string? id = null)
     {
-        if (player == null || !player.IsValid) return;
-        if (!_playerHudStates.TryGetValue(player.SteamID, out var states)) return;
-        
-        if (id == null) states.Clear();
-        else states.Remove(id);
+        if (!_playerHudStates.ContainsKey(player.SteamID)) return;
+
+        if (id == null)
+            _playerHudStates[player.SteamID].Clear();
+        else
+            _playerHudStates[player.SteamID].Remove(id);
+    }
+
+    private void UpdatePlayerHud(CCSPlayerController player)
+    {
+        if (!_playerHudStates.ContainsKey(player.SteamID)) return;
+
+        var now = DateTime.Now;
+        var activeContents = _playerHudStates[player.SteamID]
+            .Where(kvp => kvp.Value.Expiry == null || kvp.Value.Expiry > now)
+            .OrderByDescending(kvp => kvp.Value.Priority)
+            .ToList();
+
+        if (activeContents.Count == 0)
+        {
+            if (_lastSentContent.ContainsKey(player.SteamID))
+            {
+                player.PrintToCenterHtml("");
+                _lastSentContent.Remove(player.SteamID);
+            }
+            return;
+        }
+
+        var sb = new StringBuilder();
+        foreach (var content in activeContents)
+        {
+            sb.Append(content.Value.Content);
+            sb.Append("<br>");
+        }
+
+        string fullContent = sb.ToString();
+        if (_lastSentContent.TryGetValue(player.SteamID, out var lastSent) && lastSent == fullContent)
+            return;
+
+        player.PrintToCenterHtml(fullContent);
+        _lastSentContent[player.SteamID] = fullContent;
     }
 }

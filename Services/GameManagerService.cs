@@ -8,18 +8,18 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class GameManagerService
+public class GameManagerService : IGameManagerService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
-    private readonly FreezeService _freezeService;
+    private readonly IWardenService _wardenService;
+    private readonly IFreezeService _freezeService;
     
     private int _gameTimeRemaining = 0;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _gameTimer;
     private bool _isBoxActive = false;
     private bool _isSaklambacActive = false;
 
-    public GameManagerService(JailBreakPlugin plugin, WardenService wardenService, FreezeService freezeService)
+    public GameManagerService(JailBreakPlugin plugin, IWardenService wardenService, IFreezeService freezeService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
@@ -45,6 +45,29 @@ public class GameManagerService
             menu.AddItem($"{time} Saniye", (p, o) => StartBox(time));
         }
         menu.Display(player, 0);
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_box", "Boks modunu başlatır", CommandOpenBoxMenu);
+        _plugin.RegisterCommand("css_b", "Boks modunu başlatır", CommandOpenBoxMenu);
+        _plugin.RegisterCommand("css_saklambac", "Saklambaç modunu başlatır", CommandSaklambac);
+    }
+
+    public void CommandOpenBoxMenu(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid) return;
+        OpenBoxMenu(player);
+    }
+
+    public void CommandSaklambac(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.IsValid) return;
+        if (!_wardenService.HasPermission(player, "@css/changemap")) return;
+
+        string arg = info.GetArg(1);
+        int time = int.TryParse(arg, out int t) ? t : 30;
+        StartSaklambac(time);
     }
 
     public void StartBox(int duration)

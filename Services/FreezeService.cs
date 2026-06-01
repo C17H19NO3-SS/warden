@@ -8,18 +8,28 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class FreezeService
+public class FreezeService : IFreezeService
 {
     private readonly JailBreakPlugin _plugin;
+    private readonly IWardenService _wardenService;
     private bool _isFrozen = false;
 
     public bool IsFrozen => _isFrozen;
     private int _countdownTime = 0;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _countdownTimer;
 
-    public FreezeService(JailBreakPlugin plugin)
+    public FreezeService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
+        _wardenService = wardenService;
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_td", "T takımını dondur", CommandFreeze);
+        _plugin.RegisterCommand("css_tdb", "T takımının donmasını çöz", CommandUnfreeze);
+        _plugin.RegisterCommand("css_fz", "Gecikmeli dondurma başlat", CommandDelayedFreeze);
+        _plugin.RegisterCommand("css_fz0", "Dondurmayı sıfırla", CommandResetFreeze);
     }
 
     public void OnRoundStart()
@@ -32,19 +42,19 @@ public class FreezeService
 
     public void CommandFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
         FreezeAll();
     }
 
     public void CommandUnfreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
         UnfreezeAll();
     }
 
     public void CommandDelayedFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         string arg = info.GetArg(1);
         if (int.TryParse(arg, out int time))
@@ -55,7 +65,7 @@ public class FreezeService
 
     public void CommandResetFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid || !_plugin.WardenService.HasPermission(player, "@css/slay")) return;
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
 
         _countdownTimer?.Kill();
         _countdownTimer = null;

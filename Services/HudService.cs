@@ -1,12 +1,9 @@
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Timers;
-using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 
 namespace JailBreak.Services;
 
-public class HudService
+public class HudService : IHudService
 {
     private readonly JailBreakPlugin _plugin;
 
@@ -17,28 +14,26 @@ public class HudService
 
     public void SendHudMessage(CCSPlayerController player, string message, Color color, float duration = 15.0f)
     {
-        string formattedMessage = $"<font color='{ColorTranslator.ToHtml(color)}'>{message}</font>";
-        player.PrintToCenterHtml(formattedMessage);
-
-        _plugin.AddTimer(duration, () =>
-        {
-            if (player.IsValid)
-            {
-                player.PrintToCenterHtml(""); 
-            }
-        });
+        if (player == null || !player.IsValid) return;
+        
+        string hexColor = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+        string htmlMessage = $"<font color='{hexColor}'>{message}</font>";
+        
+        player.PrintToCenterHtml(htmlMessage);
     }
 
     public void SendLeftCenterHudMessage(CCSPlayerController player, string message, Color color, float duration = 15.0f)
     {
-        string formattedMessage = $"<font color='{ColorTranslator.ToHtml(color)}'>{message}</font>";
+        if (player == null || !player.IsValid) return;
 
-        _plugin.AddTimer(duration, () =>
-        {
-            if (player.IsValid)
-            {
-                player.PrintToCenterHtml(""); 
-            }
-        });
+        string hexColor = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+        string htmlMessage = $"<font color='{hexColor}'>{message}</font>";
+
+        player.PrintToCenterHtml(htmlMessage);
+    }
+
+    public void OnTick()
+    {
+        // No periodic HUD work needed currently; method exists to satisfy IHudService contract.
     }
 }

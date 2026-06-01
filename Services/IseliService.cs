@@ -8,148 +8,111 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class IseliService
+public class IseliService : IIseliService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
-
-    private int _iseliTime = 0;
+    private readonly IWardenService _wardenService;
+    private int _iseliTimeRemaining = 0;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _iseliTimer;
-    private readonly Random _random = new();
+    private bool _isIseliActive = false;
 
-    public IseliService(JailBreakPlugin plugin, WardenService wardenService)
+    public IseliService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_iseli", "İseli kapı kontrolü", CommandIseli);
+        _plugin.RegisterCommand("css_iq", "Kapıları anında aç", CommandQuickIseli);
     }
 
     public void OnRoundStart()
     {
         _iseliTimer?.Kill();
         _iseliTimer = null;
-        _iseliTime = 0;
+        _iseliTimeRemaining = 0;
+        _isIseliActive = false;
     }
 
     public void CommandIseli(CCSPlayerController? player, CommandInfo info)
     {
-        if (player != null && !player.IsValid) return;
-        if (!_plugin.IsJailbreakMap()) return;
-        if (player != null && !_wardenService.HasPermission(player, "@css/changemap"))
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
+
+        if (_isIseliActive)
         {
-            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission);
+            player.PrintToChat(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, " {ChatColors.Red}Zaten bir iseli süreci aktif!"));
             return;
         }
 
         string arg = info.GetArg(1);
+        int time = int.TryParse(arg, out int t) ? t : 30;
 
-        if (arg.ToLower() == "q")
-        {
-            if (player == null)
-            {
-                Server.PrintToConsole("[JailBreak] Bu komut sadece oyuncular tarafından kullanılabilir.");
-                return;
-            }
-            QuickOpen(player);
-            return;
-        }
-
-        if (int.TryParse(arg, out int time))
-        {
-            StartIseli(time);
-        }
+        StartIseli(time);
     }
 
     public void CommandQuickIseli(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.IsValid)
-        {
-            Server.PrintToConsole("[JailBreak] Bu komut sadece oyuncular tarafından kullanılabilir.");
-            return;
-        }
-        if (!_plugin.IsJailbreakMap()) return;
-        if (!_wardenService.HasPermission(player, "@css/changemap"))
-        {
-            PluginHelper.ReplyToCommand(player, _plugin.Config.ChatPrefix, _plugin.Lang.MsgNoPermission);
-            return;
-        }
-
+        if (player == null || !player.IsValid || !_wardenService.HasPermission(player, "@css/slay")) return;
         QuickOpen(player);
-    }
-
-    private void StartIseli(int time)
-    {
-        _iseliTimer?.Kill();
-        _iseliTime = time;
-
-        TeleportTsToRandomSpawns();
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgIseliStarted, _iseliTime)));
-
-        _iseliTimer = _plugin.AddTimer(1.0f, () =>
-        {
-            if (_iseliTime <= 0)
-            {
-                FinishIseli();
-                _iseliTimer?.Kill();
-                _iseliTimer = null;
-                return;
-            }
-
-            foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
-            {
-                string content = string.Format(_plugin.Lang.HudContentIseli, _iseliTime);
-                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleIseli, content));
-            }
-
-            _iseliTime--;
-        }, TimerFlags.REPEAT);
     }
 
     public void QuickOpen(CCSPlayerController player)
     {
         _iseliTimer?.Kill();
         _iseliTimer = null;
-        TeleportTsToRandomSpawns();
-        FinishIseli(true);
-    }
+        _isIseliActive = false;
+        _iseliTimeRemaining = 0;
 
-    private void FinishIseli(bool quick = false)
-    {
         OpenAllDoors();
-
-        string msg = quick ? _plugin.Lang.MsgIseliQuickOpened : _plugin.Lang.MsgIseliDoorsOpened;
-        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, msg));
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgIseliQuickOpened));
     }
 
-    public static void OpenAllDoors()
+    private void StartIseli(int time)
     {
-        var doors = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("func_door");
-        foreach (var door in doors) if (door.IsValid) door.AcceptInput("Open");
+        _isIseliActive = true;
+        _iseliTimeRemaining = time;
 
-        var rotatingDoors = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("func_door_rotating");
-        foreach (var door in rotatingDoors) if (door.IsValid) door.AcceptInput("Open");
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, string.Format(_plugin.Lang.MsgIseliStarted, _iseliTimeRemaining)));
 
-        var propDoors = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("prop_door_rotating");
-        foreach (var door in propDoors) if (door.IsValid) door.AcceptInput("Open");
-
-        var breakables = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("func_breakable");
-        foreach (var breakable in breakables) if (breakable.IsValid) breakable.AcceptInput("Break");
-    }
-
-    private void TeleportTsToRandomSpawns()
-    {
-        var tSpawns = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_terrorist").ToList();
-        if (tSpawns.Count == 0) return;
-
-        var tPlayers = Utilities.GetPlayers().Where(p => p.IsValid && p.Team == CsTeam.Terrorist && p.PawnIsAlive).ToList();
-
-        foreach (var player in tPlayers)
+        _iseliTimer = _plugin.AddTimer(1.0f, () =>
         {
-            var pawn = player.PlayerPawn.Value;
-            if (pawn != null && pawn.IsValid)
+            if (_iseliTimeRemaining <= 0)
             {
-                var randomSpawn = tSpawns[_random.Next(tSpawns.Count)];
-                pawn.Teleport(randomSpawn.AbsOrigin, randomSpawn.AbsRotation, new Vector(0, 0, 0));
+                EndIseli();
+                return;
             }
+
+            foreach (var p in Utilities.GetPlayers().Where(p => p.IsValid && !p.IsBot))
+            {
+                string content = string.Format(_plugin.Lang.HudContentIseli, _iseliTimeRemaining);
+                p.PrintToCenterHtml(PluginHelper.FormatHud(_plugin.Lang.HudTitleIseli, content));
+            }
+
+            _iseliTimeRemaining--;
+        }, TimerFlags.REPEAT);
+    }
+
+    private void EndIseli()
+    {
+        _iseliTimer?.Kill();
+        _iseliTimer = null;
+        _isIseliActive = false;
+        _iseliTimeRemaining = 0;
+
+        OpenAllDoors();
+        Server.PrintToChatAll(PluginHelper.FormatChat(_plugin.Config.ChatPrefix, _plugin.Lang.MsgIseliDoorsOpened));
+    }
+
+    private void OpenAllDoors()
+    {
+        var doors = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("func_door").ToList();
+        var rotatingDoors = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("func_door_rotating").ToList();
+
+        foreach (var door in doors.Concat(rotatingDoors))
+        {
+            door.AcceptInput("Open");
         }
     }
 }

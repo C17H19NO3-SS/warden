@@ -5,12 +5,12 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class ChatService
+public class ChatService : IChatService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
+    private readonly IWardenService _wardenService;
 
-    public ChatService(JailBreakPlugin plugin, WardenService wardenService)
+    public ChatService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
         _wardenService = wardenService;

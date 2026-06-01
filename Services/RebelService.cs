@@ -9,7 +9,7 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class RebelService
+public class RebelService : IRebelService
 {
     private readonly JailBreakPlugin _plugin;
     private List<RebelData> _rebels = new();
@@ -51,6 +51,12 @@ public class RebelService
 
         rebel.KillCount++;
         SaveData();
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_isyancılar", "İsyancı listesini göster", CommandRebels);
+        _plugin.RegisterCommand("css_isyancilar", "İsyancı listesini göster", CommandRebels);
     }
 
     public void CommandRebels(CCSPlayerController? player, CommandInfo info)

@@ -41,19 +41,19 @@ public class WardenService : IWardenService
         _langProvider = langProvider;
     }
 
-    public void RegisterCommands(ICommandDispatcher dispatcher)
+    public void RegisterCommands()
     {
-        dispatcher.RegisterCommand("css_w", "Komutçu ol", CommandBecomeWarden);
-        dispatcher.RegisterCommand("css_uw", "Komutçuluktan çık", CommandUnwarden);
-        dispatcher.RegisterCommand("css_komkalan", "Komutçunun kalan süresini gör", CommandKomKalan);
-        dispatcher.RegisterCommand("css_topkomutcu", "En çok komutçu olanları gör", CommandTopKomutcu);
-        dispatcher.RegisterCommand("css_q", "Komutçu koruması (God, MuteT)", CommandQ);
-        dispatcher.RegisterCommand("css_qq", "Komutçu korumasını kaldır", CommandQQ);
-        dispatcher.RegisterCommand("css_ka", "Komutçu admin menüsü", _adminService.CommandWardenAdmin);
-        dispatcher.RegisterCommand("css_kasil", "Komutçu adminini kaldır", _adminService.CommandRemoveWardenAdmin);
-        dispatcher.RegisterCommand("css_topka", "En çok komutçu admin olanları gör", _adminService.CommandTopKa);
-        dispatcher.RegisterCommand("css_k", "Komutçu ana menüsünü açar", CommandKomMenu);
-        dispatcher.RegisterCommand("css_kommenu", "Komutçu ana menüsünü açar", CommandKomMenu);
+        _plugin.RegisterCommand("css_w", "Komutçu ol", CommandBecomeWarden);
+        _plugin.RegisterCommand("css_uw", "Komutçuluktan çık", CommandUnwarden);
+        _plugin.RegisterCommand("css_komkalan", "Komutçunun kalan süresini gör", CommandKomKalan);
+        _plugin.RegisterCommand("css_topkomutcu", "En çok komutçu olanları gör", CommandTopKomutcu);
+        _plugin.RegisterCommand("css_q", "Komutçu koruması (God, MuteT)", CommandQ);
+        _plugin.RegisterCommand("css_qq", "Komutçu korumasını kaldır", CommandQQ);
+        _plugin.RegisterCommand("css_ka", "Komutçu admin menüsü", _adminService.CommandWardenAdmin);
+        _plugin.RegisterCommand("css_kasil", "Komutçu adminini kaldır", _adminService.CommandRemoveWardenAdmin);
+        _plugin.RegisterCommand("css_topka", "En çok komutçu admin olanları gör", _adminService.CommandTopKa);
+        _plugin.RegisterCommand("css_k", "Komutçu ana menüsünü açar", CommandKomMenu);
+        _plugin.RegisterCommand("css_kommenu", "Komutçu ana menüsünü açar", CommandKomMenu);
     }
 
     public async Task LoadStats() => await _statService.LoadStats();

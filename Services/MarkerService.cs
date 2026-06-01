@@ -14,10 +14,10 @@ namespace JailBreak.Services;
 /// <summary>
 /// Manages the placement and customization of visual markers on the map for the Warden.
 /// </summary>
-public class MarkerService
+public class MarkerService : IMarkerService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
+    private readonly IWardenService _wardenService;
 
     private MarkerConfig _currentMarkerConfig = new MarkerConfig();
     private readonly List<uint> _activeBeams = new();
@@ -29,7 +29,7 @@ public class MarkerService
     /// </summary>
     /// <param name="plugin">The main plugin instance.</param>
     /// <param name="wardenService">The warden service instance.</param>
-    public MarkerService(JailBreakPlugin plugin, WardenService wardenService)
+    public MarkerService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
@@ -41,6 +41,11 @@ public class MarkerService
     public void OnRoundStart()
     {
         ClearMarker();
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_marker", "İşaretleyici menüsünü açar", OpenMarkerMenu);
     }
 
     /// <summary>

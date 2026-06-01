@@ -7,13 +7,10 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class DispatcherService : ICommandDispatcher
+public class DispatcherService : IDispatcherService
 {
     private readonly Dictionary<string, (string Description, CommandInfo.CommandCallback Callback)> _commands = new();
 
-    public DispatcherService()
-    {
-    }
 
     public void RegisterCommand(string command, string description, CommandInfo.CommandCallback Callback)
     {
@@ -31,15 +28,12 @@ public class DispatcherService : ICommandDispatcher
         string args = info.ArgString;
         
         LogHelper.LogDebug($"DispatcherService: Attempting to execute command '{commandName}' with args '{args}' for player '{player?.PlayerName ?? "Console"}'");
-        LogHelper.LogTrace($"DispatcherService: Command '{commandName}' lookup in registry.");
         
         if (_commands.TryGetValue(commandName, out var cmd))
         {
             try
             {
-                LogHelper.LogTrace($"DispatcherService: Executing callback for command '{commandName}'.");
                 cmd.Callback(player, info);
-                LogHelper.LogTrace($"DispatcherService: Callback for command '{commandName}' finished.");
             }
             catch (Exception ex)
             {

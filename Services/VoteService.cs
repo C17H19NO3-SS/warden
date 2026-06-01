@@ -8,10 +8,10 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class VoteService
+public class VoteService : IVoteService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
+    private readonly IWardenService _wardenService;
 
     private bool _isCandidatePhase = false;
 
@@ -29,10 +29,17 @@ public class VoteService
 
     private readonly Dictionary<ulong, bool> _kickVotes = new();
 
-    public VoteService(JailBreakPlugin plugin, WardenService wardenService)
+    public VoteService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_komoyla", "Komutçu oylamasını başlat", CommandStartVote);
+        _plugin.RegisterCommand("css_komdk", "Komutçuyu atma oylamasını başlat", CommandStartKickVote);
+        _plugin.RegisterCommand("css_komaday", "Komutçu oylamasına katıl", CommandJoinVote);
     }
 
     public void CommandStartVote(CCSPlayerController? player, CommandInfo info)

@@ -17,10 +17,10 @@ public enum LRType
     Knife
 }
 
-public class LastRequestService
+public class LastRequestService : ILastRequestService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
+    private readonly IWardenService _wardenService;
 
     private LRType _selectedLRType = LRType.None;
     private CCSPlayerController? _lastT;
@@ -29,10 +29,17 @@ public class LastRequestService
     private bool _isLRActive = false;
     private bool _isDeagleTurnT = true;
 
-    public LastRequestService(JailBreakPlugin plugin, WardenService wardenService)
+    public LastRequestService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_sonakalan", "LR menüsünü aç", CommandSonaKalan);
+        _plugin.RegisterCommand("css_sonsec", "Sona kalan hariç öldür ve LR aç", CommandSonSec);
+        _plugin.RegisterCommand("css_sonseç", "Sona kalan hariç öldür ve LR aç", CommandSonSec);
     }
 
     public void OnRoundStart()
@@ -292,4 +299,3 @@ public class LastRequestService
         }
     }
 }
-

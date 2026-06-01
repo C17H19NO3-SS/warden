@@ -8,18 +8,24 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class PositionService
+public class PositionService : IPositionService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
-    private readonly FreezeService _freezeService;
+    private readonly IWardenService _wardenService;
+    private readonly IFreezeService _freezeService;
     private readonly Dictionary<ulong, Vector> _lastPingLocations = new();
 
-    public PositionService(JailBreakPlugin plugin, WardenService wardenService, FreezeService freezeService)
+    public PositionService(JailBreakPlugin plugin, IWardenService wardenService, IFreezeService freezeService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
         _freezeService = freezeService;
+    }
+
+    public void RegisterCommands()
+    {
+        _plugin.RegisterCommand("css_daire", "T takımını daire diz", CommandDaire);
+        _plugin.RegisterCommand("css_diz", "T takımını yan yana diz", CommandDiz);
     }
 
     public void OnPlayerPing(EventPlayerPing @event, CCSPlayerController player)
@@ -150,4 +156,3 @@ public class PositionService
         });
     }
 }
-

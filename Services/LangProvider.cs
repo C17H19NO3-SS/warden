@@ -5,12 +5,12 @@ namespace JailBreak.Services;
 
 public class LangProvider : ILangProvider
 {
-    private readonly LangConfig _config;
+    private readonly Func<LangConfig> _configFactory;
     private readonly Dictionary<string, PropertyInfo> _properties;
 
-    public LangProvider(LangConfig config)
+    public LangProvider(Func<LangConfig> configFactory)
     {
-        _config = config;
+        _configFactory = configFactory;
         _properties = typeof(LangConfig).GetProperties()
             .ToDictionary(p => p.Name, p => p, StringComparer.OrdinalIgnoreCase);
     }
@@ -19,7 +19,7 @@ public class LangProvider : ILangProvider
     {
         if (_properties.TryGetValue(key, out var prop))
         {
-            var value = prop.GetValue(_config)?.ToString() ?? key;
+            var value = prop.GetValue(_configFactory())?.ToString() ?? key;
             if (args != null && args.Length > 0)
             {
                 try

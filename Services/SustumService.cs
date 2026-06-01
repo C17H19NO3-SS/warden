@@ -16,10 +16,10 @@ public enum SustumMode
     Olusustum
 }
 
-public class SustumService
+public class SustumService : ISustumService
 {
     private readonly JailBreakPlugin _plugin;
-    private readonly WardenService _wardenService;
+    private readonly IWardenService _wardenService;
 
     private SustumMode _activeMode = SustumMode.None;
     private string _targetWord = "";
@@ -27,18 +27,18 @@ public class SustumService
     private CounterStrikeSharp.API.Modules.Timers.Timer? _sustumTimer;
     private readonly Random _random = new();
 
-    public SustumService(JailBreakPlugin plugin, WardenService wardenService)
+    public SustumService(JailBreakPlugin plugin, IWardenService wardenService)
     {
         _plugin = plugin;
         _wardenService = wardenService;
     }
 
-    public void RegisterCommands(ICommandDispatcher dispatcher)
+    public void RegisterCommands()
     {
-        dispatcher.RegisterCommand("css_dsustum", "Deagle ödüllü sustum başlat", CommandDsustum);
-        dispatcher.RegisterCommand("css_tsustum", "T'ye geçme ödüllü sustum başlat", CommandTsustum);
-        dispatcher.RegisterCommand("css_tsusdum", "T'ye geçme ödüllü sustum başlat", CommandTsustum);
-        dispatcher.RegisterCommand("css_olusustum", "Canlanma ödüllü sustum başlat", CommandOlusustum);
+        _plugin.RegisterCommand("css_dsustum", "Deagle ödüllü sustum başlat", CommandDsustum);
+        _plugin.RegisterCommand("css_tsustum", "T'ye geçme ödüllü sustum başlat", CommandTsustum);
+        _plugin.RegisterCommand("css_tsusdum", "T'ye geçme ödüllü sustum başlat", CommandTsustum);
+        _plugin.RegisterCommand("css_olusustum", "Canlanma ödüllü sustum başlat", CommandOlusustum);
     }
 
     public void CommandDsustum(CCSPlayerController? player, CommandInfo info) => StartSustum(player, SustumMode.Dsustum);

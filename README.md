@@ -111,6 +111,76 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 
 ---
 
+## 🧭 Menü ve HUD Sistemi
+Bu plugin, komutçu ve oyuncu arayüzlerini iki ana yapı üzerinden yönetir: **menüler** ve **HUD** içerikleri.
+
+### Menü Sistemi
+Menüler servis tabanlı bir mimariyle çalışır. Her ana menü, ilgili servis tarafından açılır ve seçilen seçenekler geri çağrılarla (`callback`) işlenir.
+
+- `WardenService`: `!k` / `!kommenu` komutunu kullanarak komutçu ana menüsünü açar.
+- `FFMenuService`: `!ffmenu` / `!ff` komutu ile dost ateş ve silah ayarları menüsünü yönetir.
+- `MarkerService`: `!marker` komutu ile işaretçi oluşturma/silme seçeneklerini sağlar.
+- `ChatMenu` ve `CenterHtmlMenu`: Menü yapıları, oyuncuya görsel bir seçim ekranı sunmak için bu iki ana menü API'sini kullanır.
+
+Menü akışı şu şekilde işler:
+1. Oyuncu komutu girer.
+2. İlgili servis menüyü açar.
+3. Menüde bir seçenek seçilir.
+4. Seçime bağlı olarak alt menü açılır, aksiyon tetiklenir veya oyun içi durum değiştirilir.
+
+#### Temsili Menü Görünümleri
+`Warden Menu`
+```
+[ Warden Yönetim Paneli ]
+1) Oyun Modları
+2) Oyuncu Yönetimi
+3) FF Ayarları
+4) İşaretleyiciler
+5) İstatistikler
+```
+
+`FF Menü`
+```
+[ Dost Ateşi Menüsü ]
+1) FF Aç
+2) FF Kapat
+3) Bunny Aç/Kapat
+4) Silahları Kaldır
+```
+
+`Marker Menü`
+```
+[ Marker Yönetimi ]
+1) Marker Oluştur
+2) Marker Sil
+3) Aktif Markerları Göster
+```
+
+### HUD Sistemi
+HUD sistemi iki bileşene ayrılır: `HudService` hızlı bildirimler için, `HudManager` ise sürekli güncellenen bilgi panelleri için.
+
+- `HudService`: Ekranın ortasına veya altına kısa mesajlar gönderir. `Hint` ve `CenterHtml` bildirimleri için kullanılır.
+- `HudManager`: Oyuncu başına önceliklendirilmiş HUD içerikleri tutar, süreleri ve tekrar engellemelerini yönetir.
+
+Çalışma şekli:
+- Bir servis HUD veya menü durumu değiştiğinde `HudService` ya da `HudManager` aracılığıyla içerik ekler.
+- `HudManager` periyotlu olarak `OnTick()` ile içerikleri günceller.
+- Aynı içerik tekrar tekrar gösterilmemesi için öncelik ve süre kontrolleri yapılır.
+
+#### Temsili HUD Görünümü
+```
+[ HUD Bilgisi ]
+Komutçu: aktif
+FF: kapalı
+Geri sayım: 00:45
+Sona kalan: 1 oyuncu
+```
+
+- Bu yapı, komutçu durumları, FF durumu, oylama bilgileri ve özel olayları hızlıca ekrana yansıtmak için idealdir.
+- HUD mesajları hem görsel hem de işlevsel olarak oyuncunun oyun içindeki anlık durumunu takip eder.
+
+---
+
 ## 📜 Krediler
 CS2 JailBreak topluluğu için ❤️ ile geliştirildi.
 **CounterStrikeSharp** ve **CS2MenuManager** tarafından desteklenmektedir.
