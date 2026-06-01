@@ -91,7 +91,7 @@ Bu plugin, komutçunun (Warden) oyunu yönetmesini kolaylaştırmak için tüm k
 | `!msay <mesaj>` | - | `@css/chat` | Ekranın ortasında büyük duyuru kutusu açar. |
 | `!csay <mesaj>` | - | `@css/chat` | Ekranın alt-orta kısmında renkli duyuru yapar. |
 | `!hsay <mesaj>` | - | `@css/chat` | HUD (Hint) bölgesinde mesaj gösterir. |
-| `!marker` | - | `@css/chat` | İşaretleyici menüsünü açar. |
+| `!marker` | - | `@css/chat` | Marker menüsünü açar. |
 | `!fsay <isim> <msg>`| - | `@css/root` | Belirlenen oyuncunun adıyla chat'e yazı yazar. |
 
 ### 8. Genel ve Diğer Komutlar
@@ -119,7 +119,7 @@ Menüler servis tabanlı bir mimariyle çalışır. Her ana menü, ilgili servis
 
 - `WardenService`: `!k` / `!kommenu` komutunu kullanarak komutçu ana menüsünü açar.
 - `FFMenuService`: `!ffmenu` / `!ff` komutu ile dost ateş ve silah ayarları menüsünü yönetir.
-- `MarkerService`: `!marker` komutu ile işaretçi oluşturma/silme seçeneklerini sağlar.
+- `MarkerService`: `!marker` komutu ile Marker oluşturma/silme seçeneklerini sağlar.
 - `ChatMenu` ve `CenterHtmlMenu`: Menü yapıları, oyuncuya görsel bir seçim ekranı sunmak için bu iki ana menü API'sini kullanır.
 
 Menü akışı şu şekilde işler:
@@ -142,10 +142,10 @@ Menü akışı şu şekilde işler:
 `FF Menü`
 ```
 [ Dost Ateşi Menüsü ]
-1) Birincil Silahlar (varsayılan açık)
-2) İkincil Silahlar (varsayılan açık)
+1) Birincil Silahlar
+2) İkincil Silahlar
 3) Bunny Aç/Kapat
-4) FF Süresi: 30 sn (10-50 sn, 10'ar sn adımlarla)
+4) FF Süresi: 30 sn
 5) FF Başlat
 ```
 
