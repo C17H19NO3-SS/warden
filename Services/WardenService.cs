@@ -16,7 +16,7 @@ using JailBreak.Helpers;
 
 namespace JailBreak.Services;
 
-public class WardenService
+public class WardenService : IWardenService
 {
     private readonly JailBreakPlugin _plugin;
 
@@ -58,7 +58,7 @@ public class WardenService
         dispatcher.RegisterCommand("css_kommenu", "Komutçu ana menüsünü açar", CommandKomMenu);
     }
 
-    private void LoadStats()
+    public void LoadStats()
     {
         LogHelper.LogDebug("WardenService: Loading warden stats...");
         try
